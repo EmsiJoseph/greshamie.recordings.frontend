@@ -9,7 +9,7 @@ interface SidebarItem {
 }
 
 export function AppSidebar() {
-    const items: SidebarItem[] = SIDEBAR_ITEMS
+    const items: SidebarItem[] = SIDEBAR_ITEMS.Admin
     return (
         <Sidebar>
             <SidebarContent>

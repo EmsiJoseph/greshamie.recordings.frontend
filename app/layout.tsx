@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import LayoutClient from "./layout-client";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import LayoutClient from "./react-query-context";
 import { AppSidebar } from "@/layouts/app-sidebar";
+import { AppTopbar } from "@/layouts/app-topbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,10 +40,12 @@ export default function RootLayout({
         >
           <SidebarProvider>
             <AppSidebar />
-            <LayoutClient>
-              <SidebarTrigger />
-              {children}
-            </LayoutClient>
+            <AppTopbar>
+              <LayoutClient>
+                {/* <SidebarTrigger /> */}
+                {children}
+              </LayoutClient>
+            </AppTopbar>
           </SidebarProvider>
         </ThemeProvider>
       </body>
