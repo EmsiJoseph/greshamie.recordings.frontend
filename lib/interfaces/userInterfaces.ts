@@ -16,3 +16,4 @@ export interface IUserWithToken {
     auth_token: string;
     expires_at: string;
 }
+

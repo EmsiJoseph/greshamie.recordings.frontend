@@ -6,6 +6,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import LayoutClient from "./react-query-context";
 import { AppSidebar } from "@/layouts/app-sidebar";
 import { AppTopbar } from "@/layouts/app-topbar";
+import { MainContent } from "@/layouts/main-content";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
+import PanelLayout from "@/components/panel/panel-layout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,24 +32,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          // enableSystem
-          disableTransitionOnChange
-        >
-          <SidebarProvider>
-            <AppSidebar />
-            <AppTopbar>
-              <LayoutClient>
-                {/* <SidebarTrigger /> */}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+            <PanelLayout>
                 {children}
-              </LayoutClient>
-            </AppTopbar>
-          </SidebarProvider>
+            </PanelLayout>
         </ThemeProvider>
       </body>
     </html>

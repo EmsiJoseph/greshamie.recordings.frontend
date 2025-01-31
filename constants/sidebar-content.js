@@ -16,21 +16,6 @@ export const SIDEBAR_ITEMS = {
             icon: PhoneCall,
             url: '/admin/call-logs',
         },
-        {
-            title: 'Contacts',
-            icon: Book,
-            url: '/admin/contacts',
-        },
-        {
-            title: 'Analytics',
-            icon: ChartSpline,
-            url: '/admin/analytics',
-        },
-        {
-            title: 'Settings',
-            icon: Settings,
-            url: '/admin/settings',
-        },
     ],
     
 }
