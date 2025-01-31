@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { MainContent } from "@/layouts/main-content";
 
 interface ReactQueryContextProps {
     children: React.ReactNode;
@@ -14,7 +15,9 @@ export default function ReactQueryContext({ children }: ReactQueryContextProps) 
 
     return (
         <QueryClientProvider client={queryClient}>
-            {children}
+            <MainContent>
+                {children}
+            </MainContent>
             <Toaster />
         </QueryClientProvider>
     );
