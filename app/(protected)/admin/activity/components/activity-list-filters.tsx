@@ -32,7 +32,7 @@ export const ActivityListFilters = ({ onChange }: ActivityListFiltersProps) => {
           All
         </ToggleGroupItem>
         {Object.keys(ActivityTypes).map((key) => (
-          <ToggleGroupItem value={key} aria-label={"Toggle " + key} key={key} className="bg-black">
+          <ToggleGroupItem value={key} aria-label={"Toggle " + key} key={key}>
             {capitalizeFirstLetter(ActivityTypes[key as TActivityType])}
           </ToggleGroupItem>
         ))}
