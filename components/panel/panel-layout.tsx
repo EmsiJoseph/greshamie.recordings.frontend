@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { useStore } from "@/hooks/use-store";
 import { Sidebar } from "@/components/panel/sidebar";
 import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 
 export default function PanelLayout({
   children
@@ -12,10 +14,14 @@ export default function PanelLayout({
 }) {
   const sidebar = useStore(useSidebarToggle, (state) => state);
 
+  // Initialize React Query client
+  const [queryClient] = useState(() => new QueryClient());
+
   if (!sidebar) return null;
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
+
       <Sidebar />
       <main
         className={cn(
@@ -25,6 +31,6 @@ export default function PanelLayout({
       >
         {children}
       </main>
-    </>
+    </QueryClientProvider>
   );
 }
