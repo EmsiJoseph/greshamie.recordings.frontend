@@ -8,7 +8,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { Navbar } from "@/components/panel/navbar";
 
-
 export default function PanelLayout({
   children
 }: {
@@ -25,8 +24,10 @@ export default function PanelLayout({
     <QueryClientProvider client={queryClient}>
       <div className="flex flex-col min-h-screen">
         <Navbar />
+
         <div className="flex flex-1">
           <Sidebar />
+
           {/* Main content with margin adjustment */}
           <main
             className={cn(
