@@ -31,8 +31,8 @@ export default function PanelLayout({
           {/* Main content with margin adjustment */}
           <main
             className={cn(
-              "flex-1 min-h-screen bg-zinc-50 dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300",
-              sidebar?.isOpen === false ? "lg:ml-[90px]" : "lg:ml-72"
+              "flex-1 min-h-screen bg-zinc-50 dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300 ",
+              sidebar?.isOpen === false ? "lg:ml-72" : "lg:ml-96"
             )}
           >
             <div className="container pt-8 pb-8 px-4 sm:px-8">
