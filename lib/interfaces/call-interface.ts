@@ -22,5 +22,6 @@ export interface ICallFilters {
     caller?: string,
     receiver?: string,
     recorder?: string,
-    size?: number
+    size?: number,
+    page?: number
 }

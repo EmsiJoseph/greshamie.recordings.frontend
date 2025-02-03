@@ -12,6 +12,7 @@ export const CallList = ({ calls }: CallListProps) => {
         <TableHeader>
           <TableRow>
             <TableHead>ID</TableHead>
+            <TableHead>Date</TableHead>
             <TableHead>Caller</TableHead>
             <TableHead>Receiver</TableHead>
             <TableHead>Call Type</TableHead>
