@@ -1,4 +1,3 @@
-import { ICallFilters } from '@/lib/interfaces/call-interface';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 export const useUpdateUrlParams = () => {
@@ -6,7 +5,10 @@ export const useUpdateUrlParams = () => {
   const router = useRouter();
 
   // This function appends, updates, or deletes filters without replacing everything.
-  const updateUrlParams = (newFilters: Record<string, string | undefined>) => {
+  const updateUrlParams = <T extends Record<string, any>>(newFilters?: T) => {
+    if (!newFilters) {
+      return
+    }
     const params = new URLSearchParams(searchParams);
 
     // Loop through the new filters

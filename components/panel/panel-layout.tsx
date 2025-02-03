@@ -7,6 +7,7 @@ import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { Navbar } from "@/components/panel/navbar";
+import { Toaster } from "../ui/toaster";
 
 export default function PanelLayout({
   children
@@ -41,6 +42,7 @@ export default function PanelLayout({
           </main>
         </div>
       </div>
+      <Toaster />
     </QueryClientProvider>
   );
 }
