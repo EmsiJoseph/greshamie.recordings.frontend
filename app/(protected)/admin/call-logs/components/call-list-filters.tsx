@@ -1,28 +1,41 @@
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { CallTypes } from "@/constants/call-types";
+import { useDebounce } from "@/hooks/use-debounce";
 import { ICallFilters, TCallType } from "@/lib/interfaces/call-interface";
 import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { SelectLabel } from "@radix-ui/react-select";
-import { useState } from "react";
+import { Search } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface CallListFiltersProps {
-    onChange: (filters: ICallFilters) => void;
+    onChange: (filters?: ICallFilters) => void;
 }
 
 export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
-    const [selectedCallType, setSelectedCallType] = useState("ALL")
+    const [search, setSearch] = useState<ICallFilters['search']>("");
+    const debouncedSearch = useDebounce(search);
 
     const handleSelectCallType = (value: string) => {
-        setSelectedCallType(value)
+        if (value === "ALL") {
+            onChange({ callType: "" });
+        }
+        if (value !== "ALL" && value !== "") {
+            const callType = value as TCallType; // Safely cast to TCallType
+            onChange({ callType });
+        }
     }
 
+    // For search, update url params
+    useEffect(() => {
+        onChange({search: debouncedSearch})
+    }, [debouncedSearch]);
+
     return (
-        <div>
+        <div className="flex gap-4">
             <ToggleGroup
                 type="single"
-                defaultValue={selectedCallType}
-                value={selectedCallType}
+                defaultValue={"ALL"}
                 onValueChange={handleSelectCallType}
             >
                 <ToggleGroupItem value="ALL" aria-label="Toggle all">
@@ -30,25 +43,17 @@ export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
                 </ToggleGroupItem>
                 {Object.keys(CallTypes).map((key) => (
                     <ToggleGroupItem value={key} aria-label={"Toggle " + key} key={key}>
-                        {capitalizeFirstLetter(CallTypes[key as TCallType])}
+                        {key === ""
+                            ? "No call type"
+                            : capitalizeFirstLetter(CallTypes[key as Exclude<TCallType, "">])}
                     </ToggleGroupItem>
                 ))}
             </ToggleGroup>
-            {/* <Select>
-                <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select call type" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectLabel>Call types</SelectLabel>
-                        {Object.keys(CallTypes).map((key) => (
-                            <SelectItem key={key} value={key}>
-                                {capitalizeFirstLetter(CallTypes[key as TCallType])}
-                            </SelectItem>
-                        ))}
-                    </SelectGroup>
-                </SelectContent>
-            </Select> */}
+
+            <div className="relative w-full">
+                <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
+                <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
+            </div>
         </div>
     )
 }
