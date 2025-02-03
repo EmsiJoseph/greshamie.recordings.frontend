@@ -4,8 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import LayoutClient from "./react-query-context";
-import { AppSidebar } from "@/layouts/app-sidebar";
-import { AppTopbar } from "@/layouts/app-topbar";
+
 import { MainContent } from "@/layouts/main-content";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 import PanelLayout from "@/components/panel/panel-layout";

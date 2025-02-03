@@ -47,7 +47,7 @@ export function UserNav() {
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage src="#" alt="Avatar"/>
                                     <AvatarFallback className="bg-transparent">
-                                        Berbon 
+                                        JB
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>
@@ -61,10 +61,10 @@ export function UserNav() {
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
-                           Berbon 
+                           Berbon
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
-                            berbon@.com
+                            Berbon@.com
                         </p>
                     </div>
                 </DropdownMenuLabel>

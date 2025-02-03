@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-    const user = 'sfsf';
+    const user = 'user';
     if (!user) {
         return NextResponse.redirect(new URL('/', request.url))
     }
