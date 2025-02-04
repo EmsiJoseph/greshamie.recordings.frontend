@@ -3,9 +3,14 @@ import { ICall } from "@/lib/interfaces/call-interface"
 
 interface CallListProps {
   calls?: ICall[]
+  isFetching?: boolean
 }
 
-export const CallList = ({ calls }: CallListProps) => {
+export const CallList = ({ calls, isFetching }: CallListProps) => {
+  if (isFetching) {
+    return <div>Loading...</div>
+  }
+  
   return (
     <div>
       <Table>

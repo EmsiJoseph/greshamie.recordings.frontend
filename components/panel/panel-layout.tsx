@@ -5,7 +5,6 @@ import { useStore } from "@/hooks/use-store";
 import { Sidebar } from "@/components/panel/sidebar";
 import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
 import { Navbar } from "@/components/panel/navbar";
 import { Toaster } from "../ui/toaster";
 
@@ -17,7 +16,15 @@ export default function PanelLayout({
   const sidebar = useStore(useSidebarToggle, (state) => state);
 
   // Initialize React Query client
-  const [queryClient] = useState(() => new QueryClient());
+  const staleTime = 1000 * 60 * 3; // 3min Default staleTime for all queries
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: staleTime,
+        refetchOnWindowFocus: false,
+      },
+    },
+  })
 
   if (!sidebar) return null;
 
