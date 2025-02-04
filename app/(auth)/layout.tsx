@@ -5,7 +5,7 @@ export default function NoPanelLayout({
 }) {
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 z-50 flex justify-center">
         {children}
       </div>
     </>
