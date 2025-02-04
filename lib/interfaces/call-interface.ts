@@ -9,7 +9,7 @@ export interface ICall {
     caller: string,
     receiver: string,
     callType: TCallType,
-    duration: number, // in minutes
+    duration: number, 
     recorder: string, 
     minSize: number // in kilobytes
     maxSize: number 

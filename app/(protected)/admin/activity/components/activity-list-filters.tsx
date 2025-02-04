@@ -4,53 +4,60 @@ import { ActivityTypes } from "@/constants/activity-types";
 import { IActivityFilters, TActivityType } from "@/lib/interfaces/activity-interface";
 import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { Search, Save } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface ActivityListFiltersProps {
   onChange: (filters: IActivityFilters) => void;
 }
 
 export const ActivityListFilters = ({ onChange }: ActivityListFiltersProps) => {
-  const [selectedActivityType, setSelectedActivityType] = useState("ALL");
+
+  const [search, setSearch] = useState<IActivityFilters['search']>("");
+  const debouncedSearch = useDebounce(search);
 
   const handleSelectActivityType = (value: string) => {
-    setSelectedActivityType(value);
-  };
+    if (value === "ALL") {
+        onChange({ action: "" });
+    }
+    if (value !== "ALL" && value !== "") {
+        const action = value as TActivityType; // Safely cast to TCallType
+        onChange({ action });
+    }
+  }
+
+  useEffect(() => {
+      onChange({search: debouncedSearch})
+  }, [debouncedSearch]);
 
   return (
-    <div className="w-full px-4 sm:px-8 py-4 flex items-center gap-4 bg-background">
-      {/* Toggle Group - Left Side */}
-      <ToggleGroup
-        type="single"
-        defaultValue={selectedActivityType}
-        value={selectedActivityType}
-        onValueChange={handleSelectActivityType}
-        className="flex"
-      >
-        <ToggleGroupItem value="ALL" aria-label="Toggle all">
-          All
-        </ToggleGroupItem>
-        {Object.keys(ActivityTypes).map((key) => (
-          <ToggleGroupItem value={key} aria-label={"Toggle " + key} key={key}>
-            {capitalizeFirstLetter(ActivityTypes[key as TActivityType])}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+    <div className="flex gap-4">
+        <ToggleGroup
+            type="single"
+            defaultValue={"ALL"}
+            onValueChange={handleSelectActivityType}
+        >
+            <ToggleGroupItem value="ALL" aria-label="Toggle all">
+                All
+            </ToggleGroupItem>
+            {Object.keys(ActivityTypes).map((key) => (
+                <ToggleGroupItem value={key} aria-label={"Toggle " + key} key={key}>
+                    {key === ""
+                        ? "No call type"
+                        : capitalizeFirstLetter(ActivityTypes[key as Exclude<TActivityType, "">])}
+                </ToggleGroupItem>
+            ))}
+        </ToggleGroup>
 
-      {/* Search Bar + Button - Right Side */}
-      <div className="relative flex items-center flex-grow">
-        <Input placeholder="Search user, recording item, or date range" className="rounded-md pl-4 pr-10 w-full" />
-        <button className="absolute right-2 p-2 rounded-sm">
-          <Search className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-        </button>
-      </div>
-
-      {/* Additional Button */}
-      <Button className="bg-lime-50 text-lime-700 border-lime-700 border-2 font-semibold">
-        <Save className="h-5 w-5 mr-2  text-lime-700" />
-        Export
-       </Button>
+        <div className="relative w-full">
+            <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
+            <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
+        </div>
+        <Button className="bg-lime-50 text-lime-700 border-lime-700 border-2 font-semibold">
+          <Save className="h-5 w-5 mr-2  text-lime-700" />
+          Export
+        </Button>
     </div>
   );
 };

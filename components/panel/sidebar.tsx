@@ -18,18 +18,11 @@ export function Sidebar() {
 
     return (
         <>
-            {isOpen && (
-                <div 
-                    className="fixed inset-0 bg-white z-40 lg:hidden"
-                    onClick={() => setIsOpen?.()}
-                />
-            )}
 
-            {/* Sidebar */}
             <aside 
                 className={`
-                    fixed top-14 left-0 z-50 w-72 h-[calc(100vh-56px)] shadow-lg border-r
-                    s  duration-300
+                    fixed top-14 left-0 w-72 shadow-lg border-r
+                    s  duration-300 bg-white z-40 h-full
                     ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
                 `}
             >

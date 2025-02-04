@@ -1,10 +1,16 @@
 import { ContentLayout } from "@/components/panel/content-layout";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <ContentLayout >
+    <div >
       Home
-    </ContentLayout>
+      
+      <Button>
+        <Link href="/login">Click me</Link>
+      </Button>
+    </div>
   );
 }

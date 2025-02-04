@@ -21,39 +21,39 @@ export const ActivityList = ({ activities }: ActivityListProps) => {
 
         <TableBody>
           {activities && activities.length > 0 ? (
-                      activities.map((activity) => (
-                        <TableRow key={activity.id}>
-                          {Object.keys(activity).map((key) => {
-                            const value = activity[key as keyof IActivity];
-          
-                            // Handle Date type (convert to string)
-                            if (value instanceof Date) {
-                              return (
-                                <TableCell key={key}>
-                                  {value.toLocaleString()}
-                                </TableCell>
-                              );
-                            }
-          
-                            // For other types (string, number), simply render them
-                            return (
-                              <TableCell key={key}>
-                                {key === "duration" ? `${value} minutes` : value}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      ))
-          
-                    ) : (
-                      <TableRow>
-                        <TableCell
-                          className="h-24 text-center"
-                        >
-                          No results.
-                        </TableCell>
-                      </TableRow>
-                    )}
+            activities.map((activity) => (
+              <TableRow key={activity.id}>
+                {Object.keys(activity).map((key) => {
+                  const value = activity[key as keyof IActivity];
+
+                  // Handle Date type (convert to string)
+                  if (value instanceof Date) {
+                    return (
+                      <TableCell key={key}>
+                        {value.toLocaleString()}
+                      </TableCell>
+                    );
+                  }
+
+                  // For other types (string, number), simply render them
+                  return (
+                    <TableCell key={key}>
+                      {key === "duration" ? `${value} minutes` : value}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            ))
+
+          ) : (
+            <TableRow>
+              <TableCell
+                className="h-24 text-center"
+              >
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </div>
