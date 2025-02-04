@@ -1,6 +1,6 @@
 import { CallTypes } from "@/constants/call-types"
 
-export type TCallType = typeof CallTypes[keyof typeof CallTypes] | ""
+export type TCallType = typeof CallTypes[keyof typeof CallTypes]
 
 // Type: To get the keys later and print it later
 export interface ICall {
@@ -9,9 +9,9 @@ export interface ICall {
     caller: string,
     receiver: string,
     callType: TCallType,
-    duration: number, // in minutes
+    duration: number, 
     recorder: string, 
-    size: number // in kilobytes
+    size: number 
 }
 
 export interface ICallFilters {

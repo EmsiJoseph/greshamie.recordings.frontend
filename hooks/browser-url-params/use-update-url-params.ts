@@ -14,8 +14,13 @@ export const useUpdateUrlParams = () => {
     // Loop through the new filters
     Object.entries(newFilters).forEach(([key, value]) => {
       if (value) {
-        // Update or append the parameter
-        params.set(key, value); // This updates the value if the key exists or appends it if it doesn't exist.
+        // Get the current value of the parameter in the URL
+        const currentValue = params.get(key);
+
+        // Only update or append the parameter if the value is different from the current value
+        if (currentValue !== value) {
+          params.set(key, value); // Update or append the parameter
+        }
       } else {
         // If value is falsy (e.g., null or undefined), delete the parameter
         params.delete(key);

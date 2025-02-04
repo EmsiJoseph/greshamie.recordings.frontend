@@ -13,7 +13,7 @@ export interface IActivity {
 
 export interface IActivityFilters {
     search?: string,
-    action?: TActivityType,
+    action?: TActivityType | "",
     user?: string,
     recordingItem?: string,
 }
