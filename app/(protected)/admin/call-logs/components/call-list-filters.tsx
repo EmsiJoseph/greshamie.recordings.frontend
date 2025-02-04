@@ -7,6 +7,7 @@ import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRetrieveCallFilters } from "../lib/useRetrieveCallFilters";
 import { AdvanceFilters } from "@/components/filters/advance-filters";
+import { useForm } from "react-hook-form";
 
 interface CallListFiltersProps {
     onChange: (filters?: ICallFilters) => void;
@@ -15,6 +16,7 @@ interface CallListFiltersProps {
 const all = CallTypes.ALL
 
 export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
+    // 01 Search and Call Type Selection
     const [search, setSearch] = useState<ICallFilters['search']>("");
     const debouncedSearch = useDebounce(search); // always refer to debounced value
     
@@ -36,6 +38,9 @@ export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
         onChange({ search: debouncedSearch })
     }, [debouncedSearch]);
 
+    // 02 Advance Filters
+    const { register, handleSubmit, watch} = useForm();
+
     return (
         <div className="flex gap-4">
             <ToggleGroupFilter
@@ -43,7 +48,7 @@ export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
                 onValueChange={handleSelectCallType}
                 options={CallTypes}
             />
-            <AdvanceFilters onValueChange/>
+            <AdvanceFilters register={register}/>
             <div className="relative w-full">
                 <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
                 <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
