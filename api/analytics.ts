@@ -3,8 +3,6 @@
 import { IAnalyticsCategory, IAnalyticsFilters } from "@/lib/interfaces/analytic_interface";
 import { sampleAnalyticsData } from "./sample-data/analytics";
 
-
-
 export const sampleFetchAnalytics = async (options?: IAnalyticsFilters): Promise<IAnalyticsCategory[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
 
@@ -12,7 +10,7 @@ export const sampleFetchAnalytics = async (options?: IAnalyticsFilters): Promise
 
   if (options?.category) {
     filteredAnalytics = filteredAnalytics.filter((stat) =>
-      stat.category.toLowerCase().includes(options.category!.toLowerCase())
+      stat.categoryName.toLowerCase().includes(options.category!.toLowerCase())
     );
   }
 
@@ -24,8 +22,7 @@ export const sampleFetchAnalytics = async (options?: IAnalyticsFilters): Promise
         item.label.toLowerCase().includes(searchTerm)
       ),
     })).filter((stat) => stat.data.length > 0); // Remove categories with no matching stats
-
   }
 
-  return filteredAnalytics;
+  return filteredAnalytics.length > 0 ? filteredAnalytics : sampleAnalyticsData;
 };

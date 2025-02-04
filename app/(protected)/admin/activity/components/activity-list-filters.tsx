@@ -1,28 +1,34 @@
 import { Input } from "@/components/ui/input";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ToggleGroupFilter } from "@/components/filters/toggle-group-filter";
 import { ActivityTypes } from "@/constants/activity-types";
 import { IActivityFilters, TActivityType } from "@/lib/interfaces/activity-interface";
-import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { Search, Save } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useRetrieveActivityFilters } from "../lib/useRetrieveActivityFilters";
 
 interface ActivityListFiltersProps {
   onChange: (filters: IActivityFilters) => void;
 }
 
+const all = ActivityTypes.ALL;
+
 export const ActivityListFilters = ({ onChange }: ActivityListFiltersProps) => {
 
+  
   const [search, setSearch] = useState<IActivityFilters['search']>("");
   const debouncedSearch = useDebounce(search);
+
+  const { action: initialActionType } = useRetrieveActivityFilters();
+  const defaultToggleGroupValue = initialActionType ?? all;
 
   const handleSelectActivityType = (value: string) => {
     if (value === "ALL") {
         onChange({ action: "" });
     }
     if (value !== "ALL" && value !== "") {
-        const action = value as TActivityType; // Safely cast to TCallType
+        const action = value as TActivityType; 
         onChange({ action });
     }
   }
@@ -33,23 +39,11 @@ export const ActivityListFilters = ({ onChange }: ActivityListFiltersProps) => {
 
   return (
     <div className="flex gap-4">
-        <ToggleGroup
-            type="single"
-            defaultValue={"ALL"}
+        <ToggleGroupFilter
+            defaultValue={defaultToggleGroupValue}
             onValueChange={handleSelectActivityType}
-        >
-            <ToggleGroupItem value="ALL" aria-label="Toggle all">
-                All
-            </ToggleGroupItem>
-            {Object.keys(ActivityTypes).map((key) => (
-                <ToggleGroupItem value={key} aria-label={"Toggle " + key} key={key}>
-                    {key === ""
-                        ? "No call type"
-                        : capitalizeFirstLetter(ActivityTypes[key as Exclude<TActivityType, "">])}
-                </ToggleGroupItem>
-            ))}
-        </ToggleGroup>
-
+            options={ActivityTypes}
+        />
         <div className="relative w-full">
             <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
             <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />

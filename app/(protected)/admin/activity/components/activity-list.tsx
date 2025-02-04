@@ -3,9 +3,14 @@ import { IActivity } from "@/lib/interfaces/activity-interface";
 
 interface ActivityListProps {
   activities?: IActivity[]
+  isFetching: boolean
 }
 
-export const ActivityList = ({ activities }: ActivityListProps) => {
+export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
+  if (isFetching) {
+    return <div>Loading...</div>
+  }
+  
   return (
     <div className="overflow-x-auto">
       <Table>
