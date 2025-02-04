@@ -1,3 +1,4 @@
+import { ToggleGroupFilter } from "@/components/filters/toggle-group-filter";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { CallTypes } from "@/constants/call-types";
@@ -14,7 +15,7 @@ interface CallListFiltersProps {
 
 export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
     const [search, setSearch] = useState<ICallFilters['search']>("");
-    const debouncedSearch = useDebounce(search);
+    const debouncedSearch = useDebounce(search); // store debounced search value and refer this always
 
     const handleSelectCallType = (value: string) => {
         if (value === "ALL") {
@@ -28,12 +29,12 @@ export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
 
     // For search, update url params
     useEffect(() => {
-        onChange({search: debouncedSearch})
+        onChange({ search: debouncedSearch })
     }, [debouncedSearch]);
 
     return (
         <div className="flex gap-4">
-            <ToggleGroup
+            {/* <ToggleGroup
                 type="single"
                 defaultValue={"ALL"}
                 onValueChange={handleSelectCallType}
@@ -48,7 +49,7 @@ export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
                             : capitalizeFirstLetter(CallTypes[key as Exclude<TCallType, "">])}
                     </ToggleGroupItem>
                 ))}
-            </ToggleGroup>
+            </ToggleGroup> */}
 
             <div className="relative w-full">
                 <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />

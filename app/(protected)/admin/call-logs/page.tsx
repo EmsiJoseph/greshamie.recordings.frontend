@@ -9,37 +9,27 @@ import { useUpdateUrlParams } from '@/hooks/browser-url-params/use-update-url-pa
 import { useGetUrlParams } from '@/hooks/browser-url-params/use-get-url-params';
 import { CallTypes } from '@/constants/call-types';
 import { ICallFilters } from '@/lib/interfaces/call-interface';
+import { useRetrieveCallFilters } from './lib/useRetrieveCallFilters';
 
 export default function CallLogPage() {
   const { updateUrlParams, resetUrlParams } = useUpdateUrlParams()
-  const getUrlParams = useGetUrlParams();
-
-  // Get filter values from URL
-  const search = getUrlParams("search") || "";
-  // Ensure the value returned from getUrlParams is a valid key of CallTypes
-  const callType = Object.keys(CallTypes).includes(getUrlParams("callType") as string)
-    ? (getUrlParams("callType") as keyof typeof CallTypes)
-    : undefined;  // fallback to undefined
-  const minDuration = parseFloat(getUrlParams("minDuration") || "0");
-  const maxDuration = parseFloat(getUrlParams("maxDuration") || "0");
-
-  const filters = { search, callType, minDuration, maxDuration }
+  const filters = useRetrieveCallFilters();
 
   const { data, isFetching, refetch } = useQuery({
-    queryKey: ['products',],
+    queryKey: ['calls',],
     queryFn: () => sampleFetchCalls(filters),
   });
-
-  // Re-fetch data when URL params change
-  useEffect(() => {
-    refetch();
-  }, [search, callType, minDuration, maxDuration, refetch]);
-
 
   // Function to handle updates from CallListFilters
   const handleFilterChange = (updatedFilters?: ICallFilters) => {
     updateUrlParams(updatedFilters);
   };
+
+  // Re-fetch data when URL params change
+  useEffect(() => {
+    refetch();
+  }, [filters, refetch]);
+
 
   return (
     <div>
