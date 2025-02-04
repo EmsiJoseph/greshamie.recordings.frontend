@@ -11,7 +11,8 @@ export interface ICall {
     callType: TCallType,
     duration: number, 
     recorder: string, 
-    size: number 
+    minSize: number // in kilobytes
+    maxSize: number 
 }
 
 export interface ICallFilters {
@@ -22,6 +23,7 @@ export interface ICallFilters {
     caller?: string,
     receiver?: string,
     recorder?: string,
-    size?: number,
+    minSize?: number,
+    maxSize?: number,
     page?: number
 }
