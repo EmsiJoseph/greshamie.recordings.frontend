@@ -9,9 +9,9 @@ export interface ICall {
     caller: string,
     receiver: string,
     callType: TCallType,
-    duration: number, // in minutes
+    duration: number, 
     recorder: string, 
-    size: number // in kilobytes
+    size: number 
 }
 
 export interface ICallFilters {

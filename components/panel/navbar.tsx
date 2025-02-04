@@ -89,7 +89,7 @@ export function Navbar() {
         <div className="flex items-center gap-4">
           <ModeToggle />
           {/* Gresham House Recording inside UserNav section */}
-            <span className="font-medium font-bold whitespace-nowrap hidden sm:block">
+            <span className="font-bold whitespace-nowrap hidden sm:block">
             GRESHAM HOUSE RECORDINGS
             </span>
           <UserNav />
