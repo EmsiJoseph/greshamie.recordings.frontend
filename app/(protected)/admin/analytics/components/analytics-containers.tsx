@@ -16,12 +16,27 @@ interface AnalyticsContainerProps {
 }
 
 export default function AnalyticsContainer({
+  filters,
   isFetching,
   data,
+  onFilterChange,
 }: AnalyticsContainerProps) {
   return (
     <div>
+      {/* Filter Inputs */}
       {/* Add your filter inputs here, similar to the 'CallListFilters' */}
+      <div>
+        {/* Example category filter */}
+        <input
+          type="text"
+          placeholder="Category Filter"
+          value={filters.category}
+          onChange={(e) =>
+            onFilterChange({ ...filters, category: e.target.value })
+          }
+          className="p-2 border rounded-md w-full mt-2"
+        />
+      </div>
 
       {/* Loading, Error, and Analytics List */}
       {isFetching && (

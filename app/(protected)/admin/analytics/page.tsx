@@ -15,12 +15,13 @@ export default function AnalyticsPage() {
 
   // Get filter values from URL
   const search = getUrlParams("search") || "";
-  const category = getUrlParams("category") || ""; // Assuming a 'category' filters
+  const category = getUrlParams("category") || ""; // Assuming a 'category' filter
+  const filters: IAnalyticsFilters = { category };
 
   // Fetch analytics data based on filters
   const { data, isFetching, refetch } = useQuery({
-    queryKey: ["analytics"],
-    queryFn: () => sampleFetchAnalytics(),
+    queryKey: ["analytics", filters],
+    queryFn: () => sampleFetchAnalytics(filters),
   });
 
   // Re-fetch data when URL params change
@@ -39,6 +40,7 @@ export default function AnalyticsPage() {
       {/* Add your custom filter component here if needed */}
       {data && (
         <AnalyticsContainer
+          filters={filters}
           isFetching={isFetching}
           data={data}
           onFilterChange={handleFilterChange}
