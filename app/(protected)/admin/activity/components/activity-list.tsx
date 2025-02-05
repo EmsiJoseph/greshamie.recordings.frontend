@@ -73,7 +73,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
                       <span className="ml-2 font-bold">{activityLabels[activity.action] || "Unknown Action"}</span>
                     </div>
                   ) : (
-                    <span>No Action</span>
+                    <span>No Action</span> 
                   )}
                 </TableCell>
 
@@ -92,11 +92,11 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           )}
         </TableBody>
       </Table>
-      {/* <ActivityListPagination
+      <ActivityListPagination
         currentPage={page}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-      /> */}
+      />
     </div>
   );
 };
