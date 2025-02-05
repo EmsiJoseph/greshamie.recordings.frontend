@@ -1,51 +1,52 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { useState } from "react";
+import { Button } from "../ui/button";
+import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 
 interface ToggleGroupFilterProps<T extends string> {
-    defaultValue?: T;
-    onValueChange: (value: T) => void;
+    value?: T[];
+    onValueChange: (value: T[]) => void; // Callback receives an array of T
     options: Record<T, string>;
     ariaLabelPrefix?: string;
+    onResetSelection?: () => void;
+    resetButtonLabel?: string;
+    isResetButtonActive?: boolean;
 }
 
 export const ToggleGroupFilter = <T extends string>({
-    defaultValue,
+    value,
     onValueChange,
+    onResetSelection,
     options,
     ariaLabelPrefix = "Toggle filter ",
+    resetButtonLabel = "All",
+    isResetButtonActive
 }: ToggleGroupFilterProps<T>) => {
-    const [selected, setSelected] = useState<T | undefined>(defaultValue);
-
-    const handleChange = (value: T) => {
-        setSelected(value);
-        onValueChange(value);
-    };
-
+    const activeResetButton = isResetButtonActive && "bg-slate-100";
     return (
-        <ToggleGroup
-            type="single"
-            value={selected}
-            onValueChange={handleChange}
-            className="flex gap-2"
-        >
-            {Object.keys(options).map((key) => {
-                const isActive = selected === key;
-
-                return (
+        <div className="flex gap-1">
+            {onResetSelection && <Button
+                className={`bg-transparent text-inherit hover:bg-slate-100 ${activeResetButton}`}
+                onClick={onResetSelection}
+            >
+                {resetButtonLabel}
+            </Button>}
+            <ToggleGroup
+                type="multiple"
+                onValueChange={onValueChange}
+                value={value}
+            >
+                {Object.keys(options).map((key) => (
                     <ToggleGroupItem
                         value={key}
                         aria-label={`${ariaLabelPrefix} ${key}`}
                         key={key}
-                        className={`
-                            px-4 py-2 rounded-md transition-all flex
-                            ${isActive ? "bg-slate-100 border-none rounded-full font-bold" : " hover:bg-gray-100"}
-                        `}
                     >
                         {capitalizeFirstLetter(options[key as T])}
                     </ToggleGroupItem>
-                );
-            })}
-        </ToggleGroup>
+                ))}
+            </ToggleGroup>
+        </div>
     );
 };

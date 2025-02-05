@@ -5,17 +5,22 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { useState } from "react"
 import { ICallFilters } from "@/lib/interfaces/call-interface"
+import { FieldValues, UseFormRegister } from "react-hook-form"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
 
 interface AdvanceFiltersProps {
-  onValueChange: () => void
+  title?: string
+  description?: string
+  register: UseFormRegister<FieldValues>
 }
 
-export const AdvanceFilters = ({ onValueChange }: AdvanceFiltersProps) => {
-  const [callType, setCallType] = useState<ICallFilters['callType']>()
-  const [minDuration, setMinValue] = useState<ICallFilters['minDuration']>()
-  const [maxDuration, setMaxValue] = useState<ICallFilters['maxDuration']>()
-  const [minSize, setMinSize] = useState<ICallFilters['minSize']>()
-  const [maxSize, setMaxSize] = useState<ICallFilters['maxSize']>()
+export const AdvanceFilters = ({
+  title = "Advance Filters",
+  description = "Filter your list by more specific criteria",
+  register,
+
+
+}: AdvanceFiltersProps) => {
 
   return (
     <Dialog>
@@ -24,25 +29,36 @@ export const AdvanceFilters = ({ onValueChange }: AdvanceFiltersProps) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Advance Filters</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <form className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Name
+              Call type
             </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
+            <Select>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select call type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="apple">Apple</SelectItem>
+                  <SelectItem value="banana">Banana</SelectItem>
+                  <SelectItem value="blueberry">Blueberry</SelectItem>
+                  <SelectItem value="grapes">Grapes</SelectItem>
+                  <SelectItem value="pineapple">Pineapple</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="username" className="text-right">
               Username
             </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
+            <Input id="username" defaultValue="@peduarte" className="col-span-3" />
           </div>
-        </div>
+        </form>
         <DialogFooter>
           <Button type="submit">Save changes</Button>
         </DialogFooter>
