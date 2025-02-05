@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { IActivity } from "@/lib/interfaces/activity-interface";
 import { EllipsisVertical, MousePointerClick, Plus, Trash2, Download } from "lucide-react";
 import React from "react";
+import ActivityListSkeleton from "@/components/presentational/activity-list-skeleton";
 
 interface ActivityListProps {
   activities?: IActivity[];
@@ -22,7 +23,7 @@ const capitalizeFirstLetter = (text: string) => {
 
 export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
   if (isFetching) {
-    return <div>Loading...</div>;
+    return <ActivityListSkeleton />;
   }
 
   return (
@@ -30,8 +31,6 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead></TableHead>
-            <TableHead>ID</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>User</TableHead>
             <TableHead>Recording Item</TableHead>
@@ -43,36 +42,12 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
         <TableBody>
           {activities && activities.length > 0 ? (
             activities.map((activity) => (
-              <TableRow key={activity.id}>
-                {/* Checkbox column */}
-                <TableCell>
-                  <input type="checkbox" className="h-4 w-4" />
-                </TableCell>
+              <TableRow key={activity.date.toString()}> {/* Use a different key since id is removed */}
+                <TableCell>{activity.date instanceof Date ? activity.date.toLocaleString() : activity.date}</TableCell>
+                <TableCell>{activity.user}</TableCell>
+                <TableCell>{activity.recordingItem}</TableCell>
 
-                {/* Other columns */}
-                {Object.keys(activity).map((key) => {
-                  if (key === "action") return null; // Skip the action column
-                  
-                  const value = activity[key as keyof IActivity];
-
-                  // Handle Date type (convert to string)
-                  if (value instanceof Date) {
-                    return (
-                      <TableCell key={key}>
-                        {value.toLocaleString()}
-                      </TableCell>
-                    );
-                  }
-
-                  // For other types (string, number), simply render them
-                  return (
-                    <TableCell key={key}>
-                      {key === "duration" ? `${value} minutes` : value}
-                    </TableCell>
-                  );
-                })}
-
-                {/* Action column with color and icon */}
+                {/* Action column with icon */}
                 <TableCell>
                   {activity.action && activityIcons[activity.action] ? (
                     <div className={`flex items-center ${activityIcons[activity.action].colorClass}`}>
@@ -94,7 +69,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center">
+              <TableCell colSpan={5} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>

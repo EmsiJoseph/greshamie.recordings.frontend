@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
-import PanelLayout from "@/components/panel/panel-layout";
+import NextTopLoader from 'nextjs-toploader';
 import ClientLayout from "./client-layout";
 
 const geistSans = Geist({
@@ -30,6 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <NextTopLoader
+            color="#4D7C0F"
+            height={3}         // Height of 4px
+            showSpinner={false} // Disable spinner
+            shadow="0 0 10px #FFFF00, 0 0 5px #FFFF00" // Custom yellow shadow
+        />
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

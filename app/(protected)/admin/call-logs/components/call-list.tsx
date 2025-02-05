@@ -1,27 +1,17 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ICall } from "@/lib/interfaces/call-interface"
-import { MoveDownLeft, MoveUpRight, ArrowRightLeft } from "lucide-react";
-import React from "react";
+import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 
 interface CallListProps {
   calls?: ICall[]
   isFetching?: boolean
 }
 
-const callIcons: Record<string, { icon: any, colorClass: string }> = {
-  INCOMING: { icon: MoveDownLeft, colorClass: "text-green-700" },
-  OUTGOING: { icon: MoveUpRight, colorClass: "text-orange-700" },
-  INTERNAL: { icon: ArrowRightLeft, colorClass: "text-blue-700" },
-};
-
-const capitalizeFirstLetter = (text: string) => {
-  if (!text) return text;
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-};
-
 export const CallList = ({ calls, isFetching }: CallListProps) => {
   if (isFetching) {
-    return <div>Loading...</div>
+    return (
+      <CallListSkeleton />
+    )
   }
   
   return (
@@ -63,25 +53,14 @@ export const CallList = ({ calls, isFetching }: CallListProps) => {
                     </TableCell>
                   );
                 })}
-
-                {/* Call Type column with icon and color */}
-                <TableCell>
-                  {call.callType && callIcons[call.callType] ? (
-                    <div className={`flex items-center ${callIcons[call.callType].colorClass}`}>
-                      {React.createElement(callIcons[call.callType].icon, {
-                        className: "h-5 w-5",
-                      })}
-                      <span className="ml-2 font-bold">{capitalizeFirstLetter(call.callType)}</span>
-                    </div>
-                  ) : (
-                    <span>No Action</span>
-                  )}
-                </TableCell>
               </TableRow>
             ))
+
           ) : (
             <TableRow>
-              <TableCell className="h-24 text-center">
+              <TableCell
+                className="h-24 text-center"
+              >
                 No results.
               </TableCell>
             </TableRow>

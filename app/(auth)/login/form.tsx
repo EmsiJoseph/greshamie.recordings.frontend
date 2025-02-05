@@ -38,6 +38,7 @@ export function LoginForm() {
             <img src="/microsoft.png" alt="Microsoft Logo" className="h-5 w-5 mr-2" />
             Continue with Microsoft
           </button>
+          <a href="/admin/activity" className="text-blue-600 ml-2">Login</a>
         </div>
       </form>
     </div>
