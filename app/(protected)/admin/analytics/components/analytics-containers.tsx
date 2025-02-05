@@ -6,7 +6,7 @@ import {
   IAnalyticsCategory,
   IAnalyticsFilters,
   IStatItem,
-} from "@/lib/interfaces/analytic_interface";
+} from "@/lib/interfaces/analytic-interface";
 
 interface AnalyticsContainerProps {
   filters: IAnalyticsFilters;

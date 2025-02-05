@@ -1,6 +1,6 @@
 "use server";
-import { IAuthCookie, ILoginApiResponse } from "@/lib/interfaces/authenticationInterfaces";
-import { IUser } from "@/lib/interfaces/userInterfaces";
+import { IAuthCookie, ILoginApiResponse } from "@/lib/interfaces/authentication-interfaces";
+import { IUser } from "@/lib/interfaces/user-interfaces";
 // TODO: Secure cookie, don't expose user data and tokens on cookie [security risk]
 import {cookies} from "next/headers";
 // import {IAuthCookie, ILoginApiResponse, ILoginOutput, IUser} from "@/lib/interfaces";
