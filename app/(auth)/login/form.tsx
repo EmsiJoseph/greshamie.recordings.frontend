@@ -19,28 +19,9 @@ export function LoginForm() {
           <button className="w-full bg-lime-600 text-white py-3 rounded-md mt-4 text-lg font-medium hover:bg-lime-700 transition">
             Login
           </button>
-          <div className="flex justify-between text-sm mt-2">
-            <label>
-              <input type="checkbox" className="mr-1" /> Remember me
-            </label>
+            <div className="flex justify-center text-sm mt-2">
             <a href="/forgot-password" className="text-blue-600 hover:underline">Forgot your password?</a>
-          </div>
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-3 bg-white text-gray-500">Or Continue With</span>
-            </div>
-          </div>
-          <button className="w-full bg-white text-gray-700 py-3 rounded-md flex items-center justify-center border border-gray-300 hover:bg-gray-100 transition">
-            <img
-              src="/microsoft.png"
-              alt="Microsoft Logo"
-              className="h-5 w-5 mr-2"
-            />
-            Continue with Microsoft
-          </button>
           <div className="text-center mt-4">
             <a href="/admin/activity" className="text-blue-600 hover:underline">Admin Login</a>
           </div>
