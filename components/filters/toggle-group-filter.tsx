@@ -2,14 +2,14 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 
 interface ToggleGroupFilterProps<T extends string> {
-    defaultValue?: T;
-    onValueChange: (value: T) => void;
+    value?: T;
+    onValueChange: (value: T) => void; // Callback receives an array of T
     options: Record<T, string>;
     ariaLabelPrefix?: string;
 }
 
 export const ToggleGroupFilter = <T extends string>({
-    defaultValue,
+    value,
     onValueChange,
     options,
     ariaLabelPrefix = "Toggle filter ",
@@ -17,8 +17,8 @@ export const ToggleGroupFilter = <T extends string>({
     return (
         <ToggleGroup
             type="single"
-            defaultValue={defaultValue}
             onValueChange={onValueChange}
+            value={value}
         >
             {Object.keys(options).map((key) => (
                 <ToggleGroupItem

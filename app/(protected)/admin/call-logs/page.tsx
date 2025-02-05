@@ -10,13 +10,15 @@ import { useRetrieveCallFilters } from './lib/useRetrieveCallFilters';
 
 export default function CallLogPage() {
   const { updateUrlParams } = useUpdateUrlParams()
-  const { search, callType, minDuration, maxDuration } = useRetrieveCallFilters();
-  const filters = [search, callType, minDuration, maxDuration].filter(Boolean); // Remove falsy values
+  const { search, callTypes, minDuration, maxDuration } = useRetrieveCallFilters();
+  console.log("ARRAYY", callTypes)
 
-
+  // Fetch calls with the filters
+  const stringCallTypes = callTypes?.join(',');
+  const filters = [search, stringCallTypes, minDuration, maxDuration].filter(Boolean); // Remove falsy values
   const { data, isFetching } = useQuery({
     queryKey: ['calls', ...filters],
-    queryFn: () => sampleFetchCalls({ search, callType, minDuration, maxDuration }),
+    queryFn: () => sampleFetchCalls({ search, callTypes, minDuration, maxDuration }),
   });
 
   // Function to handle updates from CallListFilters

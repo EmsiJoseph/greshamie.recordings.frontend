@@ -6,30 +6,40 @@ export const useUpdateUrlParams = () => {
 
   // This function appends, updates, or deletes filters without replacing everything.
   const updateUrlParams = <T extends Record<string, any>>(newFilters?: T) => {
-    if (!newFilters) {
-      return
-    }
+    if (!newFilters) return;
+  
     const params = new URLSearchParams(searchParams);
-
-    // Loop through the new filters
+  
     Object.entries(newFilters).forEach(([key, value]) => {
       if (value) {
-        // Get the current value of the parameter in the URL
-        const currentValue = params.get(key);
+        if (Array.isArray(value)) {
+          if (value.includes('ALL') || value.length === 0) {
+            console.log("Is array and includes all or blank", value);
 
-        // Only update or append the parameter if the value is different from the current value
+            params.delete(key);
+            return; // Skip further processing for this key
+          }
+          // Only join if the value is actually different than current
+          value = value.filter((v) => v.trim() !== '').join(',');
+
+          console.log("Is array", value);
+        }
+  
+        const currentValue = params.get(key);
         if (currentValue !== value) {
-          params.set(key, value); // Update or append the parameter
+          params.set(key, value);
         }
       } else {
-        // If value is falsy (e.g., null or undefined), delete the parameter
         params.delete(key);
       }
     });
-
-    // Update the URL with the modified parameters
-    router.replace(`?${params.toString()}`);
-  };
+  
+    // Only update the URL if something has changed
+    const newUrl = `?${params.toString()}`;
+    if (newUrl !== `?${searchParams.toString()}`) {
+      router.replace(newUrl);
+    }
+  };  
 
   // Function to reset all filters (clear query params)
   const resetUrlParams = () => {

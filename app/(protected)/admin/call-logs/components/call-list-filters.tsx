@@ -13,42 +13,43 @@ interface CallListFiltersProps {
     onChange: (filters?: ICallFilters) => void;
 }
 
-const all = CallTypes.ALL
+const ALL = CallTypes.ALL
 
 export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
     // 01 Search and Call Type Selection
     const [search, setSearch] = useState<ICallFilters['search']>("");
     const debouncedSearch = useDebounce(search); // always refer to debounced value
-    
-    const { callType: initialCallType } = useRetrieveCallFilters();
-    const defaultToggleGroupValue = initialCallType ?? all;
-    const handleSelectCallType = (value: string) => {
-        if (value === all) {
-            // Delete the URL Param
-            onChange({ callType: "" });
+
+    const { callTypes: initialCallTypes } = useRetrieveCallFilters();
+    const toggleGroupValues = initialCallTypes.length > 0? initialCallTypes : [ALL];
+
+    // Handle changes in SINGLE call type selection.
+    const handleSelectSingleCallType = (value: TCallType) => {
+        // If "all" is selected (or included in the selection),
+        // we might want to reset the filter.
+        if (value === ALL) {
+            onChange({ callTypes: [ALL] });
+        } else {
+            onChange({ callTypes: [value] });
         }
-        if (value !== all) {
-            const callType = value as TCallType; // Safely cast to TCallType
-            onChange({ callType });
-        }
-    }
+    };
 
     // For search, update url params
     useEffect(() => {
         onChange({ search: debouncedSearch })
-    }, [debouncedSearch]);
+    }, [debouncedSearch, onChange]);
 
     // 02 Advance Filters
-    const { register, handleSubmit, watch} = useForm();
+    const { register, handleSubmit, watch } = useForm();
 
     return (
         <div className="flex gap-4">
             <ToggleGroupFilter
-                defaultValue={defaultToggleGroupValue}
-                onValueChange={handleSelectCallType}
+                value={toggleGroupValues[0]}
+                onValueChange={handleSelectSingleCallType}
                 options={CallTypes}
             />
-            <AdvanceFilters register={register}/>
+            <AdvanceFilters register={register} />
             <div className="relative w-full">
                 <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
                 <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
