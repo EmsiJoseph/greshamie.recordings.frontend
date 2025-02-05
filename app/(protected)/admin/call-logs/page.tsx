@@ -4,7 +4,7 @@ import { CallList } from './components/call-list'
 import { useQuery } from '@tanstack/react-query';
 import { sampleFetchCalls } from '@/api/calls';
 import { CallListFilters } from './components/filters/call-list-filters';
-import { useRetrieveCallFilters } from './lib/useRetrieveCallFilters';
+import { useRetrieveCallFilters } from './lib/use-retrieve-call-filters';
 
 export default function CallLogPage() {
   const retrievedFilters = useRetrieveCallFilters();

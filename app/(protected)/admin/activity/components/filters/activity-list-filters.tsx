@@ -6,39 +6,40 @@ import { Search, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useRetrieveActivityFilters } from "../lib/useRetrieveActivityFilters";
+import { useRetrieveActivityFilters } from "../../lib/use-retrieve-activity-filters";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { useForm } from "react-hook-form";
+import { ActivityListAdvanceFilters } from "./activity-list-advance-filters";
 
-export const ActivityListFilters = () => {
 
+interface ActivityListFiltersProps {
+  retrievedFilters: IActivityFilters
+}
+
+export const ActivityListFilters = ({ retrievedFilters }: ActivityListFiltersProps) => {
   const { updateUrlParams, deleteUrlParam } = useUpdateUrlParams()
-  const { action: selectedActionTypes } = useRetrieveActivityFilters();
-
-   // Function to handle updates from ActivityListFilters
-  const handleFilterChange = (updatedFilters?: IActivityFilters) => {
-    updateUrlParams(updatedFilters);
-  };
+  // 01 Activity Types
 
   // Handle reset call types
   const handleResetActionTypes = () => {
     deleteUrlParam("action");
-  }
-  const isResetButtonActive = selectedActionTypes.length < 1;
-
-  // 1. Search
-  const [search, setSearch] = useState<IActivityFilters['search']>("");
-  const debouncedSearch = useDebounce(search);
+  };
 
   // Handle changes in SINGLE call type selection.
   const handleSelectActivityType = (value: TActivityType[]) => {
-    handleFilterChange({ action: value });
+    updateUrlParams({ action: value });
   };
 
-   // For search, update url params
+
+  const isResetButtonActive = retrievedFilters?.action ? retrievedFilters?.action?.length < 1 : false;
+
+  // 2. Search
+  const [search, setSearch] = useState<IActivityFilters['search']>("");
+  const debouncedSearch = useDebounce(search);
+
   useEffect(() => {
-    handleFilterChange({ search: debouncedSearch });
-  }, [debouncedSearch, handleFilterChange]);
+    updateUrlParams({ search: debouncedSearch })
+}, [debouncedSearch, updateUrlParams]);
 
   // 02 Advance Filters
   const { register, handleSubmit, watch } = useForm();
@@ -61,12 +62,13 @@ export const ActivityListFilters = () => {
   return (
     <div className="flex gap-4">
         <ToggleGroupFilter
-            value={selectedActionTypes}
+            value={retrievedFilters?.action}
             onValueChange={handleSelectActivityType}
             onResetSelection={handleResetActionTypes}
             options={ActivityTypes}
             isResetButtonActive={isResetButtonActive}
         />
+        <ActivityListAdvanceFilters retrievedActivityFilters={retrievedFilters} />
         <div className="relative w-full">
           <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
           <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
