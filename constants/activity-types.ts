@@ -1,7 +1,8 @@
 export const ActivityTypes = {
     ALL: 'ALL',
-    CREATED: 'CREATED',
-    DELETED: 'DELETED',
+    STARTED: 'STARTED',
+    PLAYED: 'PLAYED',
+    ENDED: 'ENDED',
     EXPORTED: 'EXPORTED',
-    ACCESSED: 'ACCESSED',
+    DELETED: 'DELETED',
 } as const;

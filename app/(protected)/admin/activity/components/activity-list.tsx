@@ -1,20 +1,33 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { IActivity } from "@/lib/interfaces/activity-interface";
-import { EllipsisVertical, MousePointerClick, Plus, Trash2, Download } from "lucide-react";
+import { EllipsisVertical, MousePointerClick, Plus, Trash2, Download, LogIn, Play, LogOut } from "lucide-react";
 import React from "react";
 import ActivityListSkeleton from "@/components/presentational/activity-list-skeleton";
+import ActivityListPagination from "@/components/presentational/activity-list-pagination";
 
 interface ActivityListProps {
   activities?: IActivity[];
   isFetching: boolean;
 }
 
-const activityIcons: Record<string, { icon: any, colorClass: string }> = {
-  EXPORTED: { icon: Download, colorClass: "text-blue-700" },
-  CREATED: { icon: Plus, colorClass: "text-green-700" },
-  DELETED: { icon: Trash2, colorClass: "text-orange-700" },
-  ACCESSED: { icon: MousePointerClick, colorClass: "text-slate-700" },
+
+// Map raw action types to display-friendly labels
+const activityLabels: Record<string, string> = {
+  STARTED: "Session Started",
+  PLAYED: "Recording Played",
+  ENDED: "Session Ended",
+  EXPORTED: "Recording Exported",
+  DELETED: "Recording Deleted",
 };
+
+const activityIcons: Record<string, { icon: any; colorClass: string }> = {
+  STARTED: { icon: LogIn, colorClass: "text-green-700" },
+  PLAYED: { icon: Play, colorClass: "text-cyan-700" },
+  ENDED: { icon: LogOut, colorClass: "text-red-500" },
+  EXPORTED: { icon: Download, colorClass: "text-yellow-600" },
+  DELETED: { icon: Trash2, colorClass: "text-red-700" },
+};
+
 
 const capitalizeFirstLetter = (text: string) => {
   if (!text) return text;
@@ -22,6 +35,15 @@ const capitalizeFirstLetter = (text: string) => {
 };
 
 export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
+
+  const [page, setPage] = React.useState(1); // Should be in getUrlParams
+
+  const totalPages = 5; // Temporary total pages
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  }
+  
   if (isFetching) {
     return <ActivityListSkeleton />;
   }
@@ -42,19 +64,19 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
         <TableBody>
           {activities && activities.length > 0 ? (
             activities.map((activity) => (
-              <TableRow key={activity.date.toString()}> {/* Use a different key since id is removed */}
+              <TableRow key={activity.date.toString()}>
                 <TableCell>{activity.date instanceof Date ? activity.date.toLocaleString() : activity.date}</TableCell>
                 <TableCell>{activity.user}</TableCell>
                 <TableCell>{activity.recordingItem}</TableCell>
 
-                {/* Action column with icon */}
+                {/* Action column with icon and readable label */}
                 <TableCell>
                   {activity.action && activityIcons[activity.action] ? (
                     <div className={`flex items-center ${activityIcons[activity.action].colorClass}`}>
                       {React.createElement(activityIcons[activity.action].icon, {
                         className: "h-5 w-5",
                       })}
-                      <span className="ml-2 font-bold">{capitalizeFirstLetter(activity.action)}</span>
+                      <span className="ml-2 font-bold">{activityLabels[activity.action] || "Unknown Action"}</span>
                     </div>
                   ) : (
                     <span>No Action</span>
@@ -76,6 +98,11 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           )}
         </TableBody>
       </Table>
+      <ActivityListPagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };
