@@ -12,17 +12,14 @@ export const useUpdateUrlParams = () => {
   
     Object.entries(newFilters).forEach(([key, value]) => {
       if (value) {
-        if (Array.isArray(value)) {
-          if (value.includes('ALL') || value.length === 0) {
-            console.log("Is array and includes all or blank", value);
-
+        if (Array.isArray(value)) { // For multi select filters like calltypes
+          if (value.length === 0) {
             params.delete(key);
             return; // Skip further processing for this key
           }
-          // Only join if the value is actually different than current
+          
+          // Remove empty strings and join with comma
           value = value.filter((v) => v.trim() !== '').join(',');
-
-          console.log("Is array", value);
         }
   
         const currentValue = params.get(key);
@@ -46,5 +43,12 @@ export const useUpdateUrlParams = () => {
     router.replace('?'); // Clear all query parameters
   };
 
-  return { updateUrlParams, resetUrlParams };
+  // Delete a key 
+  const deleteUrlParam = (key: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.delete(key);
+    router.replace(`?${params.toString()}`);
+  };
+
+  return { updateUrlParams, resetUrlParams, deleteUrlParam };
 };

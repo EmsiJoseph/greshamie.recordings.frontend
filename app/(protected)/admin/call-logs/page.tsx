@@ -9,9 +9,7 @@ import { ICallFilters } from '@/lib/interfaces/call-interface';
 import { useRetrieveCallFilters } from './lib/useRetrieveCallFilters';
 
 export default function CallLogPage() {
-  const { updateUrlParams } = useUpdateUrlParams()
   const { search, callTypes, minDuration, maxDuration } = useRetrieveCallFilters();
-  console.log("ARRAYY", callTypes)
 
   // Fetch calls with the filters
   const stringCallTypes = callTypes?.join(',');
@@ -21,14 +19,9 @@ export default function CallLogPage() {
     queryFn: () => sampleFetchCalls({ search, callTypes, minDuration, maxDuration }),
   });
 
-  // Function to handle updates from CallListFilters
-  const handleFilterChange = (updatedFilters?: ICallFilters) => {
-    updateUrlParams(updatedFilters);
-  };
-
   return (
     <div>
-      <CallListFilters onChange={handleFilterChange} />
+      <CallListFilters />
       <CallList calls={data} isFetching={isFetching} />
     </div>
   )

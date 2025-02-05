@@ -8,36 +8,36 @@ import { useEffect, useState } from "react";
 import { useRetrieveCallFilters } from "../lib/useRetrieveCallFilters";
 import { AdvanceFilters } from "@/components/filters/advance-filters";
 import { useForm } from "react-hook-form";
+import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 
-interface CallListFiltersProps {
-    onChange: (filters?: ICallFilters) => void;
-}
+export const CallListFilters = () => {
+    const { updateUrlParams, deleteUrlParam } = useUpdateUrlParams()
+    const { callTypes: selectedCallTypes } = useRetrieveCallFilters();
+    
+    // Function to handle updates from CallListFilters
+    const handleFilterChange = (updatedFilters?: ICallFilters) => {
+        updateUrlParams(updatedFilters);
+    };
+    // Handle reset call types 
+    const handleResetCallTypes = () => {
+        deleteUrlParam("callTypes");
+    }
+    const isResetButtonActive = selectedCallTypes.length < 1;
 
-const ALL = CallTypes.ALL
 
-export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
-    // 01 Search and Call Type Selection
+    // 01 Search
     const [search, setSearch] = useState<ICallFilters['search']>("");
     const debouncedSearch = useDebounce(search); // always refer to debounced value
 
-    const { callTypes: initialCallTypes } = useRetrieveCallFilters();
-    const toggleGroupValues = initialCallTypes.length > 0? initialCallTypes : [ALL];
-
     // Handle changes in SINGLE call type selection.
-    const handleSelectSingleCallType = (value: TCallType) => {
-        // If "all" is selected (or included in the selection),
-        // we might want to reset the filter.
-        if (value === ALL) {
-            onChange({ callTypes: [ALL] });
-        } else {
-            onChange({ callTypes: [value] });
-        }
+    const handleSelectCallType = (value: TCallType[]) => {
+        handleFilterChange({ callTypes: value });
     };
 
     // For search, update url params
     useEffect(() => {
-        onChange({ search: debouncedSearch })
-    }, [debouncedSearch, onChange]);
+        handleFilterChange({ search: debouncedSearch })
+    }, [debouncedSearch, handleFilterChange]);
 
     // 02 Advance Filters
     const { register, handleSubmit, watch } = useForm();
@@ -45,9 +45,11 @@ export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
     return (
         <div className="flex gap-4">
             <ToggleGroupFilter
-                value={toggleGroupValues[0]}
-                onValueChange={handleSelectSingleCallType}
+                value={selectedCallTypes}
+                onValueChange={handleSelectCallType}
+                onResetSelection={handleResetCallTypes}
                 options={CallTypes}
+                isResetButtonActive={isResetButtonActive}
             />
             <AdvanceFilters register={register} />
             <div className="relative w-full">
