@@ -17,12 +17,15 @@ export interface ICall {
 export interface ICallFilters {
     search?: string,
     callTypes?: TCallType[],
+    startDate?: Date,
+    endDate?: Date,
     minDuration?: number,
     maxDuration?: number,
     caller?: string,
     receiver?: string,
     recorder?: string,
-    minSize?: number,
-    maxSize?: number,
+    hasVideoRecording?: boolean,
+    hasPciCompliance?: boolean,
+    hasQualityEvaluation?: boolean,
     page?: number
 }
