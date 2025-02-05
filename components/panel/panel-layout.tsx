@@ -31,8 +31,8 @@ export default function PanelLayout({
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex flex-col min-h-screen">
-        <div className="sticky top-0 z-50 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">
-        <Navbar />    
+        <div className="sticky top-0 z-50 w-full">
+          <Navbar />
         </div>
 
         <div className="flex flex-1">
@@ -41,11 +41,11 @@ export default function PanelLayout({
           {/* Main content with margin adjustment */}
           <main
             className={cn(
-              "flex-1 min-h-screen dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300 ",
+              "flex-1 min-h-screen overflow-x-auto dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300",
               sidebar?.isOpen === false ? "lg:ml-72" : "lg:ml-96"
             )}
           >
-            <div className="container pt-8 pb-8 px-4 sm:px-8">
+            <div className="w-full min-w-[1200px] container pt-8 pb-8 px-4 sm:px-8">
               {children}
             </div>
           </main>
