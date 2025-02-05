@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useRetrieveActivityFilters } from "../lib/useRetrieveActivityFilters";
+import { sampleActivities } from "@/api/sample-data/activity";
 
 interface ActivityListFiltersProps {
   onChange: (filters: IActivityFilters) => void;
@@ -16,7 +17,6 @@ const all = ActivityTypes.ALL;
 
 export const ActivityListFilters = ({ onChange }: ActivityListFiltersProps) => {
 
-  
   const [search, setSearch] = useState<IActivityFilters['search']>("");
   const debouncedSearch = useDebounce(search);
 
@@ -32,6 +32,21 @@ export const ActivityListFilters = ({ onChange }: ActivityListFiltersProps) => {
         onChange({ action });
     }
   }
+
+  // Show the count of activities for each action type
+  // const getActivityCount = (action: string) => {
+  //   if (action === all) {
+  //       return sampleActivities.length;
+  //   }
+  //   return sampleActivities.filter(activity => activity.action === action).length;
+  // };
+
+  // const activityOptions = Object.fromEntries(
+  //   Object.entries(ActivityTypes).map(([key, value]) => [
+  //     key,
+  //     `${value} ${getActivityCount(value)}`,
+  //   ])
+  // ) as Record<TActivityType, string>;
 
   useEffect(() => {
       onChange({search: debouncedSearch})

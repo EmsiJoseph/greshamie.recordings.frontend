@@ -1,5 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ICall } from "@/lib/interfaces/call-interface"
+import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 
 interface CallListProps {
   calls?: ICall[]
@@ -8,7 +9,9 @@ interface CallListProps {
 
 export const CallList = ({ calls, isFetching }: CallListProps) => {
   if (isFetching) {
-    return <div>Loading...</div>
+    return (
+      <CallListSkeleton />
+    )
   }
   
   return (
