@@ -8,47 +8,50 @@ import { useEffect, useState } from "react";
 import { useRetrieveCallFilters } from "../lib/useRetrieveCallFilters";
 import { AdvanceFilters } from "@/components/filters/advance-filters";
 import { useForm } from "react-hook-form";
+import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 
-interface CallListFiltersProps {
-    onChange: (filters?: ICallFilters) => void;
-}
+export const CallListFilters = () => {
+    const { updateUrlParams, deleteUrlParam } = useUpdateUrlParams()
+    const { callTypes: selectedCallTypes } = useRetrieveCallFilters();
+    
+    // Function to handle updates from CallListFilters
+    const handleFilterChange = (updatedFilters?: ICallFilters) => {
+        updateUrlParams(updatedFilters);
+    };
+    // Handle reset call types 
+    const handleResetCallTypes = () => {
+        deleteUrlParam("callTypes");
+    }
+    const isResetButtonActive = selectedCallTypes.length < 1;
 
-const all = CallTypes.ALL
 
-export const CallListFilters = ({ onChange }: CallListFiltersProps) => {
-    // 01 Search and Call Type Selection
+    // 01 Search
     const [search, setSearch] = useState<ICallFilters['search']>("");
     const debouncedSearch = useDebounce(search); // always refer to debounced value
-    
-    const { callType: initialCallType } = useRetrieveCallFilters();
-    const defaultToggleGroupValue = initialCallType ?? all;
-    const handleSelectCallType = (value: string) => {
-        if (value === all) {
-            // Delete the URL Param
-            onChange({ callType: "" });
-        }
-        if (value !== all) {
-            const callType = value as TCallType; // Safely cast to TCallType
-            onChange({ callType });
-        }
-    }
+
+    // Handle changes in SINGLE call type selection.
+    const handleSelectCallType = (value: TCallType[]) => {
+        handleFilterChange({ callTypes: value });
+    };
 
     // For search, update url params
     useEffect(() => {
-        onChange({ search: debouncedSearch })
-    }, [debouncedSearch]);
+        handleFilterChange({ search: debouncedSearch })
+    }, [debouncedSearch, handleFilterChange]);
 
     // 02 Advance Filters
-    const { register, handleSubmit, watch} = useForm();
+    const { register, handleSubmit, watch } = useForm();
 
     return (
         <div className="flex gap-4">
             <ToggleGroupFilter
-                defaultValue={defaultToggleGroupValue}
+                value={selectedCallTypes}
                 onValueChange={handleSelectCallType}
+                onResetSelection={handleResetCallTypes}
                 options={CallTypes}
+                isResetButtonActive={isResetButtonActive}
             />
-            <AdvanceFilters register={register}/>
+            <AdvanceFilters register={register} />
             <div className="relative w-full">
                 <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
                 <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />

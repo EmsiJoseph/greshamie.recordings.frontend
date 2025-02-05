@@ -9,24 +9,19 @@ import { ICallFilters } from '@/lib/interfaces/call-interface';
 import { useRetrieveCallFilters } from './lib/useRetrieveCallFilters';
 
 export default function CallLogPage() {
-  const { updateUrlParams } = useUpdateUrlParams()
-  const { search, callType, minDuration, maxDuration } = useRetrieveCallFilters();
-  const filters = [search, callType, minDuration, maxDuration].filter(Boolean); // Remove falsy values
+  const { search, callTypes, minDuration, maxDuration } = useRetrieveCallFilters();
 
-
+  // Fetch calls with the filters
+  const stringCallTypes = callTypes?.join(',');
+  const filters = [search, stringCallTypes, minDuration, maxDuration].filter(Boolean); // Remove falsy values
   const { data, isFetching } = useQuery({
     queryKey: ['calls', ...filters],
-    queryFn: () => sampleFetchCalls({ search, callType, minDuration, maxDuration }),
+    queryFn: () => sampleFetchCalls({ search, callTypes, minDuration, maxDuration }),
   });
-
-  // Function to handle updates from CallListFilters
-  const handleFilterChange = (updatedFilters?: ICallFilters) => {
-    updateUrlParams(updatedFilters);
-  };
 
   return (
     <div>
-      <CallListFilters onChange={handleFilterChange} />
+      <CallListFilters />
       <CallList calls={data} isFetching={isFetching} />
     </div>
   )
