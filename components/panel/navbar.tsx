@@ -36,53 +36,6 @@ export function Navbar() {
             {!isSearchOpen && (
             <Image src={DarkLogo} alt="Wizard Logo" className="hidden dark:block" />
             )}
-
-            {/* Small Logo - Show when search is open */}
-            {isSearchOpen && (
-            <Image src={SmallLogo} alt="Wizard Logo" className="h-8 w-8" />
-            )}
-        </div>
-
-        {/* Search Bar */}
-        <div className="relative flex items-center">
-          {/* Search Icon (Visible on screens smaller than 'md') */}
-            {!isSearchOpen && (
-            <button
-              onClick={toggleSearch}
-              className="lg:hidden p-2 rounded-md"
-            >
-              <Search className="h-6 w-6 text-gray-600 dark:text-gray-400" />
-            </button>
-            )}
-
-          {/* Expanded Search Bar (Visible on 'md' and above) */}
-          <div className="relative flex justify-center transition-all duration-300">
-            <div className="hidden lg:flex items-center relative">
-              <Input
-              placeholder="Search (Ctrl + E)"
-              className="rounded-full pl-4 pr-10 w-64" // Controls width expansion on larger screens
-              />
-              <button className="absolute right-2 p-1">
-              <Search className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-              </button>
-            </div>
-
-            {/* Conditional expanded search for smaller screens */}
-            {isSearchOpen && (
-              <div className="relative flex items-center">
-              <Input
-                placeholder="Search (Ctrl + E)"
-                className="rounded-full pl-4 pr-10 w-48 sm:w-64" // Expands width on small screens
-              />
-              <button 
-                className="absolute right-2 p-1"
-                onClick={toggleSearch}
-              >
-                <Search className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-              </button>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Right side - Move Company Name Inside UserNav */}
