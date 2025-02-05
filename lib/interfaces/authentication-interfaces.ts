@@ -1,5 +1,5 @@
 import { IBaseApiResponse } from "./base-api-response-interface";
-import { IUser, IUserWithToken } from "./userInterfaces";
+import { IUser, IUserWithToken } from "./user-interfaces";
 
 export interface IAuthCookie extends IUserWithToken {
     // No additional fields, just inherits from IUserWithToken

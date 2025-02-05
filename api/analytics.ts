@@ -1,6 +1,6 @@
 // /app/api/analytics.ts
 
-import { IAnalyticsCategory, IAnalyticsFilters } from "@/lib/interfaces/analytic_interface";
+import { IAnalyticsCategory, IAnalyticsFilters } from "@/lib/interfaces/analytic-interface";
 import { sampleAnalyticsData } from "./sample-data/analytics";
 
 export const sampleFetchAnalytics = async (options?: IAnalyticsFilters): Promise<IAnalyticsCategory[]> => {

@@ -1,6 +1,6 @@
 // /components/analytics-list.tsx
 
-import { IStatItem } from "@/lib/interfaces/analytic_interface";
+import { IStatItem } from "@/lib/interfaces/analytic-interface";
 import React from "react";
 
 interface AnalyticsListProps {

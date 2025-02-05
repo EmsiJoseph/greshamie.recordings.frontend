@@ -1,4 +1,4 @@
-import { IAnalyticsCategory } from "@/lib/interfaces/analytic_interface";
+import { IAnalyticsCategory } from "@/lib/interfaces/analytic-interface";
 
 export const sampleAnalyticsData: IAnalyticsCategory[] = [
   {
