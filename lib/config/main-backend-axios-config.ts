@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { getAuthToken } from "./server-actions/cookie";
+import { getAuthToken } from "../services/server-actions/cookie";
 
 
 // Add the skipAuth Flag to the AxiosRequestConfig interface
