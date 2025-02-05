@@ -9,24 +9,20 @@ import { useRetrieveActivityFilters } from '../activity/lib/useRetrieveActivityF
 import { ActivityList } from '../activity/components/activity-list';
 
 export default function ActivityPage() {
-  const { updateUrlParams } = useUpdateUrlParams()
-    const { search, action } = useRetrieveActivityFilters();
-    const filters = [search, action].filter(Boolean); // Remove falsy values
+  const { search, action } = useRetrieveActivityFilters();
 
-
+  // Fetch activities with the filters
+  const stringActivityType = action?.join(',');
+  const filters = [search, stringActivityType].filter(Boolean); // Remove falsy values
   const { data, isFetching } = useQuery({
     queryKey: ['activities', ...filters],
     queryFn: () => sampleFetchActivities({ search, action }),
   });
-
-  // Function to handle updates from CallListFilters
-  const handleFilterChange = (updatedFilters?: IActivityFilters) => {
-    updateUrlParams(updatedFilters);
-  };
+  
 
   return (
     <div>
-      <ActivityListFilters onChange={handleFilterChange} />
+      <ActivityListFilters />
       <ActivityList activities={data} isFetching={isFetching} />
     </div>
   )

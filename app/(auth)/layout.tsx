@@ -12,7 +12,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         
         {children}
       </div>
-      <div className="w-full md:w-1/2 flex items-center justify-center bg-green-500">
+      <div className="hidden md:flex w-full md:w-1/2 items-center justify-center bg-green-500">
         <Image src={SideImage} alt="Side Image" className="w-full h-full object-cover" />
       </div>
     </div>

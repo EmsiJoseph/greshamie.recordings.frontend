@@ -7,31 +7,42 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useRetrieveActivityFilters } from "../lib/useRetrieveActivityFilters";
-import { sampleActivities } from "@/api/sample-data/activity";
+import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+import { useForm } from "react-hook-form";
+import { AdvanceFilters } from "@/components/filters/advance-filters";
 
-interface ActivityListFiltersProps {
-  onChange: (filters: IActivityFilters) => void;
-}
+export const ActivityListFilters = () => {
 
-const all = ActivityTypes.ALL;
+  const { updateUrlParams, deleteUrlParam } = useUpdateUrlParams()
+  const { action: selectedActionTypes } = useRetrieveActivityFilters();
 
-export const ActivityListFilters = ({ onChange }: ActivityListFiltersProps) => {
+   // Function to handle updates from ActivityListFilters
+  const handleFilterChange = (updatedFilters?: IActivityFilters) => {
+    updateUrlParams(updatedFilters);
+  };
 
+  // Handle reset call types
+  const handleResetActionTypes = () => {
+    deleteUrlParam("action");
+  }
+  const isResetButtonActive = selectedActionTypes.length < 1;
+
+  // 1. Search
   const [search, setSearch] = useState<IActivityFilters['search']>("");
   const debouncedSearch = useDebounce(search);
 
-  const { action: initialActionType } = useRetrieveActivityFilters();
-  const defaultToggleGroupValue = initialActionType ?? all;
+  // Handle changes in SINGLE call type selection.
+  const handleSelectActivityType = (value: TActivityType[]) => {
+    handleFilterChange({ action: value });
+  };
 
-  const handleSelectActivityType = (value: string) => {
-    if (value === "ALL") {
-        onChange({ action: "" });
-    }
-    if (value !== "ALL" && value !== "") {
-        const action = value as TActivityType; 
-        onChange({ action });
-    }
-  }
+   // For search, update url params
+  useEffect(() => {
+    handleFilterChange({ search: debouncedSearch });
+  }, [debouncedSearch, handleFilterChange]);
+
+  // 02 Advance Filters
+  const { register, handleSubmit, watch } = useForm();
 
   // Show the count of activities for each action type
   // const getActivityCount = (action: string) => {
@@ -48,20 +59,19 @@ export const ActivityListFilters = ({ onChange }: ActivityListFiltersProps) => {
   //   ])
   // ) as Record<TActivityType, string>;
 
-  useEffect(() => {
-      onChange({search: debouncedSearch})
-  }, [debouncedSearch]);
-
   return (
     <div className="flex gap-4">
         <ToggleGroupFilter
-            defaultValue={defaultToggleGroupValue}
+            value={selectedActionTypes}
             onValueChange={handleSelectActivityType}
+            onResetSelection={handleResetActionTypes}
             options={ActivityTypes}
+            isResetButtonActive={isResetButtonActive}
         />
+        <AdvanceFilters register={register} />
         <div className="relative w-full">
-            <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
-            <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
+          <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
+          <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
         </div>
         <Button className="bg-lime-50 text-lime-700 border-lime-700 border-2 font-semibold">
           <Save className="h-5 w-5 mr-2  text-lime-700" />
