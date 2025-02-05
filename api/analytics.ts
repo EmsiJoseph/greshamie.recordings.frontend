@@ -14,6 +14,9 @@ export const sampleFetchAnalytics = async (options?: IAnalyticsFilters): Promise
     );
   }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> d529f52dc5abb71f7b67351f1252cbfe96c958f1
   return filteredAnalytics.length > 0 ? filteredAnalytics : sampleAnalyticsData;
 };

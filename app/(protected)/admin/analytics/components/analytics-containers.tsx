@@ -1,12 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
-import AnalyticsList from "./analytics-list";
+import React, { useState, useEffect } from "react";
+import { useDebounce } from "@/hooks/use-debounce"; 
 import {
   IAnalyticsCategory,
   IAnalyticsFilters,
+<<<<<<< HEAD
+} from "@/lib/interfaces/analytic_interface";
+import AnalyticsList from "./analytics-list";
+=======
   IStatItem,
 } from "@/lib/interfaces/analytic-interface";
+>>>>>>> d529f52dc5abb71f7b67351f1252cbfe96c958f1
 
 interface AnalyticsContainerProps {
   filters: IAnalyticsFilters;
@@ -21,32 +26,40 @@ export default function AnalyticsContainer({
   data,
   onFilterChange,
 }: AnalyticsContainerProps) {
+  // Maintain categorySearch independent of filters.category to prevent unwanted resets
+  const [categorySearch, setCategorySearch] = useState(filters.category || "");
+
+  // Debounced value of categorySearch
+  const debouncedCategory = useDebounce(categorySearch);
+
+  // Apply filter change only when the debounced value actually changes
+  useEffect(() => {
+    if (debouncedCategory !== filters.category) {
+      onFilterChange({ category: debouncedCategory });
+    }
+  }, [debouncedCategory, filters.category, onFilterChange]);
+
   return (
     <div>
-      {/* Filter Inputs */}
-      {/* Add your filter inputs here, similar to the 'CallListFilters' */}
+      {/* Category Filter Input */}
       <div>
-        {/* Example category filter */}
         <input
           type="text"
           placeholder="Category Filter"
-          value={filters.category}
-          onChange={(e) =>
-            onFilterChange({ ...filters, category: e.target.value })
-          }
+          value={categorySearch}
+          onChange={(e) => setCategorySearch(e.target.value)}
           className="p-2 border rounded-md w-full mt-2"
         />
       </div>
 
-      {/* Loading, Error, and Analytics List */}
-      {isFetching && (
+      {/* Analytics List with no unnecessary UI flickers */}
+      {isFetching ? (
         <div className="text-center text-gray-500">Loading analytics...</div>
-      )}
-      {data && data.length > 0 ? (
+      ) : data && data.length > 0 ? (
         data.map((item, index) => (
           <div key={index}>
-            <h2 className="text-xl font-bold mb-4">{item.categoryName}</h2>
-            <AnalyticsList statItem={item.data} />
+            <h2 className="text-xl font-bold mb-4 pt-5">{item.categoryName}</h2>
+            <AnalyticsList statItem={item.data} title={""} />
           </div>
         ))
       ) : (
