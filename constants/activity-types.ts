@@ -1,5 +1,4 @@
 export const ActivityTypes = {
-    ALL: 'ALL',
     STARTED: 'STARTED',
     PLAYED: 'PLAYED',
     ENDED: 'ENDED',

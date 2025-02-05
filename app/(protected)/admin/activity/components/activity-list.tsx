@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { IActivity } from "@/lib/interfaces/activity-interface";
 import { EllipsisVertical, MousePointerClick, Plus, Trash2, Download, LogIn, Play, LogOut } from "lucide-react";
-import React from "react";
+import React, { act } from "react";
 import ActivityListSkeleton from "@/components/presentational/activity-list-skeleton";
 import ActivityListPagination from "@/components/presentational/activity-list-pagination";
 
@@ -28,12 +28,6 @@ const activityIcons: Record<string, { icon: any; colorClass: string }> = {
   DELETED: { icon: Trash2, colorClass: "text-red-700" },
 };
 
-
-const capitalizeFirstLetter = (text: string) => {
-  if (!text) return text;
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-};
-
 export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
 
   const [page, setPage] = React.useState(1); // Should be in getUrlParams
@@ -49,7 +43,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="">
       <Table>
         <TableHeader>
           <TableRow>
@@ -98,11 +92,11 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           )}
         </TableBody>
       </Table>
-      <ActivityListPagination
+      {/* <ActivityListPagination
         currentPage={page}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-      />
+      /> */}
     </div>
   );
 };
