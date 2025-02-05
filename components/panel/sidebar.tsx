@@ -21,7 +21,7 @@ export function Sidebar() {
     <aside
       className={`
         fixed top-14 left-0 w-72 shadow-lg border-r
-        duration-300 bg-white z-40 h-full
+        duration-300 bg-white z-40 h-full dark:bg-black
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}
     >

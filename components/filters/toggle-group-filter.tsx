@@ -1,27 +1,29 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { capitalizeFirstLetter } from "@/lib/utils/format-text";
-import { useState } from "react";
 import { Button } from "../ui/button";
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 
 interface ToggleGroupFilterProps<T extends string> {
     value?: T[];
-    onValueChange: (value: T[]) => void; // Callback receives an array of T
+    defaultValue?: T[];
+    onValueChange?: (value: T[]) => void; // Callback receives an array of T
     options: Record<T, string>;
     ariaLabelPrefix?: string;
     onResetSelection?: () => void;
     resetButtonLabel?: string;
     isResetButtonActive?: boolean;
+    props?: any;
 }
 
 export const ToggleGroupFilter = <T extends string>({
     value,
+    defaultValue,
     onValueChange,
     onResetSelection,
     options,
     ariaLabelPrefix = "Toggle filter ",
     resetButtonLabel = "All",
-    isResetButtonActive
+    isResetButtonActive,
+    props
 }: ToggleGroupFilterProps<T>) => {
     const activeResetButton = isResetButtonActive && "bg-slate-100";
     return (
@@ -33,6 +35,7 @@ export const ToggleGroupFilter = <T extends string>({
                 {resetButtonLabel}
             </Button>}
             <ToggleGroup
+                defaultValue={defaultValue}
                 type="multiple"
                 onValueChange={onValueChange}
                 value={value}
