@@ -73,10 +73,6 @@ export const ActivityListFilters = ({ retrievedFilters }: ActivityListFiltersPro
           <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
           <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
         </div>
-        <Button className="bg-lime-50 text-lime-700 border-lime-700 border-2 font-semibold">
-          <Save className="h-5 w-5 mr-2  text-lime-700" />
-          Export
-        </Button>
     </div>
   );
 };
