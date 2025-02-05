@@ -7,7 +7,6 @@ import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-pa
 import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
 import AnalyticsContainer from "./components/analytics-containers";
 import { IAnalyticsFilters } from "@/lib/interfaces/analytic_interface";
-import AnalyticsList from "./components/analytics-list";
 
 export default function AnalyticsPage() {
   const { updateUrlParams } = useUpdateUrlParams();
@@ -35,7 +34,7 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 min-h-screen">
       {/* Filter UI (optional) */}
       {/* Add your custom filter component here if needed */}
       {data && (
