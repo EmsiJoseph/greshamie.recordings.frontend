@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { ToggleGroupFilter } from "@/components/filters/toggle-group-filter";
+import { MultiToggleGroupFilter } from "@/components/filters/multi-toggle-group-filter";
 import { ActivityTypes } from "@/constants/activity-types";
 import { IActivityFilters, TActivityType } from "@/lib/interfaces/activity-interface";
 import { Search, Save } from "lucide-react";
@@ -61,7 +61,7 @@ export const ActivityListFilters = ({ retrievedFilters }: ActivityListFiltersPro
 
   return (
     <div className="flex gap-4">
-        <ToggleGroupFilter
+        <MultiToggleGroupFilter
             value={retrievedFilters?.action}
             onValueChange={handleSelectActivityType}
             onResetSelection={handleResetActionTypes}
