@@ -31,12 +31,12 @@ export const loginUserAction = actionClient
     })
     .action(
         async ({
-            parsedInput: { email, password },
+            parsedInput: { username, password },
         }) => {
             const request = async (): Promise<
                 AxiosResponse<ILoginApiResponse>> => {
-                let requestBody: { email: string; password: string} = {
-                    email,
+                let requestBody: { username: string; password: string} = {
+                    username,
                     password,
                 };
 
