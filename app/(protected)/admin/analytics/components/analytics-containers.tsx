@@ -5,14 +5,9 @@ import { useDebounce } from "@/hooks/use-debounce";
 import {
   IAnalyticsCategory,
   IAnalyticsFilters,
-<<<<<<< HEAD
-} from "@/lib/interfaces/analytic_interface";
-import AnalyticsList from "./analytics-list";
-=======
   IStatItem,
 } from "@/lib/interfaces/analytic-interface";
->>>>>>> d529f52dc5abb71f7b67351f1252cbfe96c958f1
-
+import AnalyticsList from "./analytics-list";
 interface AnalyticsContainerProps {
   filters: IAnalyticsFilters;
   isFetching: boolean;

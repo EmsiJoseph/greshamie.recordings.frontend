@@ -6,12 +6,8 @@ import { sampleFetchAnalytics } from "@/api/analytics";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
 import AnalyticsContainer from "./components/analytics-containers";
-<<<<<<< HEAD
-import { IAnalyticsFilters } from "@/lib/interfaces/analytic_interface";
-=======
 import { IAnalyticsFilters } from "@/lib/interfaces/analytic-interface";
 import AnalyticsList from "./components/analytics-list";
->>>>>>> d529f52dc5abb71f7b67351f1252cbfe96c958f1
 
 export default function AnalyticsPage() {
   const { updateUrlParams } = useUpdateUrlParams();
