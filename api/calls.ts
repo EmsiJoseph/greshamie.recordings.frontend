@@ -38,6 +38,20 @@ export const sampleFetchCalls = async (options?: ICallFilters) => {
         });
     }
 
+    // Filter by startDate and endDate
+    if (options?.startDate || options?.endDate) {
+        filteredCalls = filteredCalls.filter((call) => {
+            const callDate = new Date(call.date);
+            const startDate = options.startDate ? new Date(options.startDate) : null;
+            const endDate = options.endDate ? new Date(options.endDate) : null;
+
+            return (
+                (!startDate || callDate >= startDate) &&
+                (!endDate || callDate <= endDate)
+            );
+        });
+    }
+
     return filteredCalls;
 };
 

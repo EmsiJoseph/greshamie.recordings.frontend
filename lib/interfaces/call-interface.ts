@@ -10,8 +10,6 @@ export interface ICall {
     callType: TCallType,
     duration: number, 
     recorder: string, 
-    minSize: number // in kilobytes
-    maxSize: number 
 }
 
 export interface ICallFilters {

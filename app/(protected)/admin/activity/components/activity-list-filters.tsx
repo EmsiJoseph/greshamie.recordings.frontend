@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { ToggleGroupFilter } from "@/components/filters/toggle-group-filter";
+import { ToggleGroupFilter } from "@/components/filters/multi-toggle-group-filter";
 import { ActivityTypes } from "@/constants/activity-types";
 import { IActivityFilters, TActivityType } from "@/lib/interfaces/activity-interface";
 import { Search, Save } from "lucide-react";

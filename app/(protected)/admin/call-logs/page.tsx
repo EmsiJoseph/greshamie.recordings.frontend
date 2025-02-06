@@ -4,10 +4,11 @@ import { CallList } from './components/call-list'
 import { useQuery } from '@tanstack/react-query';
 import { sampleFetchCalls } from '@/api/calls';
 import { CallListFilters } from './components/filters/call-list-filters';
-import { useRetrieveCallFilters } from './lib/useRetrieveCallFilters';
+import { useCallFilters } from './lib/use-call-filters';
 
 export default function CallLogPage() {
-  const retrievedFilters = useRetrieveCallFilters();
+  const { retrievedFilters, resetCallFilters } = useCallFilters();
+
   // 01 Prepare filters for query key
   let filters = retrievedFilters as Record<string, any>;
 
@@ -30,7 +31,7 @@ export default function CallLogPage() {
 
   return (
     <div>
-      <CallListFilters retrievedFilters={retrievedFilters} />
+      <CallListFilters retrievedFilters={retrievedFilters} resetCallFilters={resetCallFilters} />
       <CallList calls={data} isFetching={isFetching} />
     </div>
   )

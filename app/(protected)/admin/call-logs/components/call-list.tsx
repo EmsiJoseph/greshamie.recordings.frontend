@@ -13,13 +13,12 @@ export const CallList = ({ calls, isFetching }: CallListProps) => {
       <CallListSkeleton />
     )
   }
-  
+
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Caller</TableHead>
             <TableHead>Receiver</TableHead>
@@ -46,12 +45,14 @@ export const CallList = ({ calls, isFetching }: CallListProps) => {
                     );
                   }
 
-                  // For other types (string, number), simply render them
-                  return (
-                    <TableCell key={key}>
-                      {key === "duration" ? `${value} minutes` : value}
-                    </TableCell>
-                  );
+                  if (key !== "id") {
+                    // For other types (string, number), simply render them
+                    return (
+                      <TableCell key={key}>
+                        {key === "duration" ? `${value} minutes` : value}
+                      </TableCell>
+                    );
+                  }
                 })}
               </TableRow>
             ))
