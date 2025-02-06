@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-import { IStatItem } from "@/lib/interfaces/analytic_interface";
-=======
 // /components/analytics-list.tsx
 
 import { IStatItem } from "@/lib/interfaces/analytic-interface";
->>>>>>> d529f52dc5abb71f7b67351f1252cbfe96c958f1
 import React from "react";
 
 interface AnalyticsListProps {
