@@ -1,6 +1,6 @@
 "use server";
 import { IAuthCookie, ILoginApiResponse } from "@/lib/interfaces/authentication-interfaces";
-import { IUser } from "@/lib/interfaces/user-interfaces";
+import { IUserWithToken } from "@/lib/interfaces/user-interfaces";
 // TODO: Secure cookie, don't expose user data and tokens on cookie [security risk]
 import {cookies} from "next/headers";
 // import {IAuthCookie, ILoginApiResponse, ILoginOutput, IUser} from "@/lib/interfaces";
@@ -26,10 +26,10 @@ export const getParsedAuthCookie = async (): Promise<IAuthCookie | null> => {
  */
 export const setAuthCookie = async (response: ILoginApiResponse): Promise<boolean> => {
     const authCookie = JSON.stringify({
-        ...response?.data,
+        user: {...response},
         is_authenticated: "true",
     });
-    const isAuthCookieSet = (await cookies()).set("auth", authCookie, {  // await cookies()
+    const isAuthCookieSet = (await cookies()).set(auth, authCookie, { 
         httpOnly: true,
         secure: false,
         maxAge: 60 * 60 * 24,
@@ -42,9 +42,13 @@ export const setAuthCookie = async (response: ILoginApiResponse): Promise<boolea
  *
  * @return {Promise<IUser | null>} The user object from the auth cookie, or null if the cookie is not present.
  */
-export const getUserFromAuthCookie = async (): Promise<IUser | null> => {
+export const getUserFromAuthCookie = async (): Promise<IUserWithToken | null> => {
     const cookie = (await cookies()).get(auth);  // await cookies()
-    return cookie ? JSON.parse(cookie.value).user : null;
+    if (!cookie) {
+        return null;
+    }
+    const cookieValue = JSON.parse(cookie.value) as IUserWithToken;
+    return cookieValue;
 }
 
 /**

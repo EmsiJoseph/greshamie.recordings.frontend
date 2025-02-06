@@ -11,12 +11,12 @@ import { LoginSchema } from '@/lib/schema/authentication-schema';
 import { loginUserAction } from '@/lib/services/server-actions/authentication';
 import {useRouter} from "next/navigation";
 import {useAction} from "next-safe-action/hooks";
+import {z} from "zod";
 
 
 export function LoginForm() {
-
+  const [success] = useState<string | undefined>("");
   const [error, setError] = useState<string | undefined>("");
-
   const {executeAsync, isExecuting} = useAction(loginUserAction);
   const form = useForm<TLoginFormValues>({
     resolver: zodResolver(LoginSchema),
@@ -28,26 +28,28 @@ export function LoginForm() {
   
   const router = useRouter();
   
-  function onSubmit(values: z.infer<typeof LoginSchema>) {
-    executeAsync(form.getValues()).then((result) =>{
+  async function onSubmit(values: z.infer<typeof LoginSchema>) {
+    executeAsync(form.getValues()).then((result) => {
       const data = result?.data;
-      const message = result?.message;
-      const errors = result?.errors;
-      const success = result?.success;
+      const message = data?.message;
+      const errors = data?.errors;
 
-      if (!success && message){
-        if(errors){
+      if (!success && message) {
+        if (errors) { 
           const errorArray = Object.values(errors as Record<string, string>);
           setError(errorArray.join(", "));
           return;
         }
-        setError(message);
+        setError(typeof message === 'string' ? message : "An unexpected error occurred.");
         return;
       }
+      // Handle successful login
+      router.push("/admin/activity");
+      
     })
-    .finally(() => {
+    .finally (() =>{
       router.replace("/admin/activity");
-    });
+  });
     form.reset(form.getValues());
   }
 
@@ -84,6 +86,7 @@ export function LoginForm() {
                   </FormItem>
               )}
               />
+              {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
               <Button
                   type="submit"
                   className="w-full bg-lime-600 text-white py-3 rounded-md mt-4 text-lg font-medium hover:bg-lime-700 transition"
