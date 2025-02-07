@@ -30,20 +30,12 @@ export const loginUserAction = actionClient
             flattenValidationErrors(ve).fieldErrors,
     })
     .action(
-        async ({
-            parsedInput: { email, password },
-        }) => {
-            const request = async (): Promise<
-                AxiosResponse<ILoginApiResponse>> => {
-                let requestBody: { email: string; password: string} = {
-                    email,
-                    password,
-                };
+        async ({ parsedInput: { username, password } }) => {
+            const request = async (): Promise<AxiosResponse<ILoginApiResponse>> => {
+                // eslint-disable-next-line prefer-const
+                let requestBody = { username, password };
 
-                return GreshamAxiosConfig.post<ILoginApiResponse>(
-                    loginEndpoint,
-                    requestBody
-                );
+                return GreshamAxiosConfig.post<ILoginApiResponse>(loginEndpoint, requestBody);
             };
 
             // Handle the response
@@ -51,13 +43,13 @@ export const loginUserAction = actionClient
                 request,
                 successMessage: "Logged in successfully! 🎉",
             });
-            // if (response?.data?.status) {
-            //     const isSetSuccessfully = await setAuthCookie(response?.data);
-            //     if (!isSetSuccessfully) {
-            //         throw new Error("Failed to set auth cookie");
-            //     }
-            // }
 
+            if (response?.data?.access_token) {
+                const isSetSuccessfully = await setAuthCookie(response?.data);
+                if (!isSetSuccessfully) {
+                    throw new Error("Failed to set auth cookie");
+                }
+            }
             return response;
         }
     );
