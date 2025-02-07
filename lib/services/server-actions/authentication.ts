@@ -42,15 +42,11 @@ export const loginUserAction = actionClient
                 successMessage: "Logged in successfully! 🎉",
             });
 
-            console.log(response?.data)
             if (response?.data?.accessToken) {
                 const isSetSuccessfully = await setAuthCookie(response?.data);
                 if (!isSetSuccessfully) {
                     throw new Error("Failed to set auth cookie");
                 }
-
-                const parsedCookie = await getParsedAuthCookie()
-                console.log("Parsed cookie var", parsedCookie)
             }
             return response;
         }
@@ -58,16 +54,18 @@ export const loginUserAction = actionClient
 
 export const logoutUserAction = actionClient.action(async () => {
     try {
-        // const response = await GreshamAxiosConfig.post(logoutEndpoint);
-        await deleteAuthCookie();
+        const response = await GreshamAxiosConfig.post(logoutEndpoint);
 
-    //     if (response.status === 200) {
-    //         await deleteAuthCookie(); // Ensure it's a server action
-    //         return NextResponse.redirect(new URL('/login'))
-    //     } else {
-    //         throw new Error("Failed to log out: Status is not 200");
-    //     }
+        console.log("Logout response:", response);
+
+        if (response.status === 200) {
+            await deleteAuthCookie();
+            return { success: true };
+        } else {
+            throw new Error("Failed to log out: Status is not 200");
+        }
     } catch (error) {
-        return "Failed to log out: " + error;
+        console.error("Logout error:", error);
+        return { success: false, message: "Failed to log out: " + error };
     }
 });

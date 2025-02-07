@@ -22,19 +22,20 @@ import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/h
 import { useAction } from "next-safe-action/hooks";
 
 export function UserNav() {
-    const {executeAsync, isExecuting} = useAction(logoutUserAction);
+    const { executeAsync, isExecuting } = useAction(logoutUserAction);
     const router = useRouter();
 
     const goToLogoutPage = async () => {
         try {
-            await executeAsync();
+            const result = await executeAsync(); // Capture the result
+            console.log("Logout result:", result); // Debug log
             router.replace("/login");
-            console.log("SFSFSFSF")
         } catch (error) {
+            console.error("Logout error:", error);
             handleApiClientSideError({
                 error: "Failed to logout. Try again later.",
                 isSuccessToast: false,
-            })
+            });
         }
     };
 

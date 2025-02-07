@@ -34,6 +34,8 @@ export function LoginForm() {
     const data = result?.data;
     const errors = data?.errors;
 
+    console.log(data)
+
     if (errors) {
       const errorArray = extractStringValues(errors);
       setError(errorArray.join(", "));
