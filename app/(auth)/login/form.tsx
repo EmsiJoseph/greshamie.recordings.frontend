@@ -34,8 +34,6 @@ export function LoginForm() {
     const data = result?.data;
     const errors = data?.errors;
 
-    console.log("data", data);
-
     if (errors) {
       const errorArray = extractStringValues(errors);
       setError(errorArray.join(", "));
@@ -89,9 +87,9 @@ export function LoginForm() {
             </Button>
           </form>
         </Form>
-        <div className="flex justify-center text-sm mt-2">
+        {/* <div className="flex justify-center text-sm mt-2">
           <a href="/forgot-password" className="text-blue-600 hover:underline">Forgot your password?</a>
-        </div>
+        </div> */}
         <div className="text-center mt-4">
           <a href="/admin/activity" className="text-blue-600 hover:underline">Admin Login</a>
         </div>
