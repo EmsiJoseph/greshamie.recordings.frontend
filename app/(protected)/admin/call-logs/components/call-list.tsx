@@ -1,17 +1,29 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ICall } from "@/lib/interfaces/call-interface"
+import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
+import { MoveDownLeft, MoveUpRight, ArrowRightLeft } from "lucide-react";
+import React from "react";
 
 interface CallListProps {
-  calls?: ICall[]
-  isFetching?: boolean
+  calls?: ICall[];
+  isFetching?: boolean;
 }
+
+const callLabels: Record<string, string> = {
+  INCOMING: "Incoming",
+  OUTGOING: "Outgoing",
+  INTERNAL: "Internal",
+};
+
+const callIcons: Record<string, { icon: any; colorClass: string }> = {
+  INCOMING: { icon: MoveDownLeft, colorClass: "text-green-700" },
+  OUTGOING: { icon: MoveUpRight, colorClass: "text-orange-700" },
+  INTERNAL: { icon: ArrowRightLeft, colorClass: "text-blue-700" },
+};
 
 export const CallList = ({ calls, isFetching }: CallListProps) => {
   if (isFetching) {
-    return (
-      <CallListSkeleton />
-    )
+    return <CallListSkeleton />;
   }
 
   return (
@@ -25,7 +37,6 @@ export const CallList = ({ calls, isFetching }: CallListProps) => {
             <TableHead>Call Type</TableHead>
             <TableHead>Duration</TableHead>
             <TableHead>Recorder</TableHead>
-            <TableHead>Size</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -33,35 +44,30 @@ export const CallList = ({ calls, isFetching }: CallListProps) => {
           {calls && calls.length > 0 ? (
             calls.map((call) => (
               <TableRow key={call.id}>
-                {Object.keys(call).map((key) => {
-                  const value = call[key as keyof ICall];
-
-                  // Handle Date type (convert to string)
-                  if (value instanceof Date) {
-                    return (
-                      <TableCell key={key}>
-                        {value.toLocaleString()}
-                      </TableCell>
-                    );
-                  }
-
-                  if (key !== "id") {
-                    // For other types (string, number), simply render them
-                    return (
-                      <TableCell key={key}>
-                        {key === "duration" ? `${value} minutes` : value}
-                      </TableCell>
-                    );
-                  }
-                })}
+                <TableCell>
+                  {call.date instanceof Date ? call.date.toLocaleString() : call.date}
+                </TableCell>
+                <TableCell>{call.caller}</TableCell>
+                <TableCell>{call.receiver}</TableCell>
+                <TableCell>
+                  {call.callType && callIcons[call.callType] ? (
+                    <div className={`flex items-center ${callIcons[call.callType].colorClass}`}>
+                      {React.createElement(callIcons[call.callType].icon, {
+                        className: "h-5 w-5",
+                      })}
+                      <span className="ml-2 font-bold">{callLabels[call.callType] || "Unknown Action"}</span>
+                    </div>
+                  ) : (
+                    <span>No Action</span> 
+                  )}
+                </TableCell>
+                <TableCell>{call.duration ? `${call.duration} minutes` : "N/A"}</TableCell>
+                <TableCell>{call.recorder}</TableCell>
               </TableRow>
             ))
-
           ) : (
             <TableRow>
-              <TableCell
-                className="h-24 text-center"
-              >
+              <TableCell colSpan={7} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>
@@ -69,5 +75,5 @@ export const CallList = ({ calls, isFetching }: CallListProps) => {
         </TableBody>
       </Table>
     </div>
-  )
-}
+  );
+};
