@@ -7,7 +7,6 @@ import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-pa
 import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
 import AnalyticsContainer from "./components/analytics-containers";
 import { IAnalyticsFilters } from "@/lib/interfaces/analytic-interface";
-import AnalyticsList from "./components/analytics-list";
 
 export default function AnalyticsPage() {
   const { updateUrlParams } = useUpdateUrlParams();

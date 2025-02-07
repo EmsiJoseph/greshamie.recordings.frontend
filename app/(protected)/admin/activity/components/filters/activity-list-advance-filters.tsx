@@ -4,10 +4,9 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { IActivity, IActivityFilters } from "@/lib/interfaces/activity-interface"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { IActivityFilters } from "@/lib/interfaces/activity-interface"
 import { DateTimePicker } from "@/components/common/date-time-picker"
-import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter"
 import { ActivityAdvanceFilterSchema } from "@/lib/schema/activity-advance-filter-schema"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -26,7 +25,7 @@ export const ActivityListAdvanceFilters = ({
 }: AdvanceFiltersProps) => {
         const [open, setOpen] = useState(false);
         const { updateUrlParams } = useUpdateUrlParams()
-        const { register, watch, setValue, getValues, formState, handleSubmit, reset } = useForm<z.infer<typeof ActivityAdvanceFilterSchema>>({
+        const { watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof ActivityAdvanceFilterSchema>>({
           resolver: zodResolver(ActivityAdvanceFilterSchema),
           defaultValues: {
             startDate: retrievedActivityFilters?.startDate,
@@ -47,8 +46,7 @@ export const ActivityListAdvanceFilters = ({
         };
 
         const handleSubmitFilter = (formValues: z.infer<typeof ActivityAdvanceFilterSchema>) => {
-            let parsedValues: Record<string, string | number | boolean> = {};
-            
+            const parsedValues: Record<string, string | number | boolean> = {};
             
             Object.entries(formValues).forEach(([key, value]) => {
                 if (!value) return;

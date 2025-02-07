@@ -4,16 +4,15 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { ICall, ICallFilters } from "@/lib/interfaces/call-interface"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { ICallFilters } from "@/lib/interfaces/call-interface"
 import { DateTimePicker } from "@/components/common/date-time-picker"
 import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter"
 import { CallAdvanceFilterSchema } from "@/lib/schema/call-advance-filter-schema"
-import { date, z } from "zod"
+import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormStateError } from "@/components/common/form-state-error"
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params"
-import { Separator } from "@radix-ui/react-dropdown-menu"
 import { useState } from "react"
 
 interface AdvanceFiltersProps {
@@ -42,7 +41,7 @@ export const CallListAdvanceFilters = ({
 }: AdvanceFiltersProps) => {
     const [open, setOpen] = useState(false);
     const { updateUrlParams } = useUpdateUrlParams()
-    const { register, watch, setValue, getValues, formState, handleSubmit, reset } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
+    const { register, watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
         resolver: zodResolver(CallAdvanceFilterSchema),
         defaultValues: {
             startDate: retrievedCallFilters?.startDate,
@@ -89,7 +88,7 @@ export const CallListAdvanceFilters = ({
     }
 
     const handleSubmitFilter = (formValues: z.infer<typeof CallAdvanceFilterSchema>) => {
-        let parsedValues: Record<string, string | number | boolean> = {};
+        const parsedValues: Record<string, string | number | boolean> = {};
 
         Object.entries(formValues).forEach(([key, value]) => {
             if (!value) return;

@@ -5,7 +5,6 @@ import { useDebounce } from "@/hooks/use-debounce";
 import {
   IAnalyticsCategory,
   IAnalyticsFilters,
-  IStatItem,
 } from "@/lib/interfaces/analytic-interface";
 import AnalyticsList from "./analytics-list";
 interface AnalyticsContainerProps {
