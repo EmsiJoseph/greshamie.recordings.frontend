@@ -33,7 +33,6 @@ export function LoginForm() {
     await executeAsync(values)
       .then((result) => {
         const data = result?.data; // ALl response are nested in a data key by next-safe-action
-        const message = data?.successMessage;
         const errors = data?.errors;
 
         if (errors) {
@@ -95,9 +94,9 @@ export function LoginForm() {
             </Button>
           </form>
         </Form>
-        <div className="flex justify-center text-sm mt-2">
+        {/* <div className="flex justify-center text-sm mt-2">
           <a href="/forgot-password" className="text-blue-600 hover:underline">Forgot your password?</a>
-        </div>
+        </div> */}
         <div className="text-center mt-4">
           <a href="/admin/activity" className="text-blue-600 hover:underline">Admin Login</a>
         </div>
