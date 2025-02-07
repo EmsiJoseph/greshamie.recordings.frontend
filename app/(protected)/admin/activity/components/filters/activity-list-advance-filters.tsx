@@ -62,7 +62,6 @@ export const ActivityListAdvanceFilters = ({
 
             updateUrlParams(parsedValues);
             setOpen(false);
-            console.log(parsedValues);
         }
 
 

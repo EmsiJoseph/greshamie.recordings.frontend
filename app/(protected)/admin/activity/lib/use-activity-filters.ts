@@ -8,15 +8,15 @@ export const useActivityFilters = () => {
     const retrieveActivityFilters = () => {
         const getUrlParams = useGetUrlParams();
         const activityTypesParams = getUrlParams("action")?.split(',');
-        let activityTypes: TActivityType[] = [];
+        let action: TActivityType[] = [];
 
         if (activityTypesParams.length > 1 || !activityTypesParams.includes('')) {
-            activityTypes = activityTypesParams as TActivityType[];
+            action = activityTypesParams as TActivityType[];
         }
 
         return {
             search: getUrlParams("search") || "",
-            activityTypes: activityTypes as TActivityType[],
+            action: action as TActivityType[],
             startDate: getUrlParams("startDate") ? new Date(getUrlParams("startDate")) : undefined,
             endDate: getUrlParams("endDate") ? new Date(getUrlParams("endDate")) : undefined,
             
