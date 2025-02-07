@@ -23,7 +23,7 @@ export const handleUseServerResponse = async <T>({
             return { successMessage: successMessage, data: response.data };
         }
 
-        // Handle other 2xx
+        // Handle other 2xx (204, 201)
         return { errors: "Unexpected status code received.", data: response.data };
     } catch (error: unknown) {
         if (axios.isAxiosError(error)) {

@@ -33,7 +33,7 @@ export const loginUserAction = actionClient
         async ({ parsedInput: { username, password } }) => {
             const request = async (): Promise<AxiosResponse<ILoginApiResponse>> => {
                 // eslint-disable-next-line prefer-const
-                let requestBody = { username, password}; 
+                let requestBody = { username, password };
 
                 return GreshamAxiosConfig.post<ILoginApiResponse>(loginEndpoint, requestBody);
             };

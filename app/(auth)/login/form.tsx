@@ -4,52 +4,51 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
 import type { TLoginFormValues } from '@/lib/schema/authentication-schema';
 import { LoginSchema } from '@/lib/schema/authentication-schema';
 import { loginUserAction } from '@/lib/services/server-actions/authentication';
-import {useRouter} from "next/navigation";
-import {useAction} from "next-safe-action/hooks";
-import {z} from "zod";
+import { useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
+import { z } from "zod";
+import { extractStringValues } from '@/lib/handlers/extract-string-values-in-nested-objs';
+import { handleApiClientSideError } from '@/lib/handlers/api-response-handlers/handle-use-client-response';
 
 
 export function LoginForm() {
-  const [success] = useState<string | undefined>("");
   const [error, setError] = useState<string | undefined>("");
-  const {executeAsync, isExecuting} = useAction(loginUserAction);
+  const { executeAsync, isExecuting, result } = useAction(loginUserAction);
   const form = useForm<TLoginFormValues>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-        username: "",
-        password: "",
-      },
+      username: "",
+      password: "",
+    },
   });
-  
-  const router = useRouter();
-  
-  async function onSubmit(values: z.infer<typeof LoginSchema>) {
-    executeAsync(form.getValues()).then((result) => {
-      const data = result?.data;
-      const message = data?.message;
-      const errors = data?.errors;
 
-      if (!success && message) {
-        if (errors) { 
-          const errorArray = Object.values(errors as Record<string, string>);
+  const router = useRouter();
+
+  async function onSubmit(values: z.infer<typeof LoginSchema>) {
+    await executeAsync(values)
+      .then((result) => {
+        const data = result?.data; // ALl response are nested in a data key by next-safe-action
+        const message = data?.successMessage;
+        const errors = data?.errors;
+
+        if (errors) {
+          const errorArray = extractStringValues(errors);
           setError(errorArray.join(", "));
           return;
         }
-        setError(typeof message === 'string' ? message : "An unexpected error occurred.");
-        return;
-      }
-      // Handle successful login
-      router.push("/admin/activity");
-      
-    })
-    .finally (() =>{
-      router.replace("/admin/activity");
-  });
+      })
+      .finally(() => {
+        router.replace("/admin/activity");
+        handleApiClientSideError({
+          success: result?.data?.successMessage,
+          isSuccessToast: true
+        })
+      });
     form.reset(form.getValues());
   }
 
@@ -62,46 +61,46 @@ export function LoginForm() {
               disabled={isExecuting}
               control={form.control}
               name="username"
-              render={({field}) => (
-                  <FormItem>
-                      <FormLabel>Username</FormLabel>
-                      <FormControl>
-                          <Input type="text" {...field} placeholder="Enter your username from Clarify.go"/>
-                      </FormControl>
-                      <FormMessage/>
-                  </FormItem>
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input type="text" {...field} placeholder="Enter your username from Clarify.go" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
             <FormField
               disabled={isExecuting}
               control={form.control}
               name="password"
-              render={({field}) => (
-                  <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                          <Input type="password" {...field} placeholder="Enter your password"/>
-                      </FormControl>
-                      <FormMessage/>
-                  </FormItem>
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} placeholder="Enter your password" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-              />
-              {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-              <Button
-                  type="submit"
-                  className="w-full bg-lime-600 text-white py-3 rounded-md mt-4 text-lg font-medium hover:bg-lime-700 transition"
-                  disabled={isExecuting}
-              >
-                  {isExecuting ? "Logging in" : "Log in"}
-              </Button>
+            />
+            {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
+            <Button
+              type="submit"
+              className="w-full bg-lime-600 text-white py-3 rounded-md mt-4 text-lg font-medium hover:bg-lime-700 transition"
+              disabled={isExecuting}
+            >
+              {isExecuting ? "Logging in" : "Log in"}
+            </Button>
           </form>
         </Form>
         <div className="flex justify-center text-sm mt-2">
-              <a href="/forgot-password" className="text-blue-600 hover:underline">Forgot your password?</a>
-            </div>
-            <div className="text-center mt-4">
-              <a href="/admin/activity" className="text-blue-600 hover:underline">Admin Login</a>
-            </div>
+          <a href="/forgot-password" className="text-blue-600 hover:underline">Forgot your password?</a>
+        </div>
+        <div className="text-center mt-4">
+          <a href="/admin/activity" className="text-blue-600 hover:underline">Admin Login</a>
+        </div>
       </div>
     </div>
   );
