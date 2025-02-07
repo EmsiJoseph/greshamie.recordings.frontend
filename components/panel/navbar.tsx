@@ -1,11 +1,9 @@
 import { ModeToggle } from "@/components/common/mode-toggle";
 import { UserNav } from "@/components/panel/user-nav";
-import { Input } from "../ui/input";
 import Logo from "@/public/logo.png";
 import DarkLogo from "@/public/darklogo.png";
-import SmallLogo from "@/public/small-logo.png";
 import Image from "next/image";
-import { Search, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 import { useState } from "react";
 

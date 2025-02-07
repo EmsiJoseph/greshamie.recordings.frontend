@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {LogOut, Settings, User} from "lucide-react";
-
+import { logoutUserAction } from "@/lib/services/server-actions/authentication";
 import {Button} from "@/components/ui/button";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
@@ -29,10 +29,14 @@ export function UserNav() {
         sessionStorage.setItem('lastPath', pathname);
     }, [pathname]);
 
-    const goToLogoutPage = () => {
-        router.replace("/logout");
+    const goToLogoutPage = async () => {
+        try {
+            await logoutUserAction();
+            router.replace("/login");
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
     };
-
 
     return (
         <DropdownMenu>
@@ -61,7 +65,7 @@ export function UserNav() {
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
-                           Berbon
+                            GHIE-API
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
                             Berbon@.com
@@ -70,12 +74,6 @@ export function UserNav() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator/>
                 <DropdownMenuGroup>
-                    <DropdownMenuItem className="hover:cursor-pointer" asChild>
-                        <Link href="/settings" className="flex items-center">
-                            <Settings className="w-4 h-4 mr-3 text-muted-foreground"/>
-                            Settings
-                        </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuItem className="hover:cursor-pointer" asChild>
                         <Link href="/account" className="flex items-center">
                             <User className="w-4 h-4 mr-3 text-muted-foreground"/>

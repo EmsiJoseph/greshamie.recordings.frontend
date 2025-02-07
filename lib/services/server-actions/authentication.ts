@@ -4,11 +4,11 @@ import { AxiosResponse } from "axios";
 import { ILoginApiResponse } from "@/lib/interfaces/authentication-interfaces";
 import { flattenValidationErrors } from "next-safe-action";
 import { GreshamAxiosConfig } from "@/lib/config/main-backend-axios-config";
-import { loginEndpoint } from "@/api/endpoints/auth-endpoints";
+import { loginEndpoint, logoutEndpoint } from "@/api/endpoints/auth-endpoints";
 import { LoginSchema } from "@/lib/schema/authentication-schema";
-import { cookies } from "next/headers";
+// import { cookies } from "next/headers";
 import { actionClient } from "@/lib/config/safe-action";
-import { setAuthCookie } from "./cookie";
+import { deleteAuthCookie, setAuthCookie } from "./cookie";
 import { handleUseServerResponse } from "@/lib/handlers/api-response-handlers/handle-use-server-response";
 // import { loginUserUseCase } from "@/core/use-cases/users";
 // import { loginRoute } from "@/config/api/backend-routes/auth-routes";
@@ -55,18 +55,17 @@ export const loginUserAction = actionClient
     );
 
 export const logoutUserAction = actionClient.action(async () => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const allCookies = await cookies();
-            const cookiesToDelete = allCookies.getAll();
-            cookiesToDelete.forEach((cookie) => {
-                allCookies.delete(cookie.name);
-            });
-            setTimeout(() => {
-                resolve(!allCookies.has("auth"));
-            }, 100);
-        } catch (error) {
-            reject(error);
+    try {
+        const response = await GreshamAxiosConfig.post(logoutEndpoint);
+
+        if (response.status === 200) {
+            await deleteAuthCookie(); // Ensure it's a server action
+            return true;
+        } else {
+            throw new Error("Failed to log out");
         }
-    });
+    } catch (error) {
+        console.error("Logout error:", error);
+        throw error;
+    }
 });

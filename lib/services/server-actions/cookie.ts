@@ -57,14 +57,20 @@ export const getUserFromAuthCookie = async (): Promise<IUserWithToken | null> =>
  * @return {Promise<boolean>} Promise that resolves when the cookie is deleted.
  */
 export const deleteAuthCookie = async (): Promise<boolean> => {
-    const isDeleted = (await cookies()).delete(auth);  // await cookies()
-    return !!isDeleted;
+    try {
+        cookies().delete("auth");  // Ensure the cookie name is correct
+        console.log("Auth cookie deleted successfully.");
+        return true;
+    } catch (error) {
+        console.error("Error deleting auth cookie:", error);
+        return false;
+    }
 };
 
 /**
  * Function to get the Gresham Token from the auth cookie.
  *
- * @return {Promise<string | null>} The pahiram token from the auth cookie, or null if the cookie is not present.
+ * @return {Promise<string | null>}
  */
 export const getAuthToken = async (): Promise<string | null> => {
     const cookie = (await cookies()).get(auth);  // await cookies()
