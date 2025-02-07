@@ -3,6 +3,7 @@ import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import { MoveDownLeft, MoveUpRight, ArrowRightLeft } from "lucide-react";
 import React from "react";
+import { Play } from "lucide-react";
 
 interface CallListProps {
   calls?: ICall[];
@@ -19,6 +20,12 @@ const callIcons: Record<string, { icon: any; colorClass: string }> = {
   INCOMING: { icon: MoveDownLeft, colorClass: "text-green-700" },
   OUTGOING: { icon: MoveUpRight, colorClass: "text-orange-700" },
   INTERNAL: { icon: ArrowRightLeft, colorClass: "text-blue-700" },
+};
+
+const formatDuration = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
 export const CallList = ({ calls, isFetching }: CallListProps) => {
@@ -61,7 +68,12 @@ export const CallList = ({ calls, isFetching }: CallListProps) => {
                     <span>No Action</span> 
                   )}
                 </TableCell>
-                <TableCell>{call.duration ? `${call.duration} minutes` : "N/A"}</TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-2">
+                    <Play className="h-5 w-5 text-gray-700 cursor-pointer" />
+                    <span>{formatDuration(call.duration)}</span>
+                  </div>
+                </TableCell>
                 <TableCell>{call.recorder}</TableCell>
               </TableRow>
             ))

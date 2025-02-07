@@ -17,7 +17,7 @@ export const sampleCalls: ICall[] = [
         caller: "Charlie",
         receiver: "Dana",
         callType: CallTypes.OUTGOING,
-        duration: 65.05,
+        duration: 65,
         recorder: "System2",
     },
     {
@@ -35,7 +35,7 @@ export const sampleCalls: ICall[] = [
         caller: "Grace",
         receiver: "Hannah",
         callType: CallTypes.INTERNAL,
-        duration: 20.05,
+        duration: 20,
         recorder: "System1",
     },
     {
@@ -62,7 +62,7 @@ export const sampleCalls: ICall[] = [
         caller: "Mona",
         receiver: "Nina",
         callType: CallTypes.INTERNAL,
-        duration: 49.1,
+        duration: 49,
         recorder: "System1",
     },
     {
@@ -71,7 +71,7 @@ export const sampleCalls: ICall[] = [
         caller: "Oscar",
         receiver: "Paul",
         callType: CallTypes.OUTGOING,
-        duration: 45.9,
+        duration: 45,
         recorder: "System2",
     },
     {
