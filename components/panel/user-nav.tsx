@@ -3,9 +3,9 @@
 import Link from "next/link";
 import {LogOut, User} from "lucide-react";
 import { logoutUserAction } from "@/lib/services/server-actions/authentication";
-import {Button} from "@/components/ui/button";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from "@/components/ui/tooltip";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,24 +17,24 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 // import {useUser} from "@/hooks/use-user";
-import {usePathname, useRouter} from "next/navigation";
-import {useEffect} from "react";
+import { useRouter } from "next/navigation";
+import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
+import { useAction } from "next-safe-action/hooks";
 
 export function UserNav() {
+    const {executeAsync, isExecuting} = useAction(logoutUserAction);
     const router = useRouter();
-    const pathname = usePathname();
-
-    useEffect(() => {
-        // Store the current path whenever it changes
-        sessionStorage.setItem('lastPath', pathname);
-    }, [pathname]);
 
     const goToLogoutPage = async () => {
         try {
-            await logoutUserAction();
+            await executeAsync();
             router.replace("/login");
+            console.log("SFSFSFSF")
         } catch (error) {
-            console.error("Logout failed", error);
+            handleApiClientSideError({
+                error: "Failed to logout. Try again later.",
+                isSuccessToast: false,
+            })
         }
     };
 
@@ -49,7 +49,7 @@ export function UserNav() {
                                 className="relative h-8 w-8 rounded-full"
                             >
                                 <Avatar className="h-8 w-8">
-                                    <AvatarImage src="#" alt="Avatar"/>
+                                    <AvatarImage src="#" alt="Avatar" />
                                     <AvatarFallback className="bg-transparent">
                                         JB
                                     </AvatarFallback>
@@ -72,23 +72,21 @@ export function UserNav() {
                         </p>
                     </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator/>
+                <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem className="hover:cursor-pointer" asChild>
                         <Link href="/account" className="flex items-center">
-                            <User className="w-4 h-4 mr-3 text-muted-foreground"/>
+                            <User className="w-4 h-4 mr-3 text-muted-foreground" />
                             Account
                         </Link>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator/>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                     className="hover:cursor-pointer"
-                    onClick={() => {
-                        goToLogoutPage();
-                    }}
+                    onClick={goToLogoutPage}
                 >
-                    <LogOut className="w-4 h-4 mr-3 text-muted-foreground"/>
+                    <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
                     Sign out
                 </DropdownMenuItem>
             </DropdownMenuContent>

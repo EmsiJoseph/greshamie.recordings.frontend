@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
@@ -14,6 +13,7 @@ import { useAction } from "next-safe-action/hooks";
 import { z } from "zod";
 import { extractStringValues } from '@/lib/handlers/extract-string-values-in-nested-objs';
 import { handleApiClientSideError } from '@/lib/handlers/api-response-handlers/handle-use-client-response';
+import { useState } from 'react';
 
 
 export function LoginForm() {
@@ -29,26 +29,19 @@ export function LoginForm() {
 
   const router = useRouter();
 
-  async function onSubmit(values: z.infer<typeof LoginSchema>) {
-    await executeAsync(values)
-      .then((result) => {
-        const data = result?.data; // ALl response are nested in a data key by next-safe-action
-        const errors = data?.errors;
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    const result = await executeAsync(values);
+    const data = result?.data;
+    const errors = data?.errors;
 
-        if (errors) {
-          const errorArray = extractStringValues(errors);
-          setError(errorArray.join(", "));
-          return;
-        }
-      })
-      .finally(() => {
-        router.replace("/admin/activity");
-        handleApiClientSideError({
-          success: result?.data?.successMessage,
-          isSuccessToast: true
-        })
-      });
-    form.reset(form.getValues());
+    if (errors) {
+      const errorArray = extractStringValues(errors);
+      setError(errorArray.join(", "));
+      return;
+    }
+
+    router.replace("/activity");
+    form.reset();
   }
 
   return (
@@ -57,7 +50,7 @@ export function LoginForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="w-full mt-6">
             <FormField
-              disabled={isExecuting}
+              disabled={!isExecuting ? undefined : isExecuting}
               control={form.control}
               name="username"
               render={({ field }) => (
@@ -71,7 +64,7 @@ export function LoginForm() {
               )}
             />
             <FormField
-              disabled={isExecuting}
+              disabled={!isExecuting ? undefined : isExecuting}
               control={form.control}
               name="password"
               render={({ field }) => (

@@ -6,12 +6,10 @@ import { flattenValidationErrors } from "next-safe-action";
 import { GreshamAxiosConfig } from "@/lib/config/main-backend-axios-config";
 import { loginEndpoint, logoutEndpoint } from "@/api/endpoints/auth-endpoints";
 import { LoginSchema } from "@/lib/schema/authentication-schema";
-// import { cookies } from "next/headers";
 import { actionClient } from "@/lib/config/safe-action";
-import { deleteAuthCookie, setAuthCookie } from "./cookie";
+import { deleteAuthCookie, getParsedAuthCookie, setAuthCookie } from "./cookie";
 import { handleUseServerResponse } from "@/lib/handlers/api-response-handlers/handle-use-server-response";
-// import { loginUserUseCase } from "@/core/use-cases/users";
-// import { loginRoute } from "@/config/api/backend-routes/auth-routes";
+import { NextResponse } from "next/server";
 
 // TODO: Implement zsa
 /**
@@ -44,11 +42,15 @@ export const loginUserAction = actionClient
                 successMessage: "Logged in successfully! 🎉",
             });
 
-            if (response?.data?.access_token) {
+            console.log(response?.data)
+            if (response?.data?.accessToken) {
                 const isSetSuccessfully = await setAuthCookie(response?.data);
                 if (!isSetSuccessfully) {
                     throw new Error("Failed to set auth cookie");
                 }
+
+                const parsedCookie = await getParsedAuthCookie()
+                console.log("Parsed cookie var", parsedCookie)
             }
             return response;
         }
@@ -56,16 +58,16 @@ export const loginUserAction = actionClient
 
 export const logoutUserAction = actionClient.action(async () => {
     try {
-        const response = await GreshamAxiosConfig.post(logoutEndpoint);
+        // const response = await GreshamAxiosConfig.post(logoutEndpoint);
+        await deleteAuthCookie();
 
-        if (response.status === 200) {
-            await deleteAuthCookie(); // Ensure it's a server action
-            return true;
-        } else {
-            throw new Error("Failed to log out");
-        }
+    //     if (response.status === 200) {
+    //         await deleteAuthCookie(); // Ensure it's a server action
+    //         return NextResponse.redirect(new URL('/login'))
+    //     } else {
+    //         throw new Error("Failed to log out: Status is not 200");
+    //     }
     } catch (error) {
-        console.error("Logout error:", error);
-        throw error;
+        return "Failed to log out: " + error;
     }
 });
