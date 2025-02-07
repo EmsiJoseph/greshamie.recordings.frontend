@@ -9,19 +9,19 @@ export const SIDEBAR_ITEMS = {
         {
             title: 'Activity',
             icon: Bell,
-            url: '/admin/activity',
+            url: '/activity',
             active: true
         },
         {
             title: 'Call logs',
             icon: PhoneCall,
-            url: '/admin/call-logs',
+            url: '/call-logs',
             active: false
         },
         {
             title: 'Analytics',
             icon: ChartLine,
-            url: '/admin/analytics',
+            url: '/analytics',
             active: false
         },
     ],

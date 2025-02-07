@@ -8,7 +8,7 @@ import { loginEndpoint } from "@/api/endpoints/auth-endpoints";
 import { LoginSchema } from "@/lib/schema/authentication-schema";
 import { cookies } from "next/headers";
 import { actionClient } from "@/lib/config/safe-action";
-import { setAuthCookie } from "./cookie";
+import { setAuthCookie, getParsedAuthCookie } from "./cookie";
 import { handleUseServerResponse } from "@/lib/handlers/api-response-handlers/handle-use-server-response";
 // import { loginUserUseCase } from "@/core/use-cases/users";
 // import { loginRoute } from "@/config/api/backend-routes/auth-routes";
@@ -44,11 +44,15 @@ export const loginUserAction = actionClient
                 successMessage: "Logged in successfully! 🎉",
             });
 
-            if (response?.data?.access_token) {
+            console.log(response?.data)
+            if (response?.data?.accessToken) {
                 const isSetSuccessfully = await setAuthCookie(response?.data);
                 if (!isSetSuccessfully) {
                     throw new Error("Failed to set auth cookie");
                 }
+
+                const parsedCookie = await getParsedAuthCookie()
+                console.log("Parsed cookie var", parsedCookie)
             }
             return response;
         }

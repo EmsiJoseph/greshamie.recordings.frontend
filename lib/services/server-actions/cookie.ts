@@ -25,10 +25,7 @@ export const getParsedAuthCookie = async (): Promise<IAuthCookie | null> => {
  * @return {Promise<boolean>} - A Promise that resolves when the cookie is successfully set.
  */
 export const setAuthCookie = async (response: ILoginApiResponse): Promise<boolean> => {
-    const authCookie = JSON.stringify({
-        user: {...response},
-        is_authenticated: "true",
-    });
+    const authCookie = JSON.stringify(response);
     const isAuthCookieSet = (await cookies()).set(auth, authCookie, { 
         httpOnly: true,
         secure: false,

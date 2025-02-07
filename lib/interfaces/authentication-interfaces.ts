@@ -9,8 +9,8 @@ export interface IAuthCookie extends IUserWithToken {
 
 export interface ILoginApiResponse extends IBaseApiResponse<IUserWithToken> {
     user_name: string;
-    access_token: string;
-    expires_in: number;
+    accessToken: string;
+    expiresIn: number;
 }
 
 export interface ILoginOutput{

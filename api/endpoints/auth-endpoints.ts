@@ -1,2 +1,2 @@
-export const loginEndpoint = "/api/auth/login";
+export const loginEndpoint = "/auth/login";
 export const logoutEndpoint = "/api/auth/logout"; 
