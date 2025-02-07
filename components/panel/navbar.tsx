@@ -8,10 +8,8 @@ import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 import { useState } from "react";
 
 export function Navbar() {
-  const { isOpen, setIsOpen } = useSidebarToggle();
+  const { setIsOpen } = useSidebarToggle();
   const [isSearchOpen, setSearchOpen] = useState(false);
-
-  const toggleSearch = () => setSearchOpen(!isSearchOpen);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">

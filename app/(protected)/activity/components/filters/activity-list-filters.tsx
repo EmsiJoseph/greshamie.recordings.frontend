@@ -3,10 +3,9 @@ import { Input } from "@/components/ui/input";
 import { ActivityTypes } from "@/constants/activity-types";
 import { useDebounce } from "@/hooks/use-debounce";
 import { IActivityFilters, TActivityType } from "@/lib/interfaces/activity-interface";
-import { Search, Save } from "lucide-react";
+import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
-import { useForm } from "react-hook-form";
 import { ActivityListAdvanceFilters } from "./activity-list-advance-filters";
 
 interface ActivityListFiltersProps {

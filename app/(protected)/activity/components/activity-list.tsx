@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { IActivity } from "@/lib/interfaces/activity-interface";
-import { EllipsisVertical, MousePointerClick, Plus, Trash2, Download, LogIn, Play, LogOut } from "lucide-react";
-import React, { act } from "react";
+import { EllipsisVertical, Trash2, Download, LogIn, Play, LogOut } from "lucide-react";
+import React from "react";
 import ActivityListSkeleton from "@/components/presentational/activity-list-skeleton";
 import ActivityListPagination from "@/components/presentational/activity-list-pagination";
 
@@ -20,7 +20,7 @@ const activityLabels: Record<string, string> = {
   DELETED: "Recording Deleted",
 };
 
-const activityIcons: Record<string, { icon: any; colorClass: string }> = {
+const activityIcons: Record<string, { icon: React.ElementType; colorClass: string }> = {
   STARTED: { icon: LogIn, colorClass: "text-green-700" },
   PLAYED: { icon: Play, colorClass: "text-cyan-700" },
   ENDED: { icon: LogOut, colorClass: "text-red-500" },
