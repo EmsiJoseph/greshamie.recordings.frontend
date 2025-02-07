@@ -1,18 +1,18 @@
 import { IActivityFilters } from "@/lib/interfaces/activity-interface";
-import { sampleActivities } from "./sample-data/activity";
+import { sampleActivities } from "./sample-data/activities";
 
 export const sampleFetchActivities = async (options?: IActivityFilters) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     let filteredActivities = sampleActivities;
 
-    console.log("FILTERED ACTIVITIES", options);
-    // Filter by action
-    if(options?.action && options.action.length > 0) {
+    if (options?.action && options.action.length > 0) {
         filteredActivities = filteredActivities.filter((activity) => options?.action?.includes(activity.action));
 
-        console.log("FILTERED ACTIVITIES", filteredActivities);
+        console.log("FILTERED CALLS", filteredActivities)
     }
+
+
 
     // Filter by search term (checking multiple fields)
     if (options?.search) {
@@ -23,6 +23,18 @@ export const sampleFetchActivities = async (options?: IActivityFilters) => {
                 activity.recordingItem.toLowerCase().includes(searchTerm)
             );
         });
+    }
+
+    // Filter by start date
+    if(options?.startDate) {
+        const startDate = new Date(options.startDate);
+        filteredActivities = filteredActivities.filter((activity) => new Date(activity.date) >= startDate);
+    }
+
+    // Filter by end date
+    if(options?.endDate) {
+        const endDate = new Date(options.endDate);
+        filteredActivities = filteredActivities.filter((activity) => new Date(activity.date) <= endDate);
     }
 
     return filteredActivities;

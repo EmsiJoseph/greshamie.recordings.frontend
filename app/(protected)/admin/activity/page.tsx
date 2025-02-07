@@ -3,11 +3,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { sampleFetchActivities } from '@/api/activities';
 import { ActivityListFilters } from './components/filters/activity-list-filters';
-import { useRetrieveActivityFilters } from './lib/use-retrieve-activity-filters';
 import { ActivityList } from '../activity/components/activity-list';
+import { useActivityFilters } from './lib/use-activity-filters';
 
 export default function ActivityPage() {
-  const retrievedFilters = useRetrieveActivityFilters();
+  const {retrievedFilters, resetActivityFilters} = useActivityFilters();
   // 01 Prepare filters for query key
   let filters = retrievedFilters as Record<string, any>;
 
@@ -27,11 +27,10 @@ export default function ActivityPage() {
     queryKey: ['activities', ...filterValues],
     queryFn: () => sampleFetchActivities({ ...retrievedFilters }),
   });
-  const { search, action } = useRetrieveActivityFilters();
 
   return (
     <div>
-      <ActivityListFilters retrievedFilters={retrievedFilters} />
+      <ActivityListFilters retrievedFilters={retrievedFilters} resetActivityFilters={resetActivityFilters} />
       <ActivityList activities={data} isFetching={isFetching} />
     </div>
   )
