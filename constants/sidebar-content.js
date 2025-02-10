@@ -24,6 +24,12 @@ export const SIDEBAR_ITEMS = {
             url: '/analytics',
             active: false
         },
+        {
+            title: 'Audio Test',
+            icon: ChartLine,
+            url: '/audiotest',
+            active: false
+        },
     ],
     
 }
