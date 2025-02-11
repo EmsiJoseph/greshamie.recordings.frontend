@@ -1,13 +1,27 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
-import { MoveDownLeft, MoveUpRight, ArrowRightLeft } from "lucide-react";
+import {
+  MoveDownLeft,
+  MoveUpRight,
+  ArrowRightLeft,
+  Pause,
+  CirclePlay,
+} from "lucide-react";
 import React from "react";
-import { Play } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CallListProps {
   calls?: ICall[];
   isFetching?: boolean;
+  onPlayAudio?: (url: string | null) => void;
 }
 
 const callLabels: Record<string, string> = {
@@ -28,7 +42,17 @@ const formatDuration = (seconds: number) => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-export const CallList = ({ calls, isFetching }: CallListProps) => {
+//https://greshamstorage.blob.core.windows.net/greshamrecordings/${year}/${month}/${day}/${callId}.mp3
+const fetchMp3Url = async (callId: string): Promise<string> => {
+  return `https://www.example.com/audio/${callId}.mp3`; //change this to a parameterized URL
+};
+
+export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
+  const queryClient = useQueryClient();
+  const currentAudioUrl = queryClient.getQueryData<string | null>([
+    "currentAudio",
+  ]);
+
   if (isFetching) {
     return <CallListSkeleton />;
   }
@@ -52,25 +76,49 @@ export const CallList = ({ calls, isFetching }: CallListProps) => {
             calls.map((call) => (
               <TableRow key={call.id}>
                 <TableCell>
-                  {call.date instanceof Date ? call.date.toLocaleString() : call.date}
+                  {call.date instanceof Date
+                    ? call.date.toLocaleString()
+                    : call.date}
                 </TableCell>
                 <TableCell>{call.caller}</TableCell>
                 <TableCell>{call.receiver}</TableCell>
                 <TableCell>
                   {call.callType && callIcons[call.callType] ? (
-                    <div className={`flex items-center ${callIcons[call.callType].colorClass}`}>
+                    <div
+                      className={`flex items-center ${
+                        callIcons[call.callType].colorClass
+                      }`}
+                    >
                       {React.createElement(callIcons[call.callType].icon, {
                         className: "h-5 w-5",
                       })}
-                      <span className="ml-2 font-bold">{callLabels[call.callType] || "Unknown Action"}</span>
+                      <span className="ml-2 font-bold">
+                        {callLabels[call.callType] || "Unknown Action"}
+                      </span>
                     </div>
                   ) : (
-                    <span>No Action</span> 
+                    <span>No Action</span>
                   )}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-2">
-                    <Play className="h-5 w-5 text-gray-700 cursor-pointer" />
+                    <button
+                      onClick={async () => {
+                        const audioUrl = await fetchMp3Url(call.id.toString());
+                        onPlayAudio &&
+                          onPlayAudio(
+                            currentAudioUrl === audioUrl ? null : audioUrl
+                          );
+                      }}
+                      className="text-gray-700 cursor-pointer"
+                    >
+                      {currentAudioUrl ===
+                      `https://www.example.com/audio/${call.id}.mp3` ? ( //change this to a parameterized URL
+                        <Pause className="h-5 w-5 text-blue-500" />
+                      ) : (
+                        <CirclePlay className="h-5 w-5 text-green-500" />
+                      )}
+                    </button>
                     <span>{formatDuration(call.duration)}</span>
                   </div>
                 </TableCell>

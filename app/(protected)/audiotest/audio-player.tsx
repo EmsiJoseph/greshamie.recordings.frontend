@@ -2,25 +2,14 @@
 
 import React, { useState, useRef } from "react";
 import ReactPlayer from "react-player";
-import {
-  FaPlay,
-  FaPause,
-  FaRedo,
-  FaUndo,
-  FaVolumeUp,
-  FaVolumeMute,
-  FaVolumeDown,
-  FaDownload,
-  FaStar,
-  FaShare,
-  FaTimes,
-} from "react-icons/fa";
+import { Download, Forward, Pause, Play, Redo, Star, Undo, Volume1, Volume2, VolumeX, X } from "lucide-react";
 
 interface AudioPlayerProps {
-  url: string;
+  url: string | null;
 }
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({ url }) => {
+  if (!url) return null;
   const [isVisible, setIsVisible] = useState(true);
   const [playing, setPlaying] = useState(false);
   const [played, setPlayed] = useState(0);
@@ -66,13 +55,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ url }) => {
   };
 
   const getVolumeIcon = () => {
-    if (muted || volume === 0) return <FaVolumeMute />;
-    if (volume < 0.5) return <FaVolumeDown />;
-    return <FaVolumeUp />;
+    if (muted || volume === 0) return <VolumeX />;
+    if (volume < 0.5) return <Volume1 />;
+    return <Volume2 />;
   };
 
   return (
-    <div className="w-full bg-white p-4 rounded-lg shadow-lg flex flex-col relative">
+    <div className="w-full bg-white p-4 rounded-lg shadow-lg flex flex-col relative mt-10">
       {/* Progress Bar */}
       <div className="w-full bg-gray-200 h-2 rounded relative">
         <div
@@ -86,13 +75,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ url }) => {
         {/* Left Controls */}
         <div className="flex items-center gap-4">
           <button onClick={handlePlayPause} className="text-xl">
-            {playing ? <FaPause /> : <FaPlay />}
+            {playing ? <Pause /> : <Play />}
           </button>
           <button onClick={() => handleSeek(-10)}>
-            <FaUndo />
+          <Undo /> 
           </button>
           <button onClick={() => handleSeek(10)}>
-            <FaRedo />
+          <Redo />
           </button>
 
           {/* Volume Control */}
@@ -139,21 +128,21 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ url }) => {
             )}
           </div>
 
-          <FaShare className="cursor-pointer" />
-          <FaDownload className="cursor-pointer" />
-          <FaStar className="cursor-pointer" />
+          <Forward className="cursor-pointer" />
+          <Download className="cursor-pointer" />
+          <Star className="cursor-pointer" />
            {/* Close Button */}
            <div className="flex items-center text-red-500 cursor-pointer" onClick={() => setIsVisible(false)}>
-            <FaTimes className="cursor-pointer text-red-500" />
+           <X className="cursor-pointer text-red-500" />
             <span>Close</span>
           </div>
         </div>
       </div>
 
-      {/* Hidden React Player */}
+      {/* Global React Player COntroller*/}
       <ReactPlayer
         ref={playerRef}
-        url={url}
+        url= {url || ""}
         playing={playing}
         volume={volume}
         muted={muted}
