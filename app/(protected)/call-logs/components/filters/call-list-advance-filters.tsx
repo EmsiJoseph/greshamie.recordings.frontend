@@ -41,7 +41,7 @@ export const CallListAdvanceFilters = ({
 }: AdvanceFiltersProps) => {
     const [open, setOpen] = useState(false);
     const { updateUrlParams } = useUpdateUrlParams()
-    const { watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
+    const { register, watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
         resolver: zodResolver(CallAdvanceFilterSchema),
         defaultValues: {
             startDate: retrievedCallFilters?.startDate,
@@ -67,11 +67,9 @@ export const CallListAdvanceFilters = ({
     };
 
     // Range Slider
-    const minDuration = "minDuration"
-    const maxDuration = "maxDuration"
     const handleDurationChange = (values: number[]) => {
-        setValue(minDuration, values[0] ?? 0); // Explicitly set 0
-        setValue(maxDuration, values[1] ?? 3600); // Ensure max has a fallback
+        setValue("minDuration", values[0] ?? 0); // Explicitly set 0
+        setValue("maxDuration", values[1] ?? 3600); // Ensure max has a fallback
     };
 
     // Booleans
@@ -152,6 +150,8 @@ export const CallListAdvanceFilters = ({
                         <div className="flex gap-4 w-full" id="call-duration-range">
                             <DualRangeSliderCustomLabel 
                                 onDurationChange={handleDurationChange}
+                                {...register("minDuration")}
+                                {...register("maxDuration")}
                             />
                             <FormStateError error={formError.minDuration?.message} />
                             <FormStateError error={formError.maxDuration?.message} />
