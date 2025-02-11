@@ -4,12 +4,12 @@ export interface IUser {
 
 export interface IAccessToken {
     value?: string,
-    expiresIn?: string, // UTC String
+    expiresAt?: string, // UTC String
 }
 
 export interface IRefreshToken {
     value?: string,
-    expiresIn?: string, // UTC String
+    expiresAt?: string, // UTC String
 }
 
 export interface IUserWithToken {

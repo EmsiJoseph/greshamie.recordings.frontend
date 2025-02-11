@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { deleteAuthCookie, getParsedAuthCookie } from './lib/services/server-actions/cookie';
-import { IUserWithToken } from './lib/interfaces/user-interfaces';
 import { hasValidAccessToken, hasValidRefreshToken, reauthenticate } from './lib/services/server-actions/authentication';
 
 
@@ -9,7 +8,7 @@ export async function middleware(request: NextRequest) {
     const isAccessTokenValid = await hasValidAccessToken()
     const isRefreshTokenValid = await hasValidRefreshToken()
     const parsedCookie = await getParsedAuthCookie()
-    console.log("PARSED COOKIE: ", parsedCookie)
+    // console.log("PARSED COOKIE: ", parsedCookie)
     const { pathname } = request.nextUrl
 
     // 01 Login success redirect
@@ -18,7 +17,7 @@ export async function middleware(request: NextRequest) {
         pathname.startsWith("/login") &&
         !pathname.startsWith("/activity")
     if (isLoginSuccess) {
-
+        console.log("LOGIN SUCCESS")
         return NextResponse.redirect(new URL('/activity', request.url))
     }
 
@@ -33,13 +32,15 @@ export async function middleware(request: NextRequest) {
     }
 
     // 03 Auto Reauthenticate
-    if (isRefreshTokenValid) {
+    if (!isAccessTokenValid && isRefreshTokenValid) {
         const isSuccessReauth = await reauthenticate()
         if (isSuccessReauth) {
             console.log("went inside REAUTH BLOCK, isSuccessReauth: ", isSuccessReauth)
             return NextResponse.next()
         }
     }
+
+    console.log("Bool values ", isAccessTokenValid, isRefreshTokenValid, shouldRedirectToLogin)
 }
 
 export const config = {

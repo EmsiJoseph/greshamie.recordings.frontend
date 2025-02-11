@@ -43,6 +43,7 @@ export const loginUserAction = actionClient
             });
 
             if (response?.data?.accessToken) {
+                console.log("AUTHENTICATION RES.DATA", response.data)
                 const isSetSuccessfully = await setAuthCookie(response?.data);
                 if (!isSetSuccessfully) {
                     throw new Error("Failed to set auth cookie");
@@ -72,7 +73,7 @@ export const reauthenticate = async (): Promise<boolean> => {
     const response = await GreshamAxiosConfig.post(reauthenticateEndpoint,
         { refreshToken: refreshToken?.value },
         { skipAuth: true });
-    console.log("reauthenticate, ", response)
+    console.log("reauthenticate, ", response.data)
 
 
     if (response?.status !== 200) {
@@ -90,9 +91,10 @@ export const reauthenticate = async (): Promise<boolean> => {
 
 export const hasValidAccessToken = async (): Promise<Boolean> => {
     const accessToken = await getAccessToken();
+    console.log(accessToken)
 
-    if (accessToken && accessToken.expiresIn) {
-        const utcDate = parseISO(accessToken.expiresIn)
+    if (accessToken && accessToken.expiresAt) {
+        const utcDate = parseISO(accessToken.expiresAt)
 
         if (utcDate <= new Date()) {
             return false
@@ -111,8 +113,8 @@ export const hasValidAccessToken = async (): Promise<Boolean> => {
 export const hasValidRefreshToken = async (): Promise<Boolean> => {
     const refreshToken = await getRefreshToken();
 
-    if (refreshToken && refreshToken.expiresIn) {
-        const utcDate = parseISO(refreshToken.expiresIn)
+    if (refreshToken && refreshToken.expiresAt) {
+        const utcDate = parseISO(refreshToken.expiresAt)
 
         if (utcDate <= new Date()) {
             return false
