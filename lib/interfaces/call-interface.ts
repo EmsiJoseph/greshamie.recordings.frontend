@@ -9,7 +9,7 @@ export interface ICall {
     receiver: string,
     callType: TCallType,
     duration: number, 
-    recorder: string, 
+    recorder: string,
 }
 
 export interface ICallFilters {
