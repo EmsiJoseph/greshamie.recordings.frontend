@@ -1,19 +1,23 @@
 export interface IUser {
-    id: number;
-    email: string;
-    first_name: string;
-    last_name: string;
-    is_active: boolean;
-    is_staff: boolean;
-    is_superuser: boolean;
-    date_joined: string;
-    last_login: string;
+    user_name?: string;
 }
 
+export interface IAccessToken {
+    value?: string,
+    expiresAt?: string, // UTC String
+}
+
+export interface IRefreshToken {
+    value?: string,
+    expiresAt?: string, // UTC String
+}
 
 export interface IUserWithToken {
-    user: IUser;
-    auth_token: string;
-    expires_at: string;
+    user?: IUser;
+    accessToken?: IAccessToken;
+    refreshToken?: IRefreshToken,
 }
 
+export interface ILoginOutput {
+    message: string;
+}

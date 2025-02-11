@@ -13,6 +13,8 @@ export interface IActivity {
 export interface IActivityFilters {
     search?: string,
     action?: TActivityType[],
+    startDate?: Date,
+    endDate?: Date,
     user?: string,
     recordingItem?: string,
 }

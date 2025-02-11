@@ -12,11 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import Logo from "@/public/logo.png"; // Import your light mode logo
-import DarkLogo from "@/public/darklogo.png" // Import your dark mode logo
 
 export function DarkModeToggle() {
-  const { theme, setTheme } = useTheme()
+  const { setTheme } = useTheme()
 
   return (
     <div>

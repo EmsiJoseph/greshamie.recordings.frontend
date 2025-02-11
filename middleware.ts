@@ -1,15 +1,48 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { deleteAuthCookie, getParsedAuthCookie } from './lib/services/server-actions/cookie';
+import { hasValidAccessToken, hasValidRefreshToken, reauthenticate } from './lib/services/server-actions/authentication';
 
-export function middleware(request: NextRequest) {
-    const user = 'user';
-    if (!user) {
-        return NextResponse.redirect(new URL('/', request.url))
+
+export async function middleware(request: NextRequest) {
+    const isAccessTokenValid = await hasValidAccessToken()
+    const isRefreshTokenValid = await hasValidRefreshToken()
+    const parsedCookie = await getParsedAuthCookie()
+    // console.log("PARSED COOKIE: ", parsedCookie)
+    const { pathname } = request.nextUrl
+
+    // 01 Login success redirect
+    const isLoginSuccess =
+        isAccessTokenValid &&
+        pathname.startsWith("/login") &&
+        !pathname.startsWith("/activity")
+    if (isLoginSuccess) {
+        console.log("LOGIN SUCCESS")
+        return NextResponse.redirect(new URL('/activity', request.url))
     }
 
-    return NextResponse.next()
+    // 02 Force Relogin
+    const shouldRedirectToLogin =
+        !pathname.startsWith("/login") && pathname !== "/";
+    if (!isAccessTokenValid && !isRefreshTokenValid && shouldRedirectToLogin) {
+        // Delete Cookies if available
+        console.log("02 Force Relogin: ", isAccessTokenValid, isRefreshTokenValid, shouldRedirectToLogin)
+        await deleteAuthCookie()
+        return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    // 03 Auto Reauthenticate
+    if (!isAccessTokenValid && isRefreshTokenValid) {
+        const isSuccessReauth = await reauthenticate()
+        if (isSuccessReauth) {
+            console.log("went inside REAUTH BLOCK, isSuccessReauth: ", isSuccessReauth)
+            return NextResponse.next()
+        }
+    }
+
+    console.log("Bool values ", isAccessTokenValid, isRefreshTokenValid, shouldRedirectToLogin)
 }
 
 export const config = {
-    matcher: ['/admin/:path*',]
+    matcher: ['/((?!api|_next|static|public|favicon.ico).*)']
 }

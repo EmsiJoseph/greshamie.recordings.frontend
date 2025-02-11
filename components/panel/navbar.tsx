@@ -1,19 +1,15 @@
 import { ModeToggle } from "@/components/common/mode-toggle";
 import { UserNav } from "@/components/panel/user-nav";
-import { Input } from "../ui/input";
 import Logo from "@/public/logo.png";
 import DarkLogo from "@/public/darklogo.png";
-import SmallLogo from "@/public/small-logo.png";
 import Image from "next/image";
-import { Search, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 import { useState } from "react";
 
 export function Navbar() {
-  const { isOpen, setIsOpen } = useSidebarToggle();
+  const { setIsOpen } = useSidebarToggle();
   const [isSearchOpen, setSearchOpen] = useState(false);
-
-  const toggleSearch = () => setSearchOpen(!isSearchOpen);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">

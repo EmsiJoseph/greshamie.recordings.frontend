@@ -9,9 +9,9 @@ export interface ICall {
     receiver: string,
     callType: TCallType,
     duration: number, 
-    recorder: string, 
-    minSize: number // in kilobytes
-    maxSize: number 
+    recorder: string,
+    streamingUrl: string,
+    downloadUrl: string,
 }
 
 export interface ICallFilters {

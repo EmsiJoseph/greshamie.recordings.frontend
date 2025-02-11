@@ -1,8 +1,8 @@
 "use server";
-import { IAuthCookie, ILoginApiResponse } from "@/lib/interfaces/authentication-interfaces";
-import { IUser } from "@/lib/interfaces/user-interfaces";
+import { IAccessToken, IRefreshToken, IUserWithToken } from "@/lib/interfaces/user-interfaces";
+import { add } from "date-fns"
 // TODO: Secure cookie, don't expose user data and tokens on cookie [security risk]
-import {cookies} from "next/headers";
+import { cookies } from "next/headers";
 // import {IAuthCookie, ILoginApiResponse, ILoginOutput, IUser} from "@/lib/interfaces";
 
 const auth = "auth";
@@ -10,10 +10,10 @@ const auth = "auth";
 /**
  * Retrieves the authentication cookie from the user's browser.
  *
- * @return {Promise<IAuthCookie | null>} - A Promise that resolves with the value of the authentication cookie,
+ * @return {Promise<IUserWithToken | null>} - A Promise that resolves with the value of the authentication cookie,
  * or null if the cookie is not found.
  */
-export const getParsedAuthCookie = async (): Promise<IAuthCookie | null> => {
+export const getParsedAuthCookie = async (): Promise<IUserWithToken | null> => {
     const cookieHeader = (await cookies()).get(auth);  // await cookies()
     return cookieHeader ? JSON.parse(cookieHeader.value) : null;
 }
@@ -21,15 +21,16 @@ export const getParsedAuthCookie = async (): Promise<IAuthCookie | null> => {
 /**
  * Sets the authentication cookie with the provided login data.
  *
- * @param {ILoginApiResponse} response - The login data from the API response.
+ * @param {IUserWithToken} response - The login data from the API response.
  * @return {Promise<boolean>} - A Promise that resolves when the cookie is successfully set.
  */
-export const setAuthCookie = async (response: ILoginApiResponse): Promise<boolean> => {
-    const authCookie = JSON.stringify({
-        ...response?.data,
-        is_authenticated: "true",
-    });
-    const isAuthCookieSet = (await cookies()).set("auth", authCookie, {  // await cookies()
+export const setAuthCookie = async (response: IUserWithToken): Promise<boolean> => {
+    // Store cookie using `auth` key
+    const authCookie = JSON.stringify(response);
+    console.log("AUTH COOKIE", authCookie)
+
+    const cookieStore = await cookies();
+    const isAuthCookieSet = await cookieStore.set(auth, authCookie, {
         httpOnly: true,
         secure: false,
         maxAge: 60 * 60 * 24,
@@ -42,9 +43,13 @@ export const setAuthCookie = async (response: ILoginApiResponse): Promise<boolea
  *
  * @return {Promise<IUser | null>} The user object from the auth cookie, or null if the cookie is not present.
  */
-export const getUserFromAuthCookie = async (): Promise<IUser | null> => {
+export const getUserFromAuthCookie = async (): Promise<IUserWithToken | null> => {
     const cookie = (await cookies()).get(auth);  // await cookies()
-    return cookie ? JSON.parse(cookie.value).user : null;
+    if (!cookie) {
+        return null;
+    }
+    const cookieValue = JSON.parse(cookie.value) as IUserWithToken;
+    return cookieValue;
 }
 
 /**
@@ -52,17 +57,45 @@ export const getUserFromAuthCookie = async (): Promise<IUser | null> => {
  *
  * @return {Promise<boolean>} Promise that resolves when the cookie is deleted.
  */
-export const deleteAuthCookie = async (): Promise<boolean> => {
-    const isDeleted = (await cookies()).delete(auth);  // await cookies()
-    return !!isDeleted;
+export const deleteAuthCookie = async () => {
+    const cookieStore = await cookies();
+    cookieStore.delete("auth"); // Just delete, no further actions
 };
 
+
+
 /**
- * Function to get the Gresham Token from the auth cookie.
+ * Function to get the Access Token from the auth cookie.
  *
- * @return {Promise<string | null>} The pahiram token from the auth cookie, or null if the cookie is not present.
+ * @return {Promise<IAccessToken | undefined>}
  */
-export const getAuthToken = async (): Promise<string | null> => {
-    const cookie = (await cookies()).get(auth);  // await cookies()
-    return cookie ? JSON.parse(cookie.value).auth_token : null;
+export const getAccessToken = async (): Promise<IAccessToken | undefined> => {
+    const cookieStore = await cookies();
+    const cookie = cookieStore.get(auth);
+
+    // console.log("COOKIIEEE", cookie)
+
+    const parsedCookie: IUserWithToken = cookie ? JSON.parse(cookie.value) : null;
+
+    if (!parsedCookie || !parsedCookie?.accessToken) {
+        return undefined;
+    }
+
+    return parsedCookie.accessToken
+}
+
+/**
+ * Function to get the Access Token from the auth cookie.
+ *
+ * @return {Promise<IRefreshToken | undefined>}
+ */
+export const getRefreshToken = async (): Promise<IRefreshToken | undefined> => {
+    const cookie = (await cookies()).get(auth);
+    const parsedCookie: IUserWithToken = cookie ? JSON.parse(cookie.value) : null;
+
+    if (!parsedCookie || !parsedCookie?.refreshToken) {
+        return undefined;
+    }
+
+    return parsedCookie.refreshToken
 }

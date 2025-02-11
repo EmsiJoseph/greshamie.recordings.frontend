@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import {LogOut, Settings, User} from "lucide-react";
-
-import {Button} from "@/components/ui/button";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
+import { LogOut, User } from "lucide-react";
+import { logoutUserAction } from "@/lib/services/server-actions/authentication";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from "@/components/ui/tooltip";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -16,23 +16,26 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// import {useUser} from "@/hooks/use-user";
-import {usePathname, useRouter} from "next/navigation";
-import {useEffect} from "react";
+import { useRouter } from "next/navigation";
+import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
+import { useAction } from "next-safe-action/hooks";
 
 export function UserNav() {
+    const { executeAsync, isExecuting } = useAction(logoutUserAction);
     const router = useRouter();
-    const pathname = usePathname();
 
-    useEffect(() => {
-        // Store the current path whenever it changes
-        sessionStorage.setItem('lastPath', pathname);
-    }, [pathname]);
+    const goToLogoutPage = async () => {
+        const result = await executeAsync(); // Capture the result
+        console.log(result)
+        router.replace("/login");
 
-    const goToLogoutPage = () => {
-        router.replace("/logout");
+        if (!result?.data) {
+            handleApiClientSideError({
+                error: "Failed to logout. Try again later.",
+                isSuccessToast: false,
+            });
+        }
     };
-
 
     return (
         <DropdownMenu>
@@ -45,7 +48,7 @@ export function UserNav() {
                                 className="relative h-8 w-8 rounded-full"
                             >
                                 <Avatar className="h-8 w-8">
-                                    <AvatarImage src="#" alt="Avatar"/>
+                                    <AvatarImage src="#" alt="Avatar" />
                                     <AvatarFallback className="bg-transparent">
                                         JB
                                     </AvatarFallback>
@@ -61,36 +64,28 @@ export function UserNav() {
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
-                           Berbon
+                            GHIE-API
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
                             Berbon@.com
                         </p>
                     </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator/>
+                <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem className="hover:cursor-pointer" asChild>
-                        <Link href="/settings" className="flex items-center">
-                            <Settings className="w-4 h-4 mr-3 text-muted-foreground"/>
-                            Settings
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="hover:cursor-pointer" asChild>
                         <Link href="/account" className="flex items-center">
-                            <User className="w-4 h-4 mr-3 text-muted-foreground"/>
+                            <User className="w-4 h-4 mr-3 text-muted-foreground" />
                             Account
                         </Link>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator/>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                     className="hover:cursor-pointer"
-                    onClick={() => {
-                        goToLogoutPage();
-                    }}
+                    onClick={goToLogoutPage}
                 >
-                    <LogOut className="w-4 h-4 mr-3 text-muted-foreground"/>
+                    <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
                     Sign out
                 </DropdownMenuItem>
             </DropdownMenuContent>

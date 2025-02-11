@@ -2,7 +2,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { Button } from "../ui/button";
 
-interface ToggleGroupFilterProps<T extends string> {
+interface MultiToggleGroupFilterProps<T extends string> {
     value?: T[];
     defaultValue?: T[];
     onValueChange?: (value: T[]) => void; // Callback receives an array of T
@@ -14,7 +14,7 @@ interface ToggleGroupFilterProps<T extends string> {
     props?: any;
 }
 
-export const ToggleGroupFilter = <T extends string>({
+export const MultiToggleGroupFilter = <T extends string>({
     value,
     defaultValue,
     onValueChange,
@@ -24,10 +24,10 @@ export const ToggleGroupFilter = <T extends string>({
     resetButtonLabel = "All",
     isResetButtonActive,
     props
-}: ToggleGroupFilterProps<T>) => {
+}: MultiToggleGroupFilterProps<T>) => {
     const activeResetButton = isResetButtonActive && "bg-slate-100";
     return (
-        <div className="flex gap-1">
+        <div className="flex gap-1" {...props}>
             {onResetSelection && <Button
                 className={`bg-transparent text-inherit hover:bg-slate-100 ${activeResetButton}`}
                 onClick={onResetSelection}

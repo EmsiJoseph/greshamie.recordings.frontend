@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { getAuthToken } from "../services/server-actions/cookie";
+import { getAccessToken } from "../services/server-actions/cookie";
 
 
 // Add the skipAuth Flag to the AxiosRequestConfig interface
@@ -30,9 +30,9 @@ GreshamAxiosConfig.interceptors.request.use(
             return config;
         }
 
-        const bearerToken = await getAuthToken();
+        const bearerToken = await getAccessToken();
         if (bearerToken) {
-            config.headers.Authorization = `Bearer ${bearerToken}`;
+            config.headers.Authorization = `Bearer ${bearerToken.value}`;
         }
         return config;
     },
