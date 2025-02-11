@@ -10,6 +10,8 @@ export interface ICall {
     callType: TCallType,
     duration: number, 
     recorder: string,
+    streamingUrl: string,
+    downloadUrl: string,
 }
 
 export interface ICallFilters {

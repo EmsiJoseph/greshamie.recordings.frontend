@@ -1,26 +1,45 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactPlayer from "react-player";
-import { Download, Forward, Pause, Play, Redo, Star, Undo, Volume1, Volume2, VolumeX, X } from "lucide-react";
+import {
+  Download,
+  Forward,
+  Pause,
+  Play,
+  Redo,
+  Undo,
+  Volume1,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
 
 interface AudioPlayerProps {
   url: string | null;
+  onClose?: () => void;
 }
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({ url }) => {
-  if (!url) return null;
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [played, setPlayed] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.5);
+  const [muted, setMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showSpeedOptions, setShowSpeedOptions] = useState(false);
-  const [muted, setMuted] = useState(false);
   const playerRef = useRef<ReactPlayer | null>(null);
 
-  if (!isVisible) return null; // Hide player when closed
+  // When URL changes, show the player but do not auto-play
+  useEffect(() => {
+    if (url) {
+      setIsVisible(true);
+      setPlaying(false);
+    }
+  }, [url]);
+
+  if (!isVisible || !url) return null; // Hide player if closed or no URL
 
   const handlePlayPause = () => setPlaying(!playing);
 
@@ -78,10 +97,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ url }) => {
             {playing ? <Pause /> : <Play />}
           </button>
           <button onClick={() => handleSeek(-10)}>
-          <Undo /> 
+            <Undo />
           </button>
           <button onClick={() => handleSeek(10)}>
-          <Redo />
+            <Redo />
           </button>
 
           {/* Volume Control */}
@@ -128,21 +147,29 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ url }) => {
             )}
           </div>
 
-          <Forward className="cursor-pointer" />
-          <Download className="cursor-pointer" />
-          <Star className="cursor-pointer" />
-           {/* Close Button */}
-           <div className="flex items-center text-red-500 cursor-pointer" onClick={() => setIsVisible(false)}>
-           <X className="cursor-pointer text-red-500" />
+          {/* Download Button */}
+          <a href={url} download className="cursor-pointer">
+            <Download className="h-5 w-5 text-blue-500" />
+          </a>
+
+          {/* Close Button */}
+          <div
+            className="flex items-center text-red-500 cursor-pointer"
+            onClick={() => {
+              setPlaying(false);
+              setIsVisible(false);
+            }}
+          >
+            <X className="cursor-pointer text-red-500" />
             <span>Close</span>
           </div>
         </div>
       </div>
 
-      {/* Global React Player COntroller*/}
+      {/* React Player */}
       <ReactPlayer
         ref={playerRef}
-        url= {url || ""}
+        url={url}
         playing={playing}
         volume={volume}
         muted={muted}

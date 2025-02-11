@@ -5,7 +5,7 @@ import { sampleFetchCalls } from "@/api/calls";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
 import { useCallFilters } from "./lib/use-call-filters";
-import AudioPlayer from "../audiotest/audio-player";
+import AudioPlayer from "../audio-player/audio-player";
 
 export default function CallLogPage() {
   const { retrievedFilters, resetCallFilters } = useCallFilters();
@@ -33,6 +33,9 @@ export default function CallLogPage() {
     },
   });
 
+  const currentAudio =
+    queryClient.getQueryData<string | null>(["currentAudio"]) || null;
+
   return (
     <>
       <div>
@@ -43,9 +46,10 @@ export default function CallLogPage() {
         <CallList
           calls={data}
           isFetching={isFetching}
-          onPlayAudio={audioMutation.mutate} 
+          onPlayAudio={audioMutation.mutate}
         />
-        <AudioPlayer url={audioMutation.data || null} />
+        {/* Only show the audio player if there is an active URL */}
+        {currentAudio && <AudioPlayer url={currentAudio} />}
       </div>
     </>
   );

@@ -42,11 +42,6 @@ const formatDuration = (seconds: number) => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-//https://greshamstorage.blob.core.windows.net/greshamrecordings/${year}/${month}/${day}/${callId}.mp3
-const fetchMp3Url = async (callId: string): Promise<string> => {
-  return `https://www.example.com/audio/${callId}.mp3`; //change this to a parameterized URL
-};
-
 export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
   const queryClient = useQueryClient();
   const currentAudioUrl = queryClient.getQueryData<string | null>([
@@ -103,22 +98,25 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
                 <TableCell>
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={async () => {
-                        const audioUrl = await fetchMp3Url(call.id.toString());
-                        onPlayAudio &&
-                          onPlayAudio(
-                            currentAudioUrl === audioUrl ? null : audioUrl
-                          );
+                      onClick={() => {
+                        if (call.streamingUrl) {
+                          onPlayAudio &&
+                            onPlayAudio(
+                              currentAudioUrl === call.streamingUrl
+                                ? null
+                                : call.streamingUrl
+                            );
+                        }
                       }}
                       className="text-gray-700 cursor-pointer"
                     >
-                      {currentAudioUrl ===
-                      `https://www.example.com/audio/${call.id}.mp3` ? ( //change this to a parameterized URL
+                      {currentAudioUrl === call.streamingUrl ? (
                         <Pause className="h-5 w-5 text-blue-500" />
                       ) : (
                         <CirclePlay className="h-5 w-5 text-green-500" />
                       )}
                     </button>
+
                     <span>{formatDuration(call.duration)}</span>
                   </div>
                 </TableCell>
