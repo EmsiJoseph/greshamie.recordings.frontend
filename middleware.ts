@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    console.log("Bool values ", isAccessTokenValid, isRefreshTokenValid, shouldRedirectToLogin)
+    // console.log("Bool values ", isAccessTokenValid, isRefreshTokenValid, shouldRedirectToLogin)
 }
 
 export const config = {

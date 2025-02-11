@@ -37,7 +37,7 @@ export const setAuthCookie = async (response: IUserWithToken): Promise<boolean> 
     // }
     // Store cookie using `auth` key
     const authCookie = JSON.stringify(response);
-    console.log("AUTH COOKIE", authCookie)
+    // console.log("AUTH COOKIE", authCookie)
 
     const cookieStore = await cookies();
     const isAuthCookieSet = await cookieStore.set(auth, authCookie, {
