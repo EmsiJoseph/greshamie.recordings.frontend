@@ -27,7 +27,7 @@ export const ActivityListFilters = ({ retrievedFilters, resetActivityFilters }: 
     updateUrlParams({ action: value });
   };
 
-  const isResetButtonActive = retrievedFilters?.action ? retrievedFilters?.action?.length < 1 : false;
+  const isResetButtonActive = retrievedFilters?.eventName ? retrievedFilters?.eventName?.length < 1 : false;
 
   // 2. Search
   const [search, setSearch] = useState<IActivityFilters['search']>("");
@@ -40,7 +40,7 @@ export const ActivityListFilters = ({ retrievedFilters, resetActivityFilters }: 
   return (
     <div className="flex gap-4">
         <MultiToggleGroupFilter
-            value={retrievedFilters?.action}
+            value={retrievedFilters?.eventName}
             onValueChange={handleSelectActivityType}
             onResetSelection={handleResetActionTypes}
             options={ActivityTypes}

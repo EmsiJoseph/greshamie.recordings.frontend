@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from '@tanstack/react-query';
-import { sampleFetchActivities } from '@/api/activities';
+import { fetchActivity } from '@/api/activities';
 import { ActivityListFilters } from './components/filters/activity-list-filters';
 import { ActivityList } from '../activity/components/activity-list';
 import { useActivityFilters } from './lib/use-activity-filters';
@@ -25,13 +25,13 @@ export default function ActivityPage() {
   // --> Pass the filters as part of the query key
   const { data, isFetching } = useQuery({
     queryKey: ['activities', ...filterValues],
-    queryFn: () => sampleFetchActivities({ ...retrievedFilters }),
+    queryFn: () => fetchActivity({ ...retrievedFilters }),
   });
 
   return (
     <div>
       <ActivityListFilters retrievedFilters={retrievedFilters} resetActivityFilters={resetActivityFilters} />
-      <ActivityList activities={data} isFetching={isFetching} />
+      <ActivityList activities={data?.data} isFetching={isFetching} />
     </div>
   )
 }
