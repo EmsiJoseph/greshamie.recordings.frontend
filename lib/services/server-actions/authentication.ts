@@ -1,15 +1,15 @@
 "use server";
 
 import { AxiosResponse } from "axios";
-import { ILoginApiResponse } from "@/lib/interfaces/authentication-interfaces";
 import { flattenValidationErrors } from "next-safe-action";
 import { GreshamAxiosConfig } from "@/lib/config/main-backend-axios-config";
-import { loginEndpoint, logoutEndpoint } from "@/api/endpoints/auth-endpoints";
+import { loginEndpoint, logoutEndpoint, reauthenticateEndpoint } from "@/api/endpoints/auth-endpoints";
 import { LoginSchema } from "@/lib/schema/authentication-schema";
 import { actionClient } from "@/lib/config/safe-action";
-import { deleteAuthCookie, getParsedAuthCookie, setAuthCookie } from "./cookie";
+import { deleteAuthCookie, getAccessToken, getRefreshToken, setAuthCookie } from "./cookie";
 import { handleUseServerResponse } from "@/lib/handlers/api-response-handlers/handle-use-server-response";
-import { NextResponse } from "next/server";
+import { IUserWithToken } from "@/lib/interfaces/user-interfaces";
+import { parseISO } from 'date-fns';
 
 // TODO: Implement zsa
 /**
@@ -29,11 +29,11 @@ export const loginUserAction = actionClient
     })
     .action(
         async ({ parsedInput: { username, password } }) => {
-            const request = async (): Promise<AxiosResponse<ILoginApiResponse>> => {
+            const request = async (): Promise<AxiosResponse<IUserWithToken>> => {
                 // eslint-disable-next-line prefer-const
                 let requestBody = { username, password };
 
-                return GreshamAxiosConfig.post<ILoginApiResponse>(loginEndpoint, requestBody);
+                return GreshamAxiosConfig.post<IUserWithToken>(loginEndpoint, requestBody);
             };
 
             // Handle the response
@@ -52,20 +52,76 @@ export const loginUserAction = actionClient
         }
     );
 
-export const logoutUserAction = actionClient.action(async () => {
-    try {
-        const response = await GreshamAxiosConfig.post(logoutEndpoint);
-
-        console.log("Logout response:", response);
-
-        if (response.status === 200) {
-            await deleteAuthCookie();
-            return { success: true };
-        } else {
-            throw new Error("Failed to log out: Status is not 200");
-        }
-    } catch (error) {
-        console.error("Logout error:", error);
-        return { success: false, message: "Failed to log out: " + error };
+export const logoutUserAction = actionClient.action(async (): Promise<boolean> => {
+    const response = await GreshamAxiosConfig.post(logoutEndpoint);
+    if (response.status === 200) {
+        await deleteAuthCookie();
+        return true
     }
+
+    return false;
+
 });
+
+export const reauthenticate = async (): Promise<boolean> => {
+    const refreshToken = await getRefreshToken();
+    if (!refreshToken?.value) {
+        return false;
+    }
+
+    const response = await GreshamAxiosConfig.post(reauthenticateEndpoint,
+        { refreshToken: refreshToken?.value },
+        { skipAuth: true });
+    console.log("reauthenticate, ", response)
+
+
+    if (response?.status !== 200) {
+        return false;
+    }
+
+    const isSetSuccessfully = await setAuthCookie(response?.data);
+    if (!isSetSuccessfully) {
+        return false;
+    }
+
+    return true;
+}
+
+
+export const hasValidAccessToken = async (): Promise<Boolean> => {
+    const accessToken = await getAccessToken();
+
+    if (accessToken && accessToken.expiresIn) {
+        const utcDate = parseISO(accessToken.expiresIn)
+
+        if (utcDate <= new Date()) {
+            return false
+        }
+
+        // Has Valid Token
+        return true;
+    }
+
+    // No Token found
+    return false;
+}
+
+
+
+export const hasValidRefreshToken = async (): Promise<Boolean> => {
+    const refreshToken = await getRefreshToken();
+
+    if (refreshToken && refreshToken.expiresIn) {
+        const utcDate = parseISO(refreshToken.expiresIn)
+
+        if (utcDate <= new Date()) {
+            return false
+        }
+
+        // Has Valid Token
+        return true;
+    }
+
+    // No Token found
+    return false;
+} 

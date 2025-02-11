@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {LogOut, User} from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { logoutUserAction } from "@/lib/services/server-actions/authentication";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,7 +16,6 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// import {useUser} from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
 import { useAction } from "next-safe-action/hooks";
@@ -26,12 +25,11 @@ export function UserNav() {
     const router = useRouter();
 
     const goToLogoutPage = async () => {
-        try {
-            const result = await executeAsync(); // Capture the result
-            console.log("Logout result:", result); // Debug log
-            router.replace("/login");
-        } catch (error) {
-            console.error("Logout error:", error);
+        const result = await executeAsync(); // Capture the result
+        console.log(result)
+        router.replace("/login");
+
+        if (!result?.data) {
             handleApiClientSideError({
                 error: "Failed to logout. Try again later.",
                 isSuccessToast: false,
