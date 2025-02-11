@@ -7,9 +7,8 @@ import { GreshamAxiosConfig } from "@/lib/config/main-backend-axios-config";
 import { loginEndpoint, logoutEndpoint } from "@/api/endpoints/auth-endpoints";
 import { LoginSchema } from "@/lib/schema/authentication-schema";
 import { actionClient } from "@/lib/config/safe-action";
-import { deleteAuthCookie, getParsedAuthCookie, setAuthCookie } from "./cookie";
+import { deleteAuthCookie, setAuthCookie } from "./cookie";
 import { handleUseServerResponse } from "@/lib/handlers/api-response-handlers/handle-use-server-response";
-import { NextResponse } from "next/server";
 
 // TODO: Implement zsa
 /**

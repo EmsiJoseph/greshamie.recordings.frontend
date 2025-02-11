@@ -3,7 +3,6 @@ import { CircleCheckBig, CircleSlash2, ClipboardCheck, ClipboardX, ListFilter, V
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { ICallFilters } from "@/lib/interfaces/call-interface"
 import { DateTimePicker } from "@/components/common/date-time-picker"
@@ -14,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { FormStateError } from "@/components/common/form-state-error"
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params"
 import { useState } from "react"
+import { DualRangeSliderCustomLabel } from "@/components/ui/slider"
 
 interface AdvanceFiltersProps {
     retrievedCallFilters?: ICallFilters,
@@ -41,7 +41,7 @@ export const CallListAdvanceFilters = ({
 }: AdvanceFiltersProps) => {
     const [open, setOpen] = useState(false);
     const { updateUrlParams } = useUpdateUrlParams()
-    const { register, watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
+    const { watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
         resolver: zodResolver(CallAdvanceFilterSchema),
         defaultValues: {
             startDate: retrievedCallFilters?.startDate,
@@ -64,6 +64,14 @@ export const CallListAdvanceFilters = ({
     const endDate = watch("endDate")
     const handleEndDateChange = (date: Date | undefined) => {
         setValue("endDate", date);
+    };
+
+    // Range Slider
+    const minDuration = "minDuration"
+    const maxDuration = "maxDuration"
+    const handleDurationChange = (values: number[]) => {
+        setValue(minDuration, values[0] ?? 0); // Explicitly set 0
+        setValue(maxDuration, values[1] ?? 3600); // Ensure max has a fallback
     };
 
     // Booleans
@@ -89,7 +97,7 @@ export const CallListAdvanceFilters = ({
 
     const handleSubmitFilter = (formValues: z.infer<typeof CallAdvanceFilterSchema>) => {
         const parsedValues: Record<string, string | number | boolean> = {};
-
+        console.log(parsedValues)
         Object.entries(formValues).forEach(([key, value]) => {
             if (!value) return;
 
@@ -112,7 +120,7 @@ export const CallListAdvanceFilters = ({
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] max-h-[500px] overflow-y-scroll">
                 <DialogHeader>
-                    <DialogTitle>Advance Filters</DialogTitle>
+                    <DialogTitle>Advanced Filters</DialogTitle>
                 </DialogHeader>
                 <form className="grid gap-5 py-4" id="call-filter-form" onSubmit={handleSubmit(handleSubmitFilter)}>
                     {/* Date Range */}
@@ -135,36 +143,20 @@ export const CallListAdvanceFilters = ({
                             </div>
                         </div>
                     </div>
+
                     {/* Duration Range */}
                     <div className="w-full">
-                        <Label htmlFor="call-duration-range" className="font-semibold text-[1rem]">Duration (minutes)</Label>
+                        <Label htmlFor="call-duration-range" className="font-semibold text-[1rem] ">Duration (Minutes)</Label>
+                        <div className="h-4"></div>
+                        {/* New Range Input */}
                         <div className="flex gap-4 w-full" id="call-duration-range">
-                            <div className="w-full">
-                                <Label className="text-right">
-                                    Minimum
-                                </Label>
-                                <Input
-                                    type="number"
-                                    placeholder="0"
-                                    {...register("minDuration")}
-                                />
-                                <FormStateError error={formError.minDuration?.message} />
-                            </div>
-                            <div className="w-full">
-                                <Label className="text-right">
-                                    Maximum
-                                </Label>
-                                <Input
-                                    type="number"
-                                    placeholder="0"
-                                    {...register("maxDuration")}
-
-                                />
-                                <FormStateError error={formError.maxDuration?.message} />
-                            </div>
+                            <DualRangeSliderCustomLabel 
+                                onDurationChange={handleDurationChange}
+                            />
+                            <FormStateError error={formError.minDuration?.message} />
+                            <FormStateError error={formError.maxDuration?.message} />
                         </div>
                     </div>
-
 
                     {/* Boolean Filters */}
                     <div className="w-full" >
@@ -187,7 +179,6 @@ export const CallListAdvanceFilters = ({
                                 />
                                 <FormStateError error={formError.hasVideoRecording?.message} />
                             </div>
-
                             {/* --> 02 Has PCI Compliance */}
                             <div className="w-full">
                                 <Label className="text-right">
@@ -203,7 +194,6 @@ export const CallListAdvanceFilters = ({
                                 />
                                 <FormStateError error={formError.hasPciCompliance?.message} />
                             </div>
-
                             {/* --> 03 Has Quality Evaluation */}
                             <div className="w-full">
                                 <Label className="text-right">
