@@ -65,13 +65,24 @@ export const CallListAdvanceFilters = ({
     const handleEndDateChange = (date: Date | undefined) => {
         setValue("endDate", date);
     };
+    // const hasMinDuration = watch("minDuration")
+    // const hasMaxDuration = watch("maxDuration")
 
     // Range Slider
     const handleDurationChange = (values: number[]) => {
-        setValue("minDuration", values[0] ?? 0); // Explicitly set 0
-        setValue("maxDuration", values[1] ?? 3600); // Ensure max has a fallback
+        // // values[0] = hasMinDuration || values[0];
+        // // values[1] = hasMaxDuration || values[1];
+        // console.log("Min Duration", hasMinDuration)
+        // console.log("Min Value Duration", values[0])
+        setValue("minDuration", values[0]); // Explicitly set 0
+        setValue("maxDuration", values[1]); // Ensure max has a fallback
     };
 
+    const handleResetSlider = () => {
+        localStorage.removeItem('dualRangeSliderValues');
+        handleDurationChange([0, 3600]);
+    }
+    
     // Booleans
     const hasVideoRecording = watch("hasVideoRecording")
     const hasPciCompliance = watch("hasPciCompliance")
@@ -213,7 +224,7 @@ export const CallListAdvanceFilters = ({
                     </div>
                 </form>
                 <DialogFooter className="gap-2">
-                    <Button variant="destructive" onClick={() => { resetCallFilters(); reset() }}>Reset</Button>
+                    <Button variant="destructive" onClick={() => { resetCallFilters(); reset(); handleResetSlider() }}>Reset</Button>
                     <Button type="submit" form="call-filter-form">Apply filters</Button>
                 </DialogFooter>
             </DialogContent>
