@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { z } from "zod";
 import { extractStringValues } from '@/lib/handlers/extract-string-values-in-nested-objs';
-import { handleApiClientSideError } from '@/lib/handlers/api-response-handlers/handle-use-client-response';
 import { useState } from 'react';
 
 
@@ -33,8 +32,6 @@ export function LoginForm() {
     const result = await executeAsync(values);
     const data = result?.data;
     const errors = data?.errors;
-
-    console.log(data)
 
     if (errors) {
       const errorArray = extractStringValues(errors);
