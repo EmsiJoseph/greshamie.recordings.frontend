@@ -51,6 +51,6 @@ export const CallAdvanceFilterSchema = z
         },
         {
             message: "Min. duration should not be greater than max. duration.",
-            path: ["minDuration"], // This sets the error on the minDuration field
+            path: ["minimumDurationSeconds"], // This sets the error on the minDuration field
         }
     );
