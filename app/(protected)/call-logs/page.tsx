@@ -27,10 +27,6 @@ export default function CallLogPage() {
     }
   });
 
-  // let filters = retrievedFilters as Record<string, any>;
-  // if (filters.callDirection && Array.isArray(filters.callDirection)) {
-  //   filters = { ...filters, callDirection: filters.callDirection.join(",") };
-  // }
   const filterValues = Object.values(filters).filter(Boolean) as string[];
 
   console.log("filter VALUES", filterValues)
@@ -70,7 +66,7 @@ export default function CallLogPage() {
           resetCallFilters={resetCallFilters}
         />
         <CallList
-          calls={data?.data.items}
+          calls={data?.data?.items}
           isFetching={isFetching}
           onPlayAudio={audioMutation.mutate}
         />
