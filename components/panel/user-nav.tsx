@@ -23,7 +23,7 @@ import { useAction } from "next-safe-action/hooks";
 import { getUserFromAuthCookie } from "@/lib/services/server-actions/cookie";
 
 export function UserNav() {
-    const { executeAsync, isExecuting } = useAction(logoutUserAction);
+    const { executeAsync } = useAction(logoutUserAction);
     const router = useRouter();
     const [userName, setUserName] = useState<string>("Guest"); 
 
@@ -98,13 +98,13 @@ export function UserNav() {
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage src="#" alt="Avatar" />
                                     <AvatarFallback className="bg-transparent">
-                                        JB
+                                        <User className="h-4 w-4" />
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>
                         </DropdownMenuTrigger>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom">Profile</TooltipContent>
+                    <TooltipContent side="bottom">User</TooltipContent>
                 </Tooltip>
             </TooltipProvider>
 
@@ -121,21 +121,15 @@ export function UserNav() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem className="hover:cursor-pointer" asChild>
-                        <Link href="/account" className="flex items-center">
-                            <User className="w-4 h-4 mr-3 text-muted-foreground" />
-                            Account
-                        </Link>
+                    <DropdownMenuItem
+                        className="hover:cursor-pointer"
+                        onClick={goToLogoutPage}
+                    >
+                        <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
+                        Sign out
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                    className="hover:cursor-pointer"
-                    onClick={goToLogoutPage}
-                >
-                    <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
-                    Sign out
-                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );

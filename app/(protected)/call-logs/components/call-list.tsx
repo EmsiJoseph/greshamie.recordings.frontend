@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,54 +9,64 @@ import {
 } from "@/components/ui/table";
 import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
-import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
 import { CallTypeWithIcon } from "./call-type-with-icon";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { formatDate } from "@/lib/utils/format-date";
-import {
-  ArrowRightLeft,
-  CirclePlay,
-  MoveDownLeft,
-  MoveUpRight,
-  Pause,
-} from "lucide-react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 
 interface CallListProps {
   calls?: ICall[];
   isFetching?: boolean;
-  onPlayAudio?: (call: ICall | null) => void;
-  // activeCallId tells which call is currently playing
-  activeCallId?: string | number | null;
+  onPlayAudio?: (url: string | null) => void;
 }
 
-const callIcons: Record<string, { icon: any; colorClass: string }> = {
-  INCOMING: { icon: MoveDownLeft, colorClass: "text-green-700" },
-  OUTGOING: { icon: MoveUpRight, colorClass: "text-orange-700" },
-  INTERNAL: { icon: ArrowRightLeft, colorClass: "text-blue-700" },
-};
+export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
+  const queryClient = useQueryClient();
+  const currentAudioUrl = queryClient.getQueryData<string | null>([
+    "currentAudio",
+  ]);
 
-const formatDuration = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-};
+  const [sortConfig, setSortConfig] = useState<{ key: keyof ICall; direction: string } | null>(null);
 
-export const CallList = ({
-  calls,
-  isFetching,
-  onPlayAudio,
-  activeCallId,
-}: CallListProps) => {
+  const sortedCalls = React.useMemo(() => {
+    if (!calls) return [];
+    if (!sortConfig) return calls;
+
+    const sorted = [...calls].sort((a, b) => {
+      let aValue = a[sortConfig.key as keyof ICall];
+      let bValue = b[sortConfig.key as keyof ICall];
+
+      if (sortConfig.key === "startDateTime" || sortConfig.key === "endDateTime") {
+        aValue = typeof aValue === "boolean" ? 0 : new Date(aValue).getTime();
+        bValue = typeof bValue === "boolean" ? 0 : new Date(bValue).getTime();
+      }
+
+      if (aValue < bValue) {
+        return sortConfig.direction === "ascending" ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === "ascending" ? 1 : -1;
+      }
+      return 0;
+    });
+
+    return sorted;
+  }, [calls, sortConfig]);
+
+  const requestSort = (key: keyof ICall) => {
+    let direction = "ascending";
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (key: string) => {
+    if (!sortConfig || sortConfig.key !== key) return null;
+    return sortConfig.direction === "ascending" ? "↑" : "↓";
+  };
+
   if (isFetching) {
     return <CallListSkeleton />;
   }
@@ -65,63 +76,50 @@ export const CallList = ({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Caller</TableHead>
-            <TableHead>Receiver</TableHead>
-            <TableHead>Start Date</TableHead>
-            <TableHead>End Date</TableHead>
-            <TableHead>Call Direction</TableHead>
-            <TableHead>Is Live</TableHead>
-            <TableHead>Duration (s)</TableHead>
-            <TableHead>Recorder</TableHead>
+            <TableHead onClick={() => requestSort("caller")}>
+              Caller {getSortIcon("caller")}
+            </TableHead>
+            <TableHead onClick={() => requestSort("receiver")}>
+              Receiver {getSortIcon("receiver")}
+            </TableHead>
+            <TableHead onClick={() => requestSort("startDateTime")}>
+              Start Date {getSortIcon("startDateTime")}
+            </TableHead>
+            <TableHead onClick={() => requestSort("endDateTime")}>
+              End Date {getSortIcon("endDateTime")}
+            </TableHead>
+            <TableHead onClick={() => requestSort("callType")}>
+              Call Direction {getSortIcon("callType")}
+            </TableHead>
+            <TableHead onClick={() => requestSort("isLive")}>
+              Is Live {getSortIcon("isLive")}
+            </TableHead>
+            <TableHead onClick={() => requestSort("durationSeconds")}>
+              Duration (s) {getSortIcon("durationSeconds")}
+            </TableHead>
+            <TableHead onClick={() => requestSort("recorder")}>
+              Recorder {getSortIcon("recorder")}
+            </TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {calls && calls.length > 0 ? (
-            calls.map((call) => (
-              <TableRow key={call.id}>
-                <TableCell>{call.caller}</TableCell>
-                <TableCell>{call.receiver}</TableCell>
-                <TableCell>{formatDate(call.startDateTime)}</TableCell>
-                <TableCell>{formatDate(call.endDateTime)}</TableCell>
-                <TableCell>
-                  <CallTypeWithIcon callType={call.callType} />
-                </TableCell>
-                <TableCell>{call.isLive ? "True" : "False"}</TableCell>
+          {sortedCalls && sortedCalls.length > 0 ? (
+            sortedCalls.map((call) => (
+              <TableRow key={call?.id}>
+                <TableCell>{call?.caller}</TableCell>
+                <TableCell>{call?.receiver}</TableCell>
+                <TableCell>{formatDate(call?.startDateTime)}</TableCell>
+                <TableCell>{formatDate(call?.endDateTime)}</TableCell>
+                <TableCell><CallTypeWithIcon callType={call?.callType} /></TableCell>
+                <TableCell>{call?.isLive ? "True" : "False"}</TableCell>
                 <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
-                <TableCell>{call.recorder}</TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => {
-                        console.log("Play button clicked for call:", call.id);
-                        // Toggle play/pause:
-                        // If this call is already active (its streaming URL is current),
-                        // then pass null to pause the audio.
-                        // Otherwise, pass the call so the parent fetches its streaming URL.
-                        if (activeCallId === call.id) {
-                          onPlayAudio && onPlayAudio(null);
-                        } else {
-                          onPlayAudio && onPlayAudio(call);
-                        }
-                      }}
-                      className="text-gray-700 cursor-pointer"
-                    >
-                      {activeCallId === call.id ? (
-                        <Pause className="h-5 w-5 text-blue-500" />
-                      ) : (
-                        <CirclePlay className="h-5 w-5 text-green-500" />
-                      )}
-                    </button>
-                    <span>{formatDuration(call.durationSeconds)}</span>
-                  </div>
-                </TableCell>
                 <TableCell>{call.recorder}</TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center">
+              <TableCell colSpan={7} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>
