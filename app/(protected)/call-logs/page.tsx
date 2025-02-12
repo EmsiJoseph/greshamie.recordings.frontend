@@ -12,7 +12,7 @@ import { AxiosResponse } from "axios";
 import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
 
-// Here, currentAudio is just the streaming URL string (or null)
+// currentAudio is just the streaming URL string (or null)
 type CurrentAudio = string | null;
 
 export default function CallLogPage() {
@@ -49,12 +49,13 @@ export default function CallLogPage() {
       console.log("Fetching streaming URL for call:", call);
       const response: AxiosResponse<ICallLogs> = await fetchStreamingUrl(call);
       console.log("Received streaming URL response:", response.data);
+      // Return the streaming URL using the correct property name from the API response.
       return response.data.StreamingUrl;
     },
     onSuccess: (data, variables) => {
       console.log("Setting current audio:", data);
       queryClient.setQueryData<CurrentAudio>(["currentAudio"], data);
-      // Set activeCallId based on the call passed in, or clear it when pausing.
+      // Update activeCallId based on the call passed in, or clear it when pausing.
       if (variables) {
         setActiveCallId(variables.id);
       } else {

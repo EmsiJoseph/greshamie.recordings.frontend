@@ -9,11 +9,16 @@ import {
 import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import React from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
 import { CallTypeWithIcon } from "./call-type-with-icon";
 import { formatDate } from "@/lib/utils/format-date";
-import { ArrowRightLeft, CirclePlay, MoveDownLeft, MoveUpRight, Pause } from "lucide-react";
+import {
+  ArrowRightLeft,
+  CirclePlay,
+  MoveDownLeft,
+  MoveUpRight,
+  Pause,
+} from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -74,21 +79,26 @@ export const CallList = ({
         <TableBody>
           {calls && calls.length > 0 ? (
             calls.map((call) => (
-              <TableRow key={call?.id}>
-                <TableCell>{call?.caller}</TableCell>
-                <TableCell>{call?.receiver}</TableCell>
-                <TableCell>{formatDate(call?.startDateTime)}</TableCell>
-                <TableCell>{formatDate(call?.endDateTime)}</TableCell>
-                <TableCell><CallTypeWithIcon callType={call?.callType} /></TableCell>
-                <TableCell>{call?.isLive ? "True" : "False"}</TableCell>
+              <TableRow key={call.id}>
+                <TableCell>{call.caller}</TableCell>
+                <TableCell>{call.receiver}</TableCell>
+                <TableCell>{formatDate(call.startDateTime)}</TableCell>
+                <TableCell>{formatDate(call.endDateTime)}</TableCell>
+                <TableCell>
+                  <CallTypeWithIcon callType={call.callType} />
+                </TableCell>
+                <TableCell>{call.isLive ? "True" : "False"}</TableCell>
                 <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
                 <TableCell>{call.recorder}</TableCell>
-                {/* <TableCell>
+                <TableCell>
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => {
                         console.log("Play button clicked for call:", call.id);
-                        // Toggle play/pause: if this call is already active, pause it; otherwise, play it.
+                        // Toggle play/pause:
+                        // If this call is already active (its streaming URL is current),
+                        // then pass null to pause the audio.
+                        // Otherwise, pass the call so the parent fetches its streaming URL.
                         if (activeCallId === call.id) {
                           onPlayAudio && onPlayAudio(null);
                         } else {
