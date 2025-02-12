@@ -48,10 +48,6 @@ export const useUpdateUrlParams = () => {
   const deleteUrlParam = (key: string) => {
     const params = new URLSearchParams(searchParams);
 
-    // Log the current value of the key before deleting it
-    const currentValue = params.get(key);
-    console.log(`Current value of ${key}:`, currentValue);
-
     // Delete the parameter
     params.delete(key);
 

@@ -1,5 +1,5 @@
-import { CallTypes } from "@/constants/call-types";
-import { ICall } from "@/lib/interfaces/call-interface";
+// import { CallTypes } from "@/constants/call-types";
+// import { ICall } from "@/lib/interfaces/call-interface";
 
 export const sampleCalls: ICall[] = [
     {

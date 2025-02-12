@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { sampleFetchCalls } from "@/api/calls";
+import { fetchCalls } from "@/api/calls";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
 import { useCallFilters } from "./lib/use-call-filters";
@@ -9,6 +9,7 @@ import AudioPlayer from "../audio-player/audio-player";
 
 export default function CallLogPage() {
   const { retrievedFilters, resetCallFilters } = useCallFilters();
+
   const queryClient = useQueryClient();
 
   // Prepare filters for query key
@@ -21,7 +22,7 @@ export default function CallLogPage() {
   // Fetch call data using React Query
   const { data, isFetching } = useQuery({
     queryKey: ["calls", ...filterValues],
-    queryFn: () => sampleFetchCalls({ ...retrievedFilters }),
+    queryFn: () => fetchCalls({ ...retrievedFilters }),
   });
 
   // Mutation to control audio state
@@ -44,7 +45,7 @@ export default function CallLogPage() {
           resetCallFilters={resetCallFilters}
         />
         <CallList
-          calls={data}
+          calls={data?.data}
           isFetching={isFetching}
           onPlayAudio={audioMutation.mutate}
         />

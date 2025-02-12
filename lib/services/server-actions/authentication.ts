@@ -30,7 +30,6 @@ export const loginUserAction = actionClient
     .action(
         async ({ parsedInput: { username, password } }) => {
             const request = async (): Promise<AxiosResponse<IUserWithToken>> => {
-                // eslint-disable-next-line prefer-const
                 let requestBody = { username, password };
 
                 return GreshamAxiosConfig.post<IUserWithToken>(loginEndpoint, requestBody);
@@ -43,7 +42,7 @@ export const loginUserAction = actionClient
             });
 
             if (response?.data?.accessToken) {
-                console.log("AUTHENTICATION RES.DATA", response.data)
+                // console.log("AUTHENTICATION RES.DATA", response.data)
                 const isSetSuccessfully = await setAuthCookie(response?.data);
                 if (!isSetSuccessfully) {
                     throw new Error("Failed to set auth cookie");
@@ -65,33 +64,38 @@ export const logoutUserAction = actionClient.action(async (): Promise<boolean> =
 });
 
 export const reauthenticate = async (): Promise<boolean> => {
-    const refreshToken = await getRefreshToken();
-    if (!refreshToken?.value) {
+    try {
+        const refreshToken = await getRefreshToken();
+        if (!refreshToken?.value) {
+            return false;
+        }
+
+        const response = await GreshamAxiosConfig.post(reauthenticateEndpoint,
+            { RefreshToken: refreshToken.value },  // Request body
+        );
+        // console.log("reauthenticate, ", response.data)
+
+
+        if (response?.status !== 200) {
+            return false;
+        }
+
+        const isSetSuccessfully = await setAuthCookie(response?.data);
+        if (!isSetSuccessfully) {
+            return false;
+        }
+
+        return true;
+    }
+    catch (e) {
+        console.log("Reauth Catch", e)
         return false;
     }
-
-    const response = await GreshamAxiosConfig.post(reauthenticateEndpoint,
-        { refreshToken: refreshToken?.value },
-        { skipAuth: true });
-    console.log("reauthenticate, ", response.data)
-
-
-    if (response?.status !== 200) {
-        return false;
-    }
-
-    const isSetSuccessfully = await setAuthCookie(response?.data);
-    if (!isSetSuccessfully) {
-        return false;
-    }
-
-    return true;
 }
 
 
 export const hasValidAccessToken = async (): Promise<Boolean> => {
     const accessToken = await getAccessToken();
-    console.log(accessToken)
 
     if (accessToken && accessToken.expiresAt) {
         const utcDate = parseISO(accessToken.expiresAt)

@@ -11,7 +11,7 @@ interface ActivityListProps {
 }
 
 
-// Map raw action types to display-friendly labels
+// Map raw eventName types to display-friendly labels
 const activityLabels: Record<string, string> = {
   STARTED: "Session Started",
   PLAYED: "Recording Played",
@@ -42,6 +42,8 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
     return <ActivityListSkeleton />;
   }
 
+  console.log("ACTIVITIES", activities);
+
   return (
     <div className="">
       <Table>
@@ -58,19 +60,19 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
         <TableBody>
           {activities && activities.length > 0 ? (
             activities.map((activity) => (
-              <TableRow key={activity.date.toString()}>
-                <TableCell>{activity.date instanceof Date ? activity.date.toLocaleString() : activity.date}</TableCell>
-                <TableCell>{activity.user}</TableCell>
+              <TableRow key={activity.id}>
+                <TableCell>{activity.timestamp instanceof Date ? activity.timestamp.toLocaleString() : activity.timestamp}</TableCell>
+                <TableCell>{activity.userName}</TableCell>
                 <TableCell>{activity.recordingItem}</TableCell>
 
                 {/* Action column with icon and readable label */}
                 <TableCell>
-                  {activity.action && activityIcons[activity.action] ? (
-                    <div className={`flex items-center ${activityIcons[activity.action].colorClass}`}>
-                      {React.createElement(activityIcons[activity.action].icon, {
+                  {activity.eventName && activityIcons[activity.eventName] ? (
+                    <div className={`flex items-center ${activityIcons[activity.eventName].colorClass}`}>
+                      {React.createElement(activityIcons[activity.eventName].icon, {
                         className: "h-5 w-5",
                       })}
-                      <span className="ml-2 font-bold">{activityLabels[activity.action] || "Unknown Action"}</span>
+                      <span className="ml-2 font-bold">{activityLabels[activity.eventName] || "Unknown Action"}</span>
                     </div>
                   ) : (
                     <span>No Action</span> 
@@ -92,11 +94,11 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           )}
         </TableBody>
       </Table>
-      <ActivityListPagination
+      {/* <ActivityListPagination
         currentPage={page}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-      />
+      /> */}
     </div>
   );
 };

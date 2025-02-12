@@ -25,21 +25,31 @@ const GreshamAxiosConfig = axios.create({
 // Inject auth token by default
 GreshamAxiosConfig.interceptors.request.use(
     async (config) => {
-        // Skip auth ONLY if explicitly requested
-        if (config?.skipAuth === true) { // Default: false
-            return config;
+        // Extract `skipAuth` and remove it from the config object
+        const { skipAuth, ...restConfig } = config;
+
+        // If skipAuth is true, remove Authorization header
+        if (skipAuth === true) {
+            if (restConfig.headers?.Authorization) {
+                delete restConfig.headers.Authorization;
+            }
+            return restConfig;
         }
 
+        // Otherwise, inject the Bearer token
         const bearerToken = await getAccessToken();
         if (bearerToken) {
-            config.headers.Authorization = `Bearer ${bearerToken.value}`;
+            restConfig.headers.Authorization = `Bearer ${bearerToken.value}`;
         }
-        return config;
+
+        return restConfig;
     },
     (error) => {
         return Promise.reject(error);
     }
 );
+
+
 
 
 export { GreshamAxiosConfig };
