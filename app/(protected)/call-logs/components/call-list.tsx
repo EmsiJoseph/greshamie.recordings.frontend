@@ -13,6 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
 import { CallTypeWithIcon } from "./call-type-with-icon";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { formatDate } from "@/lib/utils/format-date";
 
 interface CallListProps {
   calls?: ICall[];
@@ -52,18 +53,9 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
               <TableRow key={call?.id}>
                 <TableCell>{call?.caller}</TableCell>
                 <TableCell>{call?.receiver}</TableCell>
-                <TableCell>
-                  {call?.startDateTime instanceof Date
-                    ? call?.startDateTime.toLocaleString()
-                    : call?.startDateTime}
-                </TableCell>
-                <TableCell>
-                  {call?.endDateTime instanceof Date
-                    ? call?.endDateTime.toLocaleString()
-                    : call?.endDateTime}
-                </TableCell>
+                <TableCell>{formatDate(call?.startDateTime)}</TableCell>
+                <TableCell>{formatDate(call?.endDateTime)}</TableCell>
                 <TableCell><CallTypeWithIcon callType={call?.callType} /></TableCell>
-
                 <TableCell>{call?.isLive ? "True" : "False"}</TableCell>
                 <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
                 <TableCell>{call.recorder}</TableCell>
