@@ -7,6 +7,10 @@ import { ICall } from "@/lib/interfaces/call-interface";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
 import { useCallFilters } from "./lib/use-call-filters";
+import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
+import { useEffect } from "react";
+import { ICallLogs } from "@/lib/interfaces/call-interface";
+import { AxiosResponse } from "axios";
 import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "./components/helpers/streamingUrlHelper";
 
@@ -18,17 +22,28 @@ interface CurrentAudio {
 
 export default function CallLogPage() {
   const { retrievedFilters, resetCallFilters } = useCallFilters();
+
   const queryClient = useQueryClient();
 
-  // Prepare filters for query key
   let filters = retrievedFilters as Record<string, any>;
-  if (filters.callTypes && Array.isArray(filters.callTypes)) {
-    filters = { ...filters, callTypes: filters.callTypes.join(",") };
-  }
+  // Prepare filters for query key
+  Object.entries(retrievedFilters).map(([key, value]) => {
+    if (value && value instanceof Date) {
+      // If the value is a Date, convert it to ISO string
+      filters[key] = value.toISOString();
+    }
+  });
+
+  // let filters = retrievedFilters as Record<string, any>;
+  // if (filters.callDirection && Array.isArray(filters.callDirection)) {
+  //   filters = { ...filters, callDirection: filters.callDirection.join(",") };
+  // }
   const filterValues = Object.values(filters).filter(Boolean) as string[];
 
+  console.log("filter VALUES", filterValues)
+
   // Fetch call data using React Query
-  const { data, isFetching } = useQuery({
+  const { data, isFetching, isError } = useQuery<AxiosResponse<ICallLogs>>({
     queryKey: ["calls", ...filterValues],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
   });
@@ -48,25 +63,34 @@ export default function CallLogPage() {
     },
   });
 
+  useEffect(() => {
+    if (isError) {
+      handleApiClientSideError({
+        error: "Something went wrong. Try again later.",
+        isSuccessToast: false
+      })
+    }
+  }, [isError])
+
   // Retrieve the current audio state
   const currentAudio =
     queryClient.getQueryData<CurrentAudio>(["currentAudio"]) || null;
 
   return (
-    <div>
-      <CallListFilters
-        retrievedFilters={retrievedFilters}
-        resetCallFilters={resetCallFilters}
-      />
-      {/* Pass the mutation’s mutate function and currentAudio to CallList */}
-      <CallList
-        calls={data?.data}
-        isFetching={isFetching}
-        onPlayAudio={audioMutation.mutate}
-        currentAudio={currentAudio}
-      />
-      {/* Only show the audio player if there is an active URL */}
-      {currentAudio && <AudioPlayer url={currentAudio.streamingUrl} />}
-    </div>
+    <>
+      <div>
+        <CallListFilters
+          retrievedFilters={retrievedFilters}
+          resetCallFilters={resetCallFilters}
+        />
+        <CallList
+          calls={data?.data}
+          isFetching={isFetching}
+          onPlayAudio={audioMutation.mutate}
+        />
+        {/* Only show the audio player if there is an active URL */}
+        {currentAudio && <AudioPlayer url={currentAudio} />}
+      </div>
+    </>
   );
 }

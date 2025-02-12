@@ -4,6 +4,7 @@ import { EllipsisVertical, Trash2, Download, LogIn, Play, LogOut } from "lucide-
 import React from "react";
 import ActivityListSkeleton from "@/components/presentational/activity-list-skeleton";
 import ActivityListPagination from "@/components/presentational/activity-list-pagination";
+import { formatDate } from "@/lib/utils/format-date";
 
 interface ActivityListProps {
   activities?: IActivity[];
@@ -11,22 +12,26 @@ interface ActivityListProps {
 }
 
 
-// Map raw eventName types to display-friendly labels
 const activityLabels: Record<string, string> = {
-  STARTED: "Session Started",
-  PLAYED: "Recording Played",
-  ENDED: "Session Ended",
-  EXPORTED: "Recording Exported",
-  DELETED: "Recording Deleted",
+  "UserLoggedIn": "User Logged In",
+  "UserLoggedOut": "User Logged Out",
+  "RecordingPlayed": "Recording Played",
+  "RecordingExported": "Recording Exported",
+  "RecordingDeleted": "Recording Deleted",
+  "ManualSync": "Manual Sync",
+  "AutoSync": "Auto Sync",
 };
 
 const activityIcons: Record<string, { icon: React.ElementType; colorClass: string }> = {
-  STARTED: { icon: LogIn, colorClass: "text-green-700" },
-  PLAYED: { icon: Play, colorClass: "text-cyan-700" },
-  ENDED: { icon: LogOut, colorClass: "text-red-500" },
-  EXPORTED: { icon: Download, colorClass: "text-yellow-600" },
-  DELETED: { icon: Trash2, colorClass: "text-red-700" },
+  "UserLoggedIn": { icon: LogIn, colorClass: "text-green-700" },
+  "UserLoggedOut": { icon: LogOut, colorClass: "text-red-500" },
+  "RecordingPlayed": { icon: Play, colorClass: "text-cyan-700" },
+  "RecordingExported": { icon: Download, colorClass: "text-yellow-600" },
+  "RecordingDeleted": { icon: Trash2, colorClass: "text-red-700" },
+  "ManualSync": { icon: Download, colorClass: "text-blue-600" },
+  "AutoSync": { icon: Download, colorClass: "text-purple-600" },
 };
+
 
 export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
 
@@ -42,8 +47,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
     return <ActivityListSkeleton />;
   }
 
-  console.log("ACTIVITIES", activities);
-
+  console.log("Activities", activities);
   return (
     <div className="">
       <Table>
@@ -51,7 +55,6 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           <TableRow>
             <TableHead>Date</TableHead>
             <TableHead>User</TableHead>
-            <TableHead>Recording Item</TableHead>
             <TableHead>Action</TableHead>
             <TableHead></TableHead>
           </TableRow>
@@ -59,11 +62,12 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
 
         <TableBody>
           {activities && activities.length > 0 ? (
-            activities.map((activity) => (
+            activities
+            .map((activity) => (
               <TableRow key={activity.id}>
-                <TableCell>{activity.timestamp instanceof Date ? activity.timestamp.toLocaleString() : activity.timestamp}</TableCell>
+                <TableCell>{formatDate(activity.timestamp)}</TableCell>
+
                 <TableCell>{activity.userName}</TableCell>
-                <TableCell>{activity.recordingItem}</TableCell>
 
                 {/* Action column with icon and readable label */}
                 <TableCell>

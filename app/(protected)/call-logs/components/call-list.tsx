@@ -10,8 +10,6 @@ import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CallDirectionIcons } from "@/constants/call-types";
-import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
 import {
   ArrowRightLeft,
@@ -25,6 +23,8 @@ interface CurrentAudio {
   callId: string | number;
   streamingUrl: string;
 }
+import { CallTypeWithIcon } from "./call-type-with-icon";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 interface CallListProps {
   calls?: ICall[];
@@ -52,6 +52,12 @@ const formatDuration = (seconds: number) => {
 };
 
 export const CallList = ({ calls, isFetching, onPlayAudio, currentAudio }: CallListProps) => {
+export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
+  const queryClient = useQueryClient();
+  const currentAudioUrl = queryClient.getQueryData<string | null>([
+    "currentAudio",
+  ]);
+
   if (isFetching) {
     return <CallListSkeleton />;
   }
@@ -76,18 +82,18 @@ export const CallList = ({ calls, isFetching, onPlayAudio, currentAudio }: CallL
         <TableBody>
           {calls && calls.length > 0 ? (
             calls.map((call) => (
-              <TableRow key={call.id}>
-                <TableCell>{call.caller}</TableCell>
-                <TableCell>{call.receiver}</TableCell>
+              <TableRow key={call?.id}>
+                <TableCell>{call?.caller}</TableCell>
+                <TableCell>{call?.receiver}</TableCell>
                 <TableCell>
-                  {call.startDateTime instanceof Date
-                    ? call.startDateTime.toLocaleString()
-                    : call.startDateTime}
+                  {call?.startDateTime instanceof Date
+                    ? call?.startDateTime.toLocaleString()
+                    : call?.startDateTime}
                 </TableCell>
                 <TableCell>
-                  {call.endDateTime instanceof Date
-                    ? call.endDateTime.toLocaleString()
-                    : call.endDateTime}
+                  {call?.endDateTime instanceof Date
+                    ? call?.endDateTime.toLocaleString()
+                    : call?.endDateTime}
                 </TableCell>
                 <TableCell>
                   {call.callType && callIcons[call.callType.toUpperCase()] ? (
@@ -110,6 +116,12 @@ export const CallList = ({ calls, isFetching, onPlayAudio, currentAudio }: CallL
                 <TableCell>{call.isLive}</TableCell>
                 <TableCell>
                   {" "}
+                <TableCell><CallTypeWithIcon callType={call?.callType} /></TableCell>
+
+                <TableCell>{call?.isLive ? "True" : "False"}</TableCell>
+                <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
+                <TableCell>{call.recorder}</TableCell>
+                {/* <TableCell>
                   <div className="flex items-center space-x-2">
                   <button
                       onClick={() => {
@@ -132,6 +144,7 @@ export const CallList = ({ calls, isFetching, onPlayAudio, currentAudio }: CallL
                   </div>
                 </TableCell>
                 <TableCell>{call.recorder}</TableCell>
+                </TableCell> */}
               </TableRow>
             ))
           ) : (
@@ -143,6 +156,31 @@ export const CallList = ({ calls, isFetching, onPlayAudio, currentAudio }: CallL
           )}
         </TableBody>
       </Table>
+
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              2
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

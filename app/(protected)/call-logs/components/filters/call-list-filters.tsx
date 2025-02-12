@@ -7,26 +7,27 @@ import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { CallListAdvanceFilters } from "./call-list-advance-filters";
+import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter";
 
 interface CallListFiltersProps {
     retrievedFilters: ICallFilters,
     resetCallFilters: () => void
 }
 
-export const CallListFilters = ({ retrievedFilters,  resetCallFilters}: CallListFiltersProps) => {
+export const CallListFilters = ({ retrievedFilters, resetCallFilters }: CallListFiltersProps) => {
     const { updateUrlParams, deleteUrlParam } = useUpdateUrlParams()
     // 01 Call Types
     // ---> Handle reset call types 
     const handleResetCallTypes = () => {
-        deleteUrlParam("callTypes");
+        deleteUrlParam("callDirection");
     }
 
     // ---> Handle changes in call type selection.
-    const handleSelectCallType = (value: TCallDirections[]) => {
-        updateUrlParams({ callTypes: value });
+    const handleSelectCallType = (value: TCallDirections) => {
+        updateUrlParams({ callDirection: value });
     };
 
-    const isResetButtonActive = retrievedFilters?.callTypes ? retrievedFilters?.callTypes?.length < 1 : false;
+    const isResetButtonActive = retrievedFilters?.callDirection ? retrievedFilters?.callDirection?.length < 1 : false;
 
     // 02 Search
     const [search, setSearch] = useState<ICallFilters['search']>("");
@@ -41,13 +42,20 @@ export const CallListFilters = ({ retrievedFilters,  resetCallFilters}: CallList
 
     return (
         <div className="flex gap-4">
-            <MultiToggleGroupFilter
-                value={retrievedFilters?.callTypes}
+            <SingleToggleGroupFilter
+                value={retrievedFilters?.callDirection}
+                onValueChange={handleSelectCallType}
+                options={CallDirections}
+            />
+
+            {/* <MultiToggleGroupFilter
+                value={retrievedFilters?.callDirection}
                 onValueChange={handleSelectCallType}
                 onResetSelection={handleResetCallTypes}
                 options={CallDirections}
                 isResetButtonActive={isResetButtonActive}
-            />
+            /> */}
+
             <CallListAdvanceFilters retrievedCallFilters={retrievedFilters} resetCallFilters={resetCallFilters} />
             <div className="relative w-full">
                 <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />

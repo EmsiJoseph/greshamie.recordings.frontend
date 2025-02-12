@@ -1,33 +1,28 @@
 import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { TActivityType } from "@/lib/interfaces/activity-interface";
+import { TActivityTypeFilter } from "@/lib/interfaces/activity-interface";
 
 export const useActivityFilters = () => {
-    const { resetUrlParams } = useUpdateUrlParams()
+    const { resetUrlParams } = useUpdateUrlParams();
 
     const retrieveActivityFilters = () => {
         const getUrlParams = useGetUrlParams();
-        const activityTypesParams = getUrlParams("action")?.split(',');
-        let action: TActivityType[] = [];
-
-        if (activityTypesParams.length > 1 || !activityTypesParams.includes('')) {
-            action = activityTypesParams as TActivityType[];
-        }
+        const eventTypeParams = getUrlParams("eventType")?.split(",") || []; 
 
         return {
             search: getUrlParams("search") || "",
-            action: action as TActivityType[],
+            eventType: eventTypeParams as TActivityTypeFilter[], // Ensure array type
             startDate: getUrlParams("startDate") ? new Date(getUrlParams("startDate")) : undefined,
             endDate: getUrlParams("endDate") ? new Date(getUrlParams("endDate")) : undefined,
-            
-        }
-    }
+        };
+    };
 
-    const retrievedFilters = retrieveActivityFilters()
+    const retrievedFilters = retrieveActivityFilters();
 
     const resetActivityFilters = () => {
-        resetUrlParams()
-    }
+        resetUrlParams();
+    };
 
-    return { retrievedFilters, resetActivityFilters }
-}
+    return { retrievedFilters, resetActivityFilters };
+};

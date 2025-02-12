@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { ICallFilters } from "@/lib/interfaces/call-interface"
+import { ICallAdvanceFilterComponent, ICallFilters } from "@/lib/interfaces/call-interface"
 import { DateTimePicker } from "@/components/common/date-time-picker"
 import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter"
 import { CallAdvanceFilterSchema } from "@/lib/schema/call-advance-filter-schema"
@@ -45,8 +45,8 @@ export const CallListAdvanceFilters = ({
         defaultValues: {
             startDate: retrievedCallFilters?.startDate,
             endDate: retrievedCallFilters?.endDate,
-            minDuration: retrievedCallFilters?.minDuration,
-            maxDuration: retrievedCallFilters?.maxDuration,
+            minimumDurationSeconds: retrievedCallFilters?.minimumDurationSeconds,
+            maximumDurationSeconds: retrievedCallFilters?.maximumDurationSeconds,
             hasPciCompliance: retrievedCallFilters?.hasPciCompliance,
             hasQualityEvaluation: retrievedCallFilters?.hasQualityEvaluation,
             hasVideoRecording: retrievedCallFilters?.hasVideoRecording,
@@ -69,8 +69,8 @@ export const CallListAdvanceFilters = ({
 
     // Range Slider
     const handleDurationChange = (values: number[]) => {
-        setValue("minDuration", values[0]); // Explicitly set 0
-        setValue("maxDuration", values[1]); // Ensure max has a fallback
+        setValue("minimumDurationSeconds", values[0]); // Explicitly set 0
+        setValue("maximumDurationSeconds", values[1]); // Ensure max has a fallback
     };
 
     const handleResetSlider = () => {
@@ -90,7 +90,7 @@ export const CallListAdvanceFilters = ({
     const hasPciCompliance = watch("hasPciCompliance")
     const hasQualityEvaluation = watch("hasQualityEvaluation")
 
-    const handleBoolChange = (value?: string, rhfKey?: Exclude<keyof ICallFilters, "search" | "page" | "caller" | "receiver" | "callTypes" | "recorder">) => {
+    const handleBoolChange = (value?: string, rhfKey?: keyof ICallAdvanceFilterComponent) => {
         if (!rhfKey) {
             return
         }
@@ -161,12 +161,36 @@ export const CallListAdvanceFilters = ({
                         <div className="h-4"></div>
                         {/* New Range Input */}
                         <div className="flex gap-4 w-full" id="call-duration-range">
+
+                            {/* // <div className="w-full">
+                            //     <Label className="text-right">
+                            //         Minimum
+                            //     </Label>
+                            //     <Input
+                            //         type="number"
+                            //         placeholder="0"
+                            //         {...register("minimumDurationSeconds")}
+                            //     />
+                            //     <FormStateError error={formError.minimumDurationSeconds?.message} />
+                            // </div>
+                            // <div className="w-full">
+                            //     <Label className="text-right">
+                            //         Maximum
+                            //     </Label>
+                            //     <Input
+                            //         type="number"
+                            //         placeholder="0"
+                            //         {...register("maximumDurationSeconds")}
+
+                            //     />
+                            //     <FormStateError error={formError.maximumDurationSeconds?.message} />
+                            // </div> */}
                             <DualRangeSliderCustomLabel 
                                 onDurationChange={handleDurationChange}
                                 reset={resetSlider}
                             />
-                            <FormStateError error={formError.minDuration?.message} />
-                            <FormStateError error={formError.maxDuration?.message} />
+                            <FormStateError error={formError.minimumDurationSeconds?.message} />
+                            <FormStateError error={formError.maximumDurationSeconds?.message} />
                         </div>
                     </div>
 

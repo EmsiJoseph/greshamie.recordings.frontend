@@ -9,15 +9,16 @@ export const useCallFilters = () => {
     const retrieveCallFilters = (): ICallFilters => {
         const getUrlParams = useGetUrlParams();
         const callTypesParams = getUrlParams("callTypes")?.split(',');
-        let callTypes: TCallDirections[] = [];
+        // let callTypes: TCallDirections[] = [];
 
-        if (callTypesParams.length > 1 || !callTypesParams.includes('')) {
-            callTypes = callTypesParams as TCallDirections[];
-        }
+        // if (callTypesParams.length > 1 || !callTypesParams.includes('')) {
+        //     callTypes = callTypesParams as TCallDirections[];
+        // }
 
         return {
             search: getUrlParams("search") || "",
-            callDirection: callTypes as TCallDirections[],
+            // callDirection: callTypes as TCallDirections[],
+            callDirection: getUrlParams("callDirection") as TCallDirections || undefined,
             startDate: getUrlParams("startDate") ? new Date(getUrlParams("startDate")) : undefined,
             endDate: getUrlParams("endDate") ? new Date(getUrlParams("endDate")) : undefined,
             minimumDurationSeconds: parseFloat(getUrlParams("minimumDurationSeconds") || ""),

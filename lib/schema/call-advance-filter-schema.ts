@@ -12,14 +12,14 @@ export const CallAdvanceFilterSchema = z
                 message: "End date should not be in the future.",
             })
             .optional(),
-        minDuration: z.preprocess(
+        minimumDurationSeconds: z.preprocess(
             (val) => {
                 const num = Number(val);
                 return val === "" || val === null || isNaN(num) ? undefined : num;
             },
             z.number().min(0, "Min. duration must be at least 0").optional()
         ),
-        maxDuration: z.preprocess(
+        maximumDurationSeconds: z.preprocess(
             (val) => {
                 const num = Number(val);
                 return val === "" || val === null || isNaN(num) ? undefined : num;
@@ -44,8 +44,8 @@ export const CallAdvanceFilterSchema = z
     )
     .refine(
         (data) => {
-            if (data.minDuration !== undefined && data.maxDuration !== undefined) {
-                return data.minDuration <= data.maxDuration;
+            if (data.minimumDurationSeconds !== undefined && data.maximumDurationSeconds !== undefined) {
+                return data.minimumDurationSeconds <= data.maximumDurationSeconds;
             }
             return true;
         },
