@@ -1,8 +1,8 @@
 import { MultiToggleGroupFilter } from "@/components/filters/multi-toggle-group-filter";
 import { Input } from "@/components/ui/input";
-import { CallTypes } from "@/constants/call-types";
+import { CallDirections } from "@/constants/call-types";
 import { useDebounce } from "@/hooks/use-debounce";
-import { ICallFilters, TCallType } from "@/lib/interfaces/call-interface";
+import { ICallFilters, TCallDirections } from "@/lib/interfaces/call-interface";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
@@ -22,7 +22,7 @@ export const CallListFilters = ({ retrievedFilters,  resetCallFilters}: CallList
     }
 
     // ---> Handle changes in call type selection.
-    const handleSelectCallType = (value: TCallType[]) => {
+    const handleSelectCallType = (value: TCallDirections[]) => {
         updateUrlParams({ callTypes: value });
     };
 
@@ -45,7 +45,7 @@ export const CallListFilters = ({ retrievedFilters,  resetCallFilters}: CallList
                 value={retrievedFilters?.callTypes}
                 onValueChange={handleSelectCallType}
                 onResetSelection={handleResetCallTypes}
-                options={CallTypes}
+                options={CallDirections}
                 isResetButtonActive={isResetButtonActive}
             />
             <CallListAdvanceFilters retrievedCallFilters={retrievedFilters} resetCallFilters={resetCallFilters} />

@@ -4,17 +4,17 @@ export type TActivityType = typeof ActivityTypes[keyof typeof ActivityTypes]
 
 export interface IActivity {
     id: number,
-    date: Date,
-    user: string,
+    userName: string,
+    eventName: TActivityType,
+    timestamp: Date,
     recordingItem: string,
-    action: TActivityType,
 }
 
 export interface IActivityFilters {
     search?: string,
-    action?: TActivityType[],
+    eventName?: TActivityType[],
     startDate?: Date,
     endDate?: Date,
-    user?: string,
+    userName?: string,
     recordingItem?: string,
 }

@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { getAuthToken } from "../services/server-actions/cookie";
+import { getAccessToken } from "../services/server-actions/cookie";
 
 
 // Add the skipAuth Flag to the AxiosRequestConfig interface
@@ -25,21 +25,31 @@ const GreshamAxiosConfig = axios.create({
 // Inject auth token by default
 GreshamAxiosConfig.interceptors.request.use(
     async (config) => {
-        // Skip auth ONLY if explicitly requested
-        if (config?.skipAuth === true) { // Default: false
-            return config;
+        // Extract `skipAuth` and remove it from the config object
+        const { skipAuth, ...restConfig } = config;
+
+        // If skipAuth is true, remove Authorization header
+        if (skipAuth === true) {
+            if (restConfig.headers?.Authorization) {
+                delete restConfig.headers.Authorization;
+            }
+            return restConfig;
         }
 
-        const bearerToken = await getAuthToken();
+        // Otherwise, inject the Bearer token
+        const bearerToken = await getAccessToken();
         if (bearerToken) {
-            config.headers.Authorization = `Bearer ${bearerToken}`;
+            restConfig.headers.Authorization = `Bearer ${bearerToken.value}`;
         }
-        return config;
+
+        return restConfig;
     },
     (error) => {
         return Promise.reject(error);
     }
 );
+
+
 
 
 export { GreshamAxiosConfig };

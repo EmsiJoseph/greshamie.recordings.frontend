@@ -1,13 +1,24 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
-import { MoveDownLeft, MoveUpRight, ArrowRightLeft } from "lucide-react";
 import React from "react";
-import { Play } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { CallDirectionIcons } from "@/constants/call-types";
+import { capitalizeFirstLetter } from "@/lib/utils/format-text";
+import { formatDurationToHours } from "@/lib/utils/format-duration";
+import { ArrowRightLeft, CirclePlay, MoveDownLeft, MoveUpRight, Pause } from "lucide-react";
 
 interface CallListProps {
   calls?: ICall[];
   isFetching?: boolean;
+  onPlayAudio?: (url: string | null) => void;
 }
 
 const callLabels: Record<string, string> = {
@@ -28,21 +39,30 @@ const formatDuration = (seconds: number) => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-export const CallList = ({ calls, isFetching }: CallListProps) => {
+
+export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
+  const queryClient = useQueryClient();
+  const currentAudioUrl = queryClient.getQueryData<string | null>([
+    "currentAudio",
+  ]);
+
   if (isFetching) {
     return <CallListSkeleton />;
   }
 
+  console.log("CALLS LIST", calls)
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
             <TableHead>Caller</TableHead>
             <TableHead>Receiver</TableHead>
-            <TableHead>Call Type</TableHead>
-            <TableHead>Duration</TableHead>
+            <TableHead>Start Date</TableHead>
+            <TableHead>End Date</TableHead>
+            <TableHead>Call Direction</TableHead>
+            <TableHead>Is Live</TableHead>
+            <TableHead>Duration (s)</TableHead>
             <TableHead>Recorder</TableHead>
           </TableRow>
         </TableHeader>
@@ -51,30 +71,63 @@ export const CallList = ({ calls, isFetching }: CallListProps) => {
           {calls && calls.length > 0 ? (
             calls.map((call) => (
               <TableRow key={call.id}>
-                <TableCell>
-                  {call.date instanceof Date ? call.date.toLocaleString() : call.date}
-                </TableCell>
                 <TableCell>{call.caller}</TableCell>
                 <TableCell>{call.receiver}</TableCell>
                 <TableCell>
-                  {call.callType && callIcons[call.callType] ? (
-                    <div className={`flex items-center ${callIcons[call.callType].colorClass}`}>
+                  {call.startDateTime instanceof Date
+                    ? call.startDateTime.toLocaleString()
+                    : call.startDateTime}
+                </TableCell>
+                <TableCell>
+                  {call.endDateTime instanceof Date
+                    ? call.endDateTime.toLocaleString()
+                    : call.endDateTime}
+                </TableCell>
+                <TableCell>
+                  {call.callType && callIcons[call.callType.toUpperCase()] ? (
+                    <div
+                      className={`flex items-center ${callIcons[call.callType].colorClass
+                        }`}
+                    >
                       {React.createElement(callIcons[call.callType].icon, {
                         className: "h-5 w-5",
                       })}
-                      <span className="ml-2 font-bold">{callLabels[call.callType] || "Unknown Action"}</span>
+                      <span className="ml-2 font-bold">
+                        {capitalizeFirstLetter(call.callType) || ""}
+                      </span>
                     </div>
                   ) : (
-                    <span>No Action</span> 
+                    <span>No Direction</span>
                   )}
                 </TableCell>
+                <TableCell>{call.isLive}</TableCell>
+                <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
+                <TableCell>{call.recorder}</TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-2">
-                    <Play className="h-5 w-5 text-gray-700 cursor-pointer" />
-                    <span>{formatDuration(call.duration)}</span>
+                    <button
+                      onClick={() => {
+                        if (call.streamingUrl) {
+                          onPlayAudio &&
+                            onPlayAudio(
+                              currentAudioUrl === call.streamingUrl
+                                ? null
+                                : call.streamingUrl
+                            );
+                        }
+                      }}
+                      className="text-gray-700 cursor-pointer"
+                    >
+                      {currentAudioUrl === call.streamingUrl ? (
+                        <Pause className="h-5 w-5 text-blue-500" />
+                      ) : (
+                        <CirclePlay className="h-5 w-5 text-green-500" />
+                      )}
+                    </button>
+
+                    <span>{formatDuration(call.durationSeconds)}</span>
                   </div>
                 </TableCell>
-                <TableCell>{call.recorder}</TableCell>
               </TableRow>
             ))
           ) : (
