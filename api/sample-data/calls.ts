@@ -10,6 +10,8 @@ export const sampleCalls: ICall[] = [
         callType: CallTypes.INCOMING,
         duration: 5,
         recorder: "System1",
+        streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     },
     {
         id: 2,
@@ -19,6 +21,8 @@ export const sampleCalls: ICall[] = [
         callType: CallTypes.OUTGOING,
         duration: 65,
         recorder: "System2",
+        streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     },
     {
         id: 3,
@@ -28,6 +32,8 @@ export const sampleCalls: ICall[] = [
         callType: CallTypes.INCOMING,
         duration: 20,
         recorder: "System3",
+        streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+        downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     },
     {
         id: 4,
@@ -37,6 +43,8 @@ export const sampleCalls: ICall[] = [
         callType: CallTypes.INTERNAL,
         duration: 20,
         recorder: "System1",
+        streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+        downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     },
     {
         id: 5,
@@ -46,6 +54,8 @@ export const sampleCalls: ICall[] = [
         callType: CallTypes.OUTGOING,
         duration: 3,
         recorder: "System2",
+        streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+        downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     },
     {
         id: 6,
@@ -55,6 +65,8 @@ export const sampleCalls: ICall[] = [
         callType: CallTypes.INCOMING,
         duration: 2,
         recorder: "System3",
+        streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+        downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     },
     {
         id: 7,
@@ -64,6 +76,8 @@ export const sampleCalls: ICall[] = [
         callType: CallTypes.INTERNAL,
         duration: 49,
         recorder: "System1",
+        streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
+        downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     },
     {
         id: 8,
@@ -73,6 +87,8 @@ export const sampleCalls: ICall[] = [
         callType: CallTypes.OUTGOING,
         duration: 45,
         recorder: "System2",
+        streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+        downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     },
     {
         id: 9,
@@ -82,6 +98,8 @@ export const sampleCalls: ICall[] = [
         callType: CallTypes.INCOMING,
         duration: 90,
         recorder: "System3",
+        streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+        downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     },
     {
         id: 10,
@@ -91,5 +109,7 @@ export const sampleCalls: ICall[] = [
         callType: CallTypes.INTERNAL,
         duration: 120,
         recorder: "System1",
+        streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
+        downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     }
 ];

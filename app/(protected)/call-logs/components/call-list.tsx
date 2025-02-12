@@ -42,6 +42,7 @@ const formatDuration = (seconds: number) => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
+
 export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
   const queryClient = useQueryClient();
   const currentAudioUrl = queryClient.getQueryData<string | null>([
