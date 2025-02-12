@@ -129,7 +129,7 @@ export const CallListAdvanceFilters = ({
             <DialogTrigger asChild>
                 <Button variant="outline" onClick={() => setOpen(true)}><ListFilter /></Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] max-h-[500px] overflow-y-scroll">
+            <DialogContent className="sm:max-w-[600px] max-h-[700px] overflow-y-scroll">
                 <DialogHeader>
                     <DialogTitle>Advanced Filters</DialogTitle>
                 </DialogHeader>
@@ -159,9 +159,6 @@ export const CallListAdvanceFilters = ({
                     <div className="w-full">
                         <Label htmlFor="call-duration-range" className="font-semibold text-[1rem] ">Duration (Minutes)</Label>
                         <div className="h-4"></div>
-                        {/* New Range Input */}
-                        <div className="flex gap-4 w-full" id="call-duration-range">
-
                             {/* // <div className="w-full">
                             //     <Label className="text-right">
                             //         Minimum
@@ -185,6 +182,8 @@ export const CallListAdvanceFilters = ({
                             //     />
                             //     <FormStateError error={formError.maximumDurationSeconds?.message} />
                             // </div> */}
+                            {/* New Range Input */}
+                        <div className="flex gap-4 w-full" id="call-duration-range">
                             <DualRangeSliderCustomLabel 
                                 onDurationChange={handleDurationChange}
                                 reset={resetSlider}

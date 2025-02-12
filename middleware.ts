@@ -9,19 +9,19 @@ export async function middleware(request: NextRequest) {
     const isRefreshTokenValid = await hasValidRefreshToken()
     const { pathname } = request.nextUrl
 
+
     // 01 Login success redirect
     const isLoginSuccess =
         isAccessTokenValid &&
         pathname.startsWith("/login") &&
-        !pathname.startsWith("/activity")
+        !pathname.startsWith("/call-logs")
     if (isLoginSuccess) {
-        return NextResponse.redirect(new URL('/activity', request.url))
+        return NextResponse.redirect(new URL('/call-logs', request.url))
     }
 
     // 02 Force Relogin
     const shouldRedirectToLogin =
-        !pathname.startsWith("/login") &&
-        pathname !== "/";
+        !pathname.startsWith("/login");
     if (!isAccessTokenValid && !isRefreshTokenValid && shouldRedirectToLogin) {
         // Delete Cookies if available
         await deleteAuthCookie()
@@ -36,10 +36,9 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // console.log("Bool values ", isAccessTokenValid, isRefreshTokenValid, shouldRedirectToLogin)
+       // console.log("Bool values ", isAccessTokenValid, isRefreshTokenValid, shouldRedirectToLogin)
 }
 
 export const config = {
     matcher: ['/((?!api|_next|static|public|favicon.ico).*)']
-    // matcher: []
 }

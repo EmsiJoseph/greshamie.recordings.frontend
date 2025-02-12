@@ -39,7 +39,7 @@ export function LoginForm() {
       return;
     }
 
-    router.replace("/activity");
+    router.replace("/call-logs");
     form.reset();
   }
 
@@ -54,9 +54,9 @@ export function LoginForm() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel className='dark:text-black'>Username</FormLabel>
                   <FormControl>
-                    <Input type="text" {...field} placeholder="Enter your username from Clarify.go" />
+                    <Input className="dark:bg-white dark:text-black" type="text" {...field} placeholder="Enter your username from Clarify.go" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -68,9 +68,9 @@ export function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className='dark:text-black'>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} placeholder="Enter your password" />
+                    <Input className="dark:bg-white dark:text-black" type="password" {...field} placeholder="Enter your password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -79,7 +79,7 @@ export function LoginForm() {
             {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
             <Button
               type="submit"
-              className="w-full bg-lime-600 text-white py-3 rounded-md mt-4 text-lg font-medium hover:bg-lime-700 transition"
+              className="w-full bg-lime-600 dark:bg-lime-600 dark:text-white dark:hover:bg-lime-700 text-white py-3 rounded-md mt-4 text-lg font-medium hover:bg-lime-700 transition"
               disabled={isExecuting}
             >
               {isExecuting ? "Logging in" : "Log in"}
@@ -89,9 +89,6 @@ export function LoginForm() {
         {/* <div className="flex justify-center text-sm mt-2">
           <a href="/forgot-password" className="text-blue-600 hover:underline">Forgot your password?</a>
         </div> */}
-        <div className="text-center mt-4">
-          <a href="/admin/activity" className="text-blue-600 hover:underline">Admin Login</a>
-        </div>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="flex flex-col md:flex-row h-screen">
       <div className="w-full md:w-1/2 flex flex-col items-center justify-center bg-white p-10 flex-shrink-0 min-h-screen md:min-h-0">
         <Image src={Logo} alt="Logo" className="mb-4" />
-        <h1 className="font-bold text-l">GRESHAM HOUSE RECORDINGS</h1>
+        <h1 className="font-bold text-l dark:text-black">GRESHAM HOUSE RECORDINGS</h1>
         
         {children}
       </div>

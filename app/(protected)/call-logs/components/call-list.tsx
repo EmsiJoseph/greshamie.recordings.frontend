@@ -9,6 +9,10 @@ import {
 import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { formatDurationToHours } from "@/lib/utils/format-duration";
+import { CallTypeWithIcon } from "./call-type-with-icon";
+import { formatDate } from "@/lib/utils/format-date";
 import { ArrowRightLeft, CirclePlay, MoveDownLeft, MoveUpRight, Pause } from "lucide-react";
 import {
   Pagination,
@@ -70,35 +74,16 @@ export const CallList = ({
         <TableBody>
           {calls && calls.length > 0 ? (
             calls.map((call) => (
-              <TableRow key={call.id}>
-                <TableCell>{call.caller}</TableCell>
-                <TableCell>{call.receiver}</TableCell>
-                <TableCell>
-                  {call.startDateTime instanceof Date
-                    ? call.startDateTime.toLocaleString()
-                    : call.startDateTime}
-                </TableCell>
-                <TableCell>
-                  {call.endDateTime instanceof Date
-                    ? call.endDateTime.toLocaleString()
-                    : call.endDateTime}
-                </TableCell>
-                <TableCell>
-                  {call.callType && callIcons[call.callType.toUpperCase()] ? (
-                    <div className={`flex items-center ${callIcons[call.callType].colorClass}`}>
-                      {React.createElement(callIcons[call.callType].icon, {
-                        className: "h-5 w-5",
-                      })}
-                      <span className="ml-2 font-bold">
-                        {capitalizeFirstLetter(call.callType) || ""}
-                      </span>
-                    </div>
-                  ) : (
-                    <span>No Direction</span>
-                  )}
-                </TableCell>
-                <TableCell>{call.isLive ? "True" : "False"}</TableCell>
-                <TableCell>
+              <TableRow key={call?.id}>
+                <TableCell>{call?.caller}</TableCell>
+                <TableCell>{call?.receiver}</TableCell>
+                <TableCell>{formatDate(call?.startDateTime)}</TableCell>
+                <TableCell>{formatDate(call?.endDateTime)}</TableCell>
+                <TableCell><CallTypeWithIcon callType={call?.callType} /></TableCell>
+                <TableCell>{call?.isLive ? "True" : "False"}</TableCell>
+                <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
+                <TableCell>{call.recorder}</TableCell>
+                {/* <TableCell>
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => {
