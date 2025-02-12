@@ -6,7 +6,6 @@ import { GreshamAxiosConfig } from "@/lib/config/main-backend-axios-config";
 import { loginEndpoint, logoutEndpoint, reauthenticateEndpoint } from "@/api/endpoints/auth-endpoints";
 import { LoginSchema } from "@/lib/schema/authentication-schema";
 import { actionClient } from "@/lib/config/safe-action";
-import { deleteAuthCookie, setAuthCookie } from "./cookie";
 import { deleteAuthCookie, getAccessToken, getRefreshToken, setAuthCookie } from "./cookie";
 import { handleUseServerResponse } from "@/lib/handlers/api-response-handlers/handle-use-server-response";
 import { IUserWithToken } from "@/lib/interfaces/user-interfaces";
