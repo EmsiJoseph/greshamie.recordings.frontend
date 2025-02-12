@@ -1,7 +1,6 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import Link from "next/link";
 import { LogOut, User } from "lucide-react";
 import { logoutUserAction } from "@/lib/services/server-actions/authentication";
 import { Button } from "@/components/ui/button";
@@ -53,37 +52,6 @@ export function UserNav() {
         getUserInfo();
     }, []);
     
-    // const getUserNameFromCookies = () => {
-
-    //     const authCookie =
-    //     // Get the "auth" cookie
-    //     const cookies = document.cookie
-    //         .split("; ")
-    //         .find(row => row.startsWith("auth"));
-        
-    //     console.log("agaga", cookies)
-    
-    //     if (!cookies) return "Guest"; // If cookie doesn't exist
-    
-    //     try {
-    //         // Extract and decode the cookie value
-    //         const authValue = decodeURIComponent(cookies.split("=")[1] || "");
-    
-    //         if (!authValue) return "Guest"; // Ensure we have a value
-    
-    //         // Parse the JSON
-    //         const authData = JSON.parse(authValue);
-    
-    //         // Return the username or a default fallback
-    //         return authData?.user?.userName || "Guest";
-    //     } catch (error) {
-    //         console.error("Error parsing auth cookie:", error);
-    //         return "Guest";
-    //     }
-    // };
-    
-    // const userName = getUserNameFromCookies();
-    // console.log("User Name:", userName);
 
     return (
         <DropdownMenu>
