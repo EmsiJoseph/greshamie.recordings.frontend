@@ -1,14 +1,16 @@
 import { GreshamAxiosConfig } from "@/lib/config/main-backend-axios-config";
 import { activityEndpoint } from "./endpoints/activity-endpoints";
-import { IActivityFilters } from "@/lib/interfaces/activity-interface";
+import { IActivityFilters, IActivityResponse } from "@/lib/interfaces/activity-interface";
+import { AxiosResponse } from "axios";
 
-export const fetchActivity = async (filters?: IActivityFilters) => {
+export const fetchActivity = async (filters?: IActivityFilters): Promise<AxiosResponse<IActivityResponse>> => {
     let finalEndpoint = activityEndpoint;
     if (filters) {
         const queryParams = Object.entries(filters)
             .filter(([key, value]) => value) // Only include entries where the value is truthy
             .map(([key, value]) => `${key}=${value}`)
             .join('&'); // Join the query parameters with '&'
+
  
         if (queryParams) {
             // If there are existing params in the endpoint, append with '&', else use '?'
@@ -17,7 +19,7 @@ export const fetchActivity = async (filters?: IActivityFilters) => {
                 : `${activityEndpoint}?${queryParams}`;
         }
     }
- 
+    
     return await GreshamAxiosConfig.get(finalEndpoint);
 }
  

@@ -12,31 +12,26 @@ interface ActivityListProps {
 }
 
 
-const sessionActivities = new Set(["User Logged In", "User Logged Out"]);
-
 const activityLabels: Record<string, string> = {
-  "User Logged In": "User Logged In",
-  "User Logged Out": "User Logged Out",
-  "Session Started": "Session Started",
-  "Recording Played": "Recording Played",
-  "Session Ended": "Session Ended",
-  "Recording Exported": "Recording Exported",
-  "Recording Deleted": "Recording Deleted",
-  "Manual Sync": "Manual Sync",
-  "Auto Sync": "Auto Sync",
+  "UserLoggedIn": "User Logged In",
+  "UserLoggedOut": "User Logged Out",
+  "RecordingPlayed": "Recording Played",
+  "RecordingExported": "Recording Exported",
+  "RecordingDeleted": "Recording Deleted",
+  "ManualSync": "Manual Sync",
+  "AutoSync": "Auto Sync",
 };
 
 const activityIcons: Record<string, { icon: React.ElementType; colorClass: string }> = {
-  "User Logged In": { icon: LogIn, colorClass: "text-green-500" },
-  "User Logged Out": { icon: LogOut, colorClass: "text-red-500" },
-  "Session Started": { icon: LogIn, colorClass: "text-green-700" },
-  "Recording Played": { icon: Play, colorClass: "text-cyan-700" },
-  "Session Ended": { icon: LogOut, colorClass: "text-red-500" },
-  "Recording Exported": { icon: Download, colorClass: "text-yellow-600" },
-  "Recording Deleted": { icon: Trash2, colorClass: "text-red-700" },
-  "Manual Sync": { icon: Download, colorClass: "text-blue-600" }, // Choose a sync icon if available
-  "Auto Sync": { icon: Download, colorClass: "text-purple-600" },
+  "UserLoggedIn": { icon: LogIn, colorClass: "text-green-700" },
+  "UserLoggedOut": { icon: LogOut, colorClass: "text-red-500" },
+  "RecordingPlayed": { icon: Play, colorClass: "text-cyan-700" },
+  "RecordingExported": { icon: Download, colorClass: "text-yellow-600" },
+  "RecordingDeleted": { icon: Trash2, colorClass: "text-red-700" },
+  "ManualSync": { icon: Download, colorClass: "text-blue-600" },
+  "AutoSync": { icon: Download, colorClass: "text-purple-600" },
 };
+
 
 export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
 
@@ -52,8 +47,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
     return <ActivityListSkeleton />;
   }
 
-  console.log("ACTIVITIES", activities);
-
+  console.log("Activities", activities);
   return (
     <div className="">
       <Table>
@@ -61,7 +55,6 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           <TableRow>
             <TableHead>Date</TableHead>
             <TableHead>User</TableHead>
-            <TableHead>Recording Item</TableHead>
             <TableHead>Action</TableHead>
             <TableHead></TableHead>
           </TableRow>
@@ -69,12 +62,12 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
 
         <TableBody>
           {activities && activities.length > 0 ? (
-            activities.map((activity) => (
+            activities
+            .map((activity) => (
               <TableRow key={activity.id}>
                 <TableCell>{formatDate(activity.timestamp)}</TableCell>
 
                 <TableCell>{activity.userName}</TableCell>
-                <TableCell>{activity.recordingItem}</TableCell>
 
                 {/* Action column with icon and readable label */}
                 <TableCell>

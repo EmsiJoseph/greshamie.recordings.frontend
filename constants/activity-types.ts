@@ -5,3 +5,8 @@ export const ActivityTypes = {
     EXPORTED: 'EXPORTED',
     DELETED: 'DELETED',
 } as const;
+
+export const ActivityTypesFilter = {
+    SESSION: 'SESSION',
+    RECORDING: 'RECORDING',
+} as const;

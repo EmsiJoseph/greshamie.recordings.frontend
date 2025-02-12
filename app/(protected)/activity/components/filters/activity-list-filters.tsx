@@ -1,8 +1,8 @@
 import { MultiToggleGroupFilter } from "@/components/filters/multi-toggle-group-filter";
 import { Input } from "@/components/ui/input";
-import { ActivityTypes } from "@/constants/activity-types";
+import { ActivityTypesFilter } from "@/constants/activity-types";
 import { useDebounce } from "@/hooks/use-debounce";
-import { IActivityFilters, TActivityType } from "@/lib/interfaces/activity-interface";
+import { IActivityFilters, TActivityTypeFilter } from "@/lib/interfaces/activity-interface";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
@@ -19,15 +19,15 @@ export const ActivityListFilters = ({ retrievedFilters, resetActivityFilters }: 
 
   // Handle reset call types
   const handleResetActionTypes = () => {
-    deleteUrlParam("action");
+    deleteUrlParam("eventType");
   };
 
   // Handle changes in SINGLE call type selection.
-  const handleSelectActivityType = (value: TActivityType[]) => {
-    updateUrlParams({ action: value });
+  const handleSelectActivityType = (value: TActivityTypeFilter[]) => {
+    updateUrlParams({ eventType: value });
   };
 
-  const isResetButtonActive = retrievedFilters?.eventName ? retrievedFilters?.eventName?.length < 1 : false;
+  const isResetButtonActive = retrievedFilters?.eventType ? retrievedFilters?.eventType?.length < 1 : false;
 
   // 2. Search
   const [search, setSearch] = useState<IActivityFilters['search']>("");
@@ -40,12 +40,12 @@ export const ActivityListFilters = ({ retrievedFilters, resetActivityFilters }: 
   return (
     <div className="flex gap-4">
         <MultiToggleGroupFilter
-            value={retrievedFilters?.eventName}
-            onValueChange={handleSelectActivityType}
-            onResetSelection={handleResetActionTypes}
-            options={ActivityTypes}
-            isResetButtonActive={isResetButtonActive}
-        />
+        value={retrievedFilters?.eventType}
+        onValueChange={handleSelectActivityType}
+        onResetSelection={handleResetActionTypes}
+        options={ActivityTypesFilter}
+        isResetButtonActive={isResetButtonActive}
+      />
         <ActivityListAdvanceFilters retrievedActivityFilters={retrievedFilters} resetActivityFilters={resetActivityFilters} />
         <div className="relative w-full">
           <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
