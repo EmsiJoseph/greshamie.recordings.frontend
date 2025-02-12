@@ -12,8 +12,8 @@ export interface ICall {
     isLive: boolean,
     durationSeconds: number, // Seconds
     recorder: string,
-    streamingUrl: string,
-    downloadUrl: string,
+    StreamingUrl: string,
+    DownloadUrl: string,
 }
 
 export interface ICallFilters {
@@ -39,6 +39,7 @@ export interface ICallLogs {
     pageOffset?: number
     totalCount?: number,
     totalPages?: number
+    StreamingUrl: string,
 }
 
 export interface ICallAdvanceFilterComponent {
