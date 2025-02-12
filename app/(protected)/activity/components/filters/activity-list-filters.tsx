@@ -1,12 +1,13 @@
 import { MultiToggleGroupFilter } from "@/components/filters/multi-toggle-group-filter";
 import { Input } from "@/components/ui/input";
-import { ActivityTypes } from "@/constants/activity-types";
 import { useDebounce } from "@/hooks/use-debounce";
-import { IActivityFilters, TActivityType } from "@/lib/interfaces/activity-interface";
+import { IActivityFilters, TEventType } from "@/lib/interfaces/activity-interface";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { ActivityListAdvanceFilters } from "./activity-list-advance-filters";
+import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter";
+import { EventTypes } from "@/constants/activity-types";
 
 interface ActivityListFiltersProps {
   retrievedFilters: IActivityFilters
@@ -19,15 +20,15 @@ export const ActivityListFilters = ({ retrievedFilters, resetActivityFilters }: 
 
   // Handle reset call types
   const handleResetActionTypes = () => {
-    deleteUrlParam("action");
+    deleteUrlParam("search");
   };
 
   // Handle changes in SINGLE call type selection.
-  const handleSelectActivityType = (value: TActivityType[]) => {
-    updateUrlParams({ action: value });
+  const handleSelectActivityType = (value: TEventType) => {
+    updateUrlParams({ search: value });
   };
 
-  const isResetButtonActive = retrievedFilters?.eventName ? retrievedFilters?.eventName?.length < 1 : false;
+  const isResetButtonActive = retrievedFilters?.eventType ? retrievedFilters?.eventType?.length < 1 : false;
 
   // 2. Search
   const [search, setSearch] = useState<IActivityFilters['search']>("");
@@ -39,12 +40,10 @@ export const ActivityListFilters = ({ retrievedFilters, resetActivityFilters }: 
 
   return (
     <div className="flex gap-4">
-        <MultiToggleGroupFilter
-            value={retrievedFilters?.eventName}
+        <SingleToggleGroupFilter
+            value={retrievedFilters?.eventType}
             onValueChange={handleSelectActivityType}
-            onResetSelection={handleResetActionTypes}
-            options={ActivityTypes}
-            isResetButtonActive={isResetButtonActive}
+            options={EventTypes}
         />
         <ActivityListAdvanceFilters retrievedActivityFilters={retrievedFilters} resetActivityFilters={resetActivityFilters} />
         <div className="relative w-full">
