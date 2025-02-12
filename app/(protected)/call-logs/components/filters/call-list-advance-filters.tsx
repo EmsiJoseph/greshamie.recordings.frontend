@@ -12,7 +12,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormStateError } from "@/components/common/form-state-error"
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DualRangeSliderCustomLabel } from "@/components/ui/slider"
 
 interface AdvanceFiltersProps {
@@ -54,6 +54,8 @@ export const CallListAdvanceFilters = ({
         },
     })
 
+    const [resetSlider, setResetSlider] = useState(false);
+
     const formError = formState.errors;
 
     const startDate = watch("startDate")
@@ -65,15 +67,11 @@ export const CallListAdvanceFilters = ({
     const handleEndDateChange = (date: Date | undefined) => {
         setValue("endDate", date);
     };
-    // const hasMinDuration = watch("minDuration")
-    // const hasMaxDuration = watch("maxDuration")
 
     // Range Slider
+    // const hasMinDuration = watch("minDuration")
+    // const hasMaxDuration = watch("maxDuration")
     const handleDurationChange = (values: number[]) => {
-        // // values[0] = hasMinDuration || values[0];
-        // // values[1] = hasMaxDuration || values[1];
-        // console.log("Min Duration", hasMinDuration)
-        // console.log("Min Value Duration", values[0])
         setValue("minDuration", values[0]); // Explicitly set 0
         setValue("maxDuration", values[1]); // Ensure max has a fallback
     };
@@ -81,7 +79,14 @@ export const CallListAdvanceFilters = ({
     const handleResetSlider = () => {
         localStorage.removeItem('dualRangeSliderValues');
         handleDurationChange([0, 3600]);
-    }
+        setResetSlider(true);
+    };
+
+    useEffect(() => {
+        if (resetSlider) {
+            setResetSlider(false);
+        }
+    }, [resetSlider]);
     
     // Booleans
     const hasVideoRecording = watch("hasVideoRecording")
@@ -161,6 +166,7 @@ export const CallListAdvanceFilters = ({
                         <div className="flex gap-4 w-full" id="call-duration-range">
                             <DualRangeSliderCustomLabel 
                                 onDurationChange={handleDurationChange}
+                                reset={resetSlider}
                                 {...register("minDuration")}
                                 {...register("maxDuration")}
                             />

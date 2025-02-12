@@ -44,9 +44,11 @@ const DualRangeSlider = React.forwardRef<
 DualRangeSlider.displayName = 'DualRangeSlider';
 
 const DualRangeSliderCustomLabel = ({ 
-    onDurationChange 
+    onDurationChange,
+    reset
 }: { 
-    onDurationChange: (values: number[]) => void; 
+    onDurationChange: (values: number[]) => void;
+    reset: boolean;
 }) => {
     const [values, setValues] = React.useState(() => {
         const savedValues = localStorage.getItem('dualRangeSliderValues');
@@ -54,12 +56,18 @@ const DualRangeSliderCustomLabel = ({
     });
 
     React.useEffect(() => {
+        if (reset) {
+            setValues([0, 3600]);
+        }
+    }, [reset]);
+
+    React.useEffect(() => {
         localStorage.setItem('dualRangeSliderValues', JSON.stringify(values));
     }, [values]);
 
     const handleValueChange = (newValues: number[]) => {
-        setValues(newValues); // Update local state
-        onDurationChange(newValues); // Notify parent
+        setValues(newValues);
+        onDurationChange(newValues);
     };
 
     return (
@@ -67,14 +75,13 @@ const DualRangeSliderCustomLabel = ({
             <DualRangeSlider
                 label={(value) => `${Math.floor((value ?? 0) / 60)} min`}
                 value={values}
-                onValueChange={handleValueChange} // Handle changes properly
+                onValueChange={handleValueChange}
                 min={0}
-                max={3600} // 60 minutes * 60 seconds
-                step={60} // Step by 1 minute
+                max={3600}
+                step={60}
             />
         </div>
     );
 };
-
 
 export { DualRangeSlider, DualRangeSliderCustomLabel };
