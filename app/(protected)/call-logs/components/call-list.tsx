@@ -13,12 +13,24 @@ import { useQueryClient } from "@tanstack/react-query";
 import { CallDirectionIcons } from "@/constants/call-types";
 import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
-import { ArrowRightLeft, CirclePlay, MoveDownLeft, MoveUpRight, Pause } from "lucide-react";
+import {
+  ArrowRightLeft,
+  CirclePlay,
+  MoveDownLeft,
+  MoveUpRight,
+  Pause,
+} from "lucide-react";
+
+interface CurrentAudio {
+  callId: string | number;
+  streamingUrl: string;
+}
 
 interface CallListProps {
   calls?: ICall[];
   isFetching?: boolean;
-  onPlayAudio?: (url: string | null) => void;
+  onPlayAudio?: (call: ICall | null) => void;
+  currentAudio?: CurrentAudio | null;
 }
 
 const callLabels: Record<string, string> = {
@@ -39,18 +51,12 @@ const formatDuration = (seconds: number) => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-
-export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
-  const queryClient = useQueryClient();
-  const currentAudioUrl = queryClient.getQueryData<string | null>([
-    "currentAudio",
-  ]);
-
+export const CallList = ({ calls, isFetching, onPlayAudio, currentAudio }: CallListProps) => {
   if (isFetching) {
     return <CallListSkeleton />;
   }
 
-  console.log("CALLS LIST", calls)
+  console.log("CALLS LIST", calls);
   return (
     <div>
       <Table>
@@ -86,8 +92,9 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
                 <TableCell>
                   {call.callType && callIcons[call.callType.toUpperCase()] ? (
                     <div
-                      className={`flex items-center ${callIcons[call.callType].colorClass
-                        }`}
+                      className={`flex items-center ${
+                        callIcons[call.callType].colorClass
+                      }`}
                     >
                       {React.createElement(callIcons[call.callType].icon, {
                         className: "h-5 w-5",
@@ -101,38 +108,35 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
                   )}
                 </TableCell>
                 <TableCell>{call.isLive}</TableCell>
-                <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
-                <TableCell>{call.recorder}</TableCell>
                 <TableCell>
+                  {" "}
                   <div className="flex items-center space-x-2">
-                    <button
+                  <button
                       onClick={() => {
-                        if (call.streamingUrl) {
-                          onPlayAudio &&
-                            onPlayAudio(
-                              currentAudioUrl === call.streamingUrl
-                                ? null
-                                : call.streamingUrl
-                            );
+                        // Toggle: if the current audio belongs to this call, pause it (by passing null)
+                        if (currentAudio && currentAudio.callId === call.id) {
+                          onPlayAudio && onPlayAudio(null);
+                        } else {
+                          onPlayAudio && onPlayAudio(call);
                         }
                       }}
                       className="text-gray-700 cursor-pointer"
                     >
-                      {currentAudioUrl === call.streamingUrl ? (
+                      {currentAudio && currentAudio.callId === call.id ? (
                         <Pause className="h-5 w-5 text-blue-500" />
                       ) : (
                         <CirclePlay className="h-5 w-5 text-green-500" />
                       )}
                     </button>
-
                     <span>{formatDuration(call.durationSeconds)}</span>
                   </div>
                 </TableCell>
+                <TableCell>{call.recorder}</TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center">
+              <TableCell colSpan={8} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>
