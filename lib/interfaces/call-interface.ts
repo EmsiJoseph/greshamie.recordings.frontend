@@ -12,8 +12,8 @@ export interface ICall {
     isLive: boolean,
     durationSeconds: number, // Seconds
     recorder: string,
-    streamingUrl?: string,
-    downloadUrl?: string,
+    streamingUrl: string,
+    downloadUrl: string,
 }
 
 export interface ICallFilters {

@@ -5,11 +5,11 @@ import { fetchCalls } from "@/api/calls";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
 import { useCallFilters } from "./lib/use-call-filters";
-import AudioPlayer from "../audiotest/audio-player";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
 import { useEffect } from "react";
 import { ICallLogs } from "@/lib/interfaces/call-interface";
 import { AxiosResponse } from "axios";
+import AudioPlayer from "../audio-player/audio-player";
 
 export default function CallLogPage() {
   const { retrievedFilters, resetCallFilters } = useCallFilters();
@@ -59,6 +59,8 @@ export default function CallLogPage() {
     }
   }, [isError])
 
+  const currentAudio =
+    queryClient.getQueryData<string | null>(["currentAudio"]) || null;
 
   return (
     <>
@@ -72,7 +74,8 @@ export default function CallLogPage() {
           isFetching={isFetching}
           onPlayAudio={audioMutation.mutate}
         />
-        <AudioPlayer url={audioMutation.data || null} />
+        {/* Only show the audio player if there is an active URL */}
+        {currentAudio && <AudioPlayer url={currentAudio} />}
       </div>
     </>
   );

@@ -27,7 +27,7 @@ export const SIDEBAR_ITEMS = {
         {
             title: 'Audio Test',
             icon: ChartLine,
-            url: '/audiotest',
+            url: '/audio-player',
             active: false
         },
     ],
