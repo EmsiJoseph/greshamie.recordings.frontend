@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { ICallFilters } from "@/lib/interfaces/call-interface"
+import { ICallAdvanceFilterComponent, ICallFilters } from "@/lib/interfaces/call-interface"
 import { DateTimePicker } from "@/components/common/date-time-picker"
 import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter"
 import { CallAdvanceFilterSchema } from "@/lib/schema/call-advance-filter-schema"
@@ -46,8 +46,8 @@ export const CallListAdvanceFilters = ({
         defaultValues: {
             startDate: retrievedCallFilters?.startDate,
             endDate: retrievedCallFilters?.endDate,
-            minDuration: retrievedCallFilters?.minDuration,
-            maxDuration: retrievedCallFilters?.maxDuration,
+            minimumDurationSeconds: retrievedCallFilters?.minimumDurationSeconds,
+            maximumDurationSeconds: retrievedCallFilters?.maximumDurationSeconds,
             hasPciCompliance: retrievedCallFilters?.hasPciCompliance,
             hasQualityEvaluation: retrievedCallFilters?.hasQualityEvaluation,
             hasVideoRecording: retrievedCallFilters?.hasVideoRecording,
@@ -71,7 +71,7 @@ export const CallListAdvanceFilters = ({
     const hasPciCompliance = watch("hasPciCompliance")
     const hasQualityEvaluation = watch("hasQualityEvaluation")
 
-    const handleBoolChange = (value?: string, rhfKey?: Exclude<keyof ICallFilters, "search" | "page" | "caller" | "receiver" | "callTypes" | "recorder">) => {
+    const handleBoolChange = (value?: string, rhfKey?: keyof ICallAdvanceFilterComponent) => {
         if (!rhfKey) {
             return
         }
@@ -146,9 +146,9 @@ export const CallListAdvanceFilters = ({
                                 <Input
                                     type="number"
                                     placeholder="0"
-                                    {...register("minDuration")}
+                                    {...register("minimumDurationSeconds")}
                                 />
-                                <FormStateError error={formError.minDuration?.message} />
+                                <FormStateError error={formError.minimumDurationSeconds?.message} />
                             </div>
                             <div className="w-full">
                                 <Label className="text-right">
@@ -157,10 +157,10 @@ export const CallListAdvanceFilters = ({
                                 <Input
                                     type="number"
                                     placeholder="0"
-                                    {...register("maxDuration")}
+                                    {...register("maximumDurationSeconds")}
 
                                 />
-                                <FormStateError error={formError.maxDuration?.message} />
+                                <FormStateError error={formError.maximumDurationSeconds?.message} />
                             </div>
                         </div>
                     </div>

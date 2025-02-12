@@ -18,8 +18,7 @@ export interface ICall {
 
 export interface ICallFilters {
     search?: string,
-    callDirection?: TCallDirections[],
-    callTypes?: TCallDirections[],
+    callDirection?: TCallDirections,
     startDate?: Date, // UTC Str
     endDate?: Date, // UTC Str
     minimumDurationSeconds?: number,
@@ -30,6 +29,24 @@ export interface ICallFilters {
     hasVideoRecording?: boolean,
     hasPciCompliance?: boolean,
     hasQualityEvaluation?: boolean,
+}
+
+export interface ICallLogs {
+    hasNext?: boolean,
+    hasPrevious?: boolean,
+    items: ICall[] | [],
     pageSize?: number
     pageOffset?: number
+    totalCount?: number,
+    totalPages?: number
+}
+
+export interface ICallAdvanceFilterComponent {
+    startDate?: Date, // UTC Str
+    endDate?: Date, // UTC Str
+    minimumDurationSeconds?: number,
+    maximumDurationSeconds?: number,
+    hasVideoRecording?: boolean,
+    hasPciCompliance?: boolean,
+    hasQualityEvaluation?: boolean,
 }

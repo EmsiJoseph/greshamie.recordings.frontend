@@ -1,7 +1,8 @@
 import { GreshamAxiosConfig } from "@/lib/config/main-backend-axios-config";
-import { ICall, ICallFilters } from "@/lib/interfaces/call-interface";
+import { ICallFilters, ICallLogs } from "@/lib/interfaces/call-interface";
 import { callsEndpoint } from "./endpoints/call-logs-endpoints";
-export const fetchCalls = async (filters?: ICallFilters) => {
+import { AxiosResponse } from "axios";
+export const fetchCalls = async (filters?: ICallFilters): Promise<AxiosResponse<ICallLogs>> => {
     let finalEndpoint = callsEndpoint;
 
     if (filters) {
@@ -10,7 +11,13 @@ export const fetchCalls = async (filters?: ICallFilters) => {
                 // Check if the value is a non-empty array, or if it's a non-falsy string or number
                 return value && (Array.isArray(value) ? value.length > 0 : true);
             })
-            .map(([key, value]) => `${key}=${value}`)
+            .map(([key, value]) => {
+                // If the value is a Date, convert it to an ISO string
+                if (value instanceof Date) {
+                    value = value.toISOString();
+                }
+                return `${key}=${value}`;
+            })
             .join('&'); // Join the query parameters with '&'
 
         if (queryParams) {
@@ -21,7 +28,7 @@ export const fetchCalls = async (filters?: ICallFilters) => {
         }
     }
 
-    console.log
+    console.log(finalEndpoint); // Log the final endpoint with query params
     return await GreshamAxiosConfig.get(finalEndpoint);
 };
 

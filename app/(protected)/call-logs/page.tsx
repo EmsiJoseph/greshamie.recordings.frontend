@@ -6,21 +6,37 @@ import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
 import { useCallFilters } from "./lib/use-call-filters";
 import AudioPlayer from "../audiotest/audio-player";
+import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
+import { useEffect } from "react";
+import { ICallLogs } from "@/lib/interfaces/call-interface";
+import { AxiosResponse } from "axios";
 
 export default function CallLogPage() {
   const { retrievedFilters, resetCallFilters } = useCallFilters();
 
+  console.log(retrievedFilters)
+
   const queryClient = useQueryClient();
 
-  // Prepare filters for query key
   let filters = retrievedFilters as Record<string, any>;
-  if (filters.callTypes && Array.isArray(filters.callTypes)) {
-    filters = { ...filters, callTypes: filters.callTypes.join(",") };
-  }
+  // Prepare filters for query key
+  Object.entries(retrievedFilters).map(([key, value]) => {
+    if (value && value instanceof Date) {
+      // If the value is a Date, convert it to ISO string
+      filters[key] = value.toISOString();
+    }
+  });
+
+  // let filters = retrievedFilters as Record<string, any>;
+  // if (filters.callDirection && Array.isArray(filters.callDirection)) {
+  //   filters = { ...filters, callDirection: filters.callDirection.join(",") };
+  // }
   const filterValues = Object.values(filters).filter(Boolean) as string[];
 
+  console.log("filter VALUES", filterValues)
+
   // Fetch call data using React Query
-  const { data, isFetching } = useQuery({
+  const { data, isFetching, isError } = useQuery<AxiosResponse<ICallLogs>>({
     queryKey: ["calls", ...filterValues],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
   });
@@ -34,6 +50,16 @@ export default function CallLogPage() {
     },
   });
 
+  useEffect(() => {
+    if (isError) {
+      handleApiClientSideError({
+        error: "Something went wrong. Try again later.",
+        isSuccessToast: false
+      })
+    }
+  }, [isError])
+
+
   return (
     <>
       <div>
@@ -42,7 +68,7 @@ export default function CallLogPage() {
           resetCallFilters={resetCallFilters}
         />
         <CallList
-          calls={data?.data}
+          calls={data?.data.items}
           isFetching={isFetching}
           onPlayAudio={audioMutation.mutate}
         />

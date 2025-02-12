@@ -10,17 +10,15 @@ import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CallDirectionIcons } from "@/constants/call-types";
-import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
+import { CallTypeWithIcon } from "./call-type-with-icon";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 interface CallListProps {
   calls?: ICall[];
   isFetching?: boolean;
   onPlayAudio?: (url: string | null) => void;
 }
-
-const callIcons = CallDirectionIcons
 
 export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
   const queryClient = useQueryClient();
@@ -32,7 +30,6 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
     return <CallListSkeleton />;
   }
 
-  console.log("CALLS LIST", calls)
   return (
     <div>
       <Table>
@@ -52,37 +49,22 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
         <TableBody>
           {calls && calls.length > 0 ? (
             calls.map((call) => (
-              <TableRow key={call.id}>
-                <TableCell>{call.caller}</TableCell>
-                <TableCell>{call.receiver}</TableCell>
+              <TableRow key={call?.id}>
+                <TableCell>{call?.caller}</TableCell>
+                <TableCell>{call?.receiver}</TableCell>
                 <TableCell>
-                  {call.startDateTime instanceof Date
-                    ? call.startDateTime.toLocaleString()
-                    : call.startDateTime}
+                  {call?.startDateTime instanceof Date
+                    ? call?.startDateTime.toLocaleString()
+                    : call?.startDateTime}
                 </TableCell>
                 <TableCell>
-                  {call.endDateTime instanceof Date
-                    ? call.endDateTime.toLocaleString()
-                    : call.endDateTime}
+                  {call?.endDateTime instanceof Date
+                    ? call?.endDateTime.toLocaleString()
+                    : call?.endDateTime}
                 </TableCell>
-                <TableCell>
-                  {call.callType && callIcons[call.callType.toUpperCase()] ? (
-                    <div
-                      className={`flex items-center ${callIcons[call.callType].colorClass
-                        }`}
-                    >
-                      {React.createElement(callIcons[call.callType].icon, {
-                        className: "h-5 w-5",
-                      })}
-                      <span className="ml-2 font-bold">
-                        {capitalizeFirstLetter(call.callType) || ""}
-                      </span>
-                    </div>
-                  ) : (
-                    <span>No Direction</span>
-                  )}
-                </TableCell>
-                <TableCell>{call.isLive}</TableCell>
+                <TableCell><CallTypeWithIcon callType={call?.callType} /></TableCell>
+
+                <TableCell>{call?.isLive ? "True" : "False"}</TableCell>
                 <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
                 <TableCell>{call.recorder}</TableCell>
                 {/* <TableCell>
@@ -118,6 +100,31 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
           )}
         </TableBody>
       </Table>
+
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              2
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };
