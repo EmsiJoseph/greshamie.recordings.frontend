@@ -7,28 +7,16 @@ import { Settings } from 'lucide-react';
 export const SIDEBAR_ITEMS = {
     Admin: [
         {
-            title: 'Activity',
-            icon: Bell,
-            url: '/activity',
-            active: true
-        },
-        {
             title: 'Call logs',
             icon: PhoneCall,
             url: '/call-logs',
             active: false
         },
         {
-            title: 'Analytics',
-            icon: ChartLine,
-            url: '/analytics',
-            active: false
-        },
-        {
-            title: 'Audio Test',
-            icon: ChartLine,
-            url: '/audio-player',
-            active: false
+            title: 'Activity',
+            icon: Bell,
+            url: '/activity',
+            active: true
         },
     ],
     

@@ -1,14 +1,12 @@
-import { ActivityTypes } from "@/constants/activity-types"
-import { ActivityTypesFilter } from "@/constants/activity-types"
+import { EventTypes } from "@/constants/activity-types"
 
-export type TActivityType = typeof ActivityTypes[keyof typeof ActivityTypes]
-export type TActivityTypeFilter = typeof ActivityTypesFilter[keyof typeof ActivityTypesFilter]
+export type TEventType = typeof EventTypes[keyof typeof EventTypes]
 
 export interface IActivity {
     id: number,
     userName: string,
-    eventType: TActivityTypeFilter,
-    eventName: TActivityType,
+    eventType: TEventType,
+    eventName: TEventType,
     recordingId: string,
     timestamp: Date,
 }
@@ -24,7 +22,7 @@ export interface IActivityResponse {
 
 export interface IActivityFilters {
     search?: string,
-    eventType?: TActivityTypeFilter[],
+    eventType?: TEventType,
     startDate?: Date,
     endDate?: Date,
     user?: string,
