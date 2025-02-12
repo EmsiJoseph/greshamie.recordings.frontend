@@ -1,5 +1,4 @@
 import { CircleCheckBig, CircleSlash2, ClipboardCheck, ClipboardX, ListFilter, Video, VideoOff } from "lucide-react"
-
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -41,7 +40,7 @@ export const CallListAdvanceFilters = ({
 }: AdvanceFiltersProps) => {
     const [open, setOpen] = useState(false);
     const { updateUrlParams } = useUpdateUrlParams()
-    const { register, watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
+    const { watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
         resolver: zodResolver(CallAdvanceFilterSchema),
         defaultValues: {
             startDate: retrievedCallFilters?.startDate,
@@ -69,8 +68,6 @@ export const CallListAdvanceFilters = ({
     };
 
     // Range Slider
-    // const hasMinDuration = watch("minDuration")
-    // const hasMaxDuration = watch("maxDuration")
     const handleDurationChange = (values: number[]) => {
         setValue("minDuration", values[0]); // Explicitly set 0
         setValue("maxDuration", values[1]); // Ensure max has a fallback
@@ -167,8 +164,6 @@ export const CallListAdvanceFilters = ({
                             <DualRangeSliderCustomLabel 
                                 onDurationChange={handleDurationChange}
                                 reset={resetSlider}
-                                {...register("minDuration")}
-                                {...register("maxDuration")}
                             />
                             <FormStateError error={formError.minDuration?.message} />
                             <FormStateError error={formError.maxDuration?.message} />

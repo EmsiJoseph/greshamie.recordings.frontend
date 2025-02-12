@@ -5,7 +5,6 @@ import * as SliderPrimitive from '@radix-ui/react-slider';
 import { cn } from '@/lib/utils';
 
 interface DualRangeSliderProps extends React.ComponentProps<typeof SliderPrimitive.Root> {
-    labelPosition?: 'top' | 'bottom';
     label?: (value: number | undefined) => React.ReactNode;
 }
 
@@ -25,15 +24,14 @@ const DualRangeSlider = React.forwardRef<
                 <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-400">
                     <SliderPrimitive.Range className="absolute h-full bg-slate-600" />
                 </SliderPrimitive.Track>
-                {initialValue.map((value, index) => (
-                    <React.Fragment key={index}>
-                        <SliderPrimitive.Thumb className="relative block h-7 w-7 rounded-full bg-slate-600 border-4 border-white focus-visible:ring-2 focus-visible:ring-slate-600">
-                        </SliderPrimitive.Thumb>
-                    </React.Fragment>
+                {initialValue.map((_, index) => (
+                    <SliderPrimitive.Thumb
+                        key={index}
+                        className="relative block h-7 w-7 rounded-full bg-slate-600 border-4 border-white focus-visible:ring-2 focus-visible:ring-slate-600"
+                    />
                 ))}
             </SliderPrimitive.Root>
-            <div className="h-1"></div>
-            <div className="flex w-1/2 justify-between text-[15px] text-gray-800 space-x-1">
+            <div className="flex w-1/2 justify-between text-[15px] text-gray-800">
                 <span className="border px-2 py-1 rounded">{label(initialValue[0])}</span>
                 <span className="text-gray-800">—</span>
                 <span className="border px-2 py-1 rounded">{label(initialValue[1])}</span>
@@ -43,10 +41,7 @@ const DualRangeSlider = React.forwardRef<
 });
 DualRangeSlider.displayName = 'DualRangeSlider';
 
-const DualRangeSliderCustomLabel = ({ 
-    onDurationChange,
-    reset
-}: { 
+const DualRangeSliderCustomLabel = ({ onDurationChange, reset }: { 
     onDurationChange: (values: number[]) => void;
     reset: boolean;
 }) => {
@@ -56,9 +51,7 @@ const DualRangeSliderCustomLabel = ({
     });
 
     React.useEffect(() => {
-        if (reset) {
-            setValues([0, 3600]);
-        }
+        if (reset) setValues([0, 3600]);
     }, [reset]);
 
     React.useEffect(() => {
