@@ -1,5 +1,6 @@
 "use client";
 
+import React, {useEffect, useState} from "react";
 import Link from "next/link";
 import { LogOut, User } from "lucide-react";
 import { logoutUserAction } from "@/lib/services/server-actions/authentication";
@@ -19,10 +20,12 @@ import {
 import { useRouter } from "next/navigation";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
 import { useAction } from "next-safe-action/hooks";
+import { getUserFromAuthCookie } from "@/lib/services/server-actions/cookie";
 
 export function UserNav() {
     const { executeAsync, isExecuting } = useAction(logoutUserAction);
     const router = useRouter();
+    const [userName, setUserName] = useState<string>("Guest"); 
 
     const goToLogoutPage = async () => {
         const result = await executeAsync(); // Capture the result
@@ -36,6 +39,51 @@ export function UserNav() {
             });
         }
     };
+
+    const getUserInfo = async () => {
+        const user = await getUserFromAuthCookie();
+        if (user) {
+            setUserName(user.user?.userName || "Guest"); // Set the state with user name
+        } else {
+            setUserName("Guest"); // Default to "Guest" if no user
+        }
+    };
+    
+    useEffect(() => {
+        getUserInfo();
+    }, []);
+    
+    // const getUserNameFromCookies = () => {
+
+    //     const authCookie =
+    //     // Get the "auth" cookie
+    //     const cookies = document.cookie
+    //         .split("; ")
+    //         .find(row => row.startsWith("auth"));
+        
+    //     console.log("agaga", cookies)
+    
+    //     if (!cookies) return "Guest"; // If cookie doesn't exist
+    
+    //     try {
+    //         // Extract and decode the cookie value
+    //         const authValue = decodeURIComponent(cookies.split("=")[1] || "");
+    
+    //         if (!authValue) return "Guest"; // Ensure we have a value
+    
+    //         // Parse the JSON
+    //         const authData = JSON.parse(authValue);
+    
+    //         // Return the username or a default fallback
+    //         return authData?.user?.userName || "Guest";
+    //     } catch (error) {
+    //         console.error("Error parsing auth cookie:", error);
+    //         return "Guest";
+    //     }
+    // };
+    
+    // const userName = getUserNameFromCookies();
+    // console.log("User Name:", userName);
 
     return (
         <DropdownMenu>
@@ -63,11 +111,11 @@ export function UserNav() {
             <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                            GHIE-API
+                        <p className="text-sm font-bold leading-none">
+                            {userName}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
-                            Berbon@.com
+                            Current User
                         </p>
                     </div>
                 </DropdownMenuLabel>

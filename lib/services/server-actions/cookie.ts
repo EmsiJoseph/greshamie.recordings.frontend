@@ -3,6 +3,7 @@ import { IAccessToken, IRefreshToken, IUserWithToken } from "@/lib/interfaces/us
 import { add } from "date-fns"
 // TODO: Secure cookie, don't expose user data and tokens on cookie [security risk]
 import { cookies } from "next/headers";
+import { useAuthStore } from "@/hooks/auth-store";
 // import {IAuthCookie, ILoginApiResponse, ILoginOutput, IUser} from "@/lib/interfaces";
 
 const auth = "auth";
@@ -36,6 +37,7 @@ export const setAuthCookie = async (response: IUserWithToken): Promise<boolean> 
     //     console.log("TEST EXPIRED DATE", response.accessToken.expiresAt, now)
     // }
     // Store cookie using `auth` key
+    
     const authCookie = JSON.stringify(response);
     // console.log("AUTH COOKIE", authCookie)
 
@@ -45,6 +47,8 @@ export const setAuthCookie = async (response: IUserWithToken): Promise<boolean> 
         secure: false,
         maxAge: 60 * 60 * 24,
     });
+    
+    
     return !!isAuthCookieSet;
 }
 
