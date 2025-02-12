@@ -10,18 +10,15 @@ import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CallDirectionIcons } from "@/constants/call-types";
-import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
-import { formatDate } from "@/lib/utils/format-date";
+import { CallTypeWithIcon } from "./call-type-with-icon";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 interface CallListProps {
   calls?: ICall[];
   isFetching?: boolean;
   onPlayAudio?: (url: string | null) => void;
 }
-
-const callIcons = CallDirectionIcons
 
 export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
   const queryClient = useQueryClient();
@@ -33,7 +30,6 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
     return <CallListSkeleton />;
   }
 
-  console.log("CALLS LIST", calls)
   return (
     <div>
       <Table>
@@ -53,55 +49,47 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
         <TableBody>
           {calls && calls.length > 0 ? (
             calls.map((call) => (
-              <TableRow key={call.id}>
-                <TableCell>{call.caller}</TableCell>
-                <TableCell>{call.receiver}</TableCell>
+              <TableRow key={call?.id}>
+                <TableCell>{call?.caller}</TableCell>
+                <TableCell>{call?.receiver}</TableCell>
                 <TableCell>
-                  {formatDate(call.startDateTime)}
+                  {call?.startDateTime instanceof Date
+                    ? call?.startDateTime.toLocaleString()
+                    : call?.startDateTime}
                 </TableCell>
                 <TableCell>
-                  {formatDate(call.endDateTime)}
+                  {call?.endDateTime instanceof Date
+                    ? call?.endDateTime.toLocaleString()
+                    : call?.endDateTime}
                 </TableCell>
-                <TableCell>
-                  {call.callType && callIcons[call.callType.toUpperCase()] ? (
-                    <div
-                      className={`flex items-center ${callIcons[call.callType].colorClass
-                        }`}
-                    >
-                      {React.createElement(callIcons[call.callType].icon, {
-                        className: "h-5 w-5",
-                      })}
-                      <span className="ml-2 font-bold">
-                        {capitalizeFirstLetter(call.callType) || ""}
-                      </span>
-                    </div>
-                  ) : (
-                    <span>No Direction</span>
-                  )}
-                </TableCell>
-                <TableCell>{call.isLive}</TableCell>
+                <TableCell><CallTypeWithIcon callType={call?.callType} /></TableCell>
+
+                <TableCell>{call?.isLive ? "True" : "False"}</TableCell>
                 <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
                 <TableCell>{call.recorder}</TableCell>
                 {/* <TableCell>
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={async () => {
-                        const audioUrl = await fetchMp3Url(call.id.toString());
-                        onPlayAudio &&
-                          onPlayAudio(
-                            currentAudioUrl === audioUrl ? null : audioUrl
-                          );
+                      onClick={() => {
+                        if (call.streamingUrl) {
+                          onPlayAudio &&
+                            onPlayAudio(
+                              currentAudioUrl === call.streamingUrl
+                                ? null
+                                : call.streamingUrl
+                            );
+                        }
                       }}
                       className="text-gray-700 cursor-pointer"
                     >
-                      {currentAudioUrl ===
-                      `https://www.example.com/audio/${call.id}.mp3` ? ( //change this to a parameterized URL
+                      {currentAudioUrl === call.streamingUrl ? (
                         <Pause className="h-5 w-5 text-blue-500" />
                       ) : (
                         <CirclePlay className="h-5 w-5 text-green-500" />
                       )}
                     </button>
-                    <span>{formatDuration(call.duration)}</span>
+
+                    <span>{formatDuration(call.durationSeconds)}</span>
                   </div>
                 </TableCell> */}
               </TableRow>
@@ -115,6 +103,31 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
           )}
         </TableBody>
       </Table>
+
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              2
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

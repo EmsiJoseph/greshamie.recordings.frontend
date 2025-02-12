@@ -1,17 +1,60 @@
 // import { CallTypes } from "@/constants/call-types";
-// import { ICall } from "@/lib/interfaces/call-interface";
+import { ICall } from "@/lib/interfaces/call-interface";
 
-// export const sampleCalls: ICall[] = [
-//     {
-//         id: 1,
-//         startDateTime: new Date('2025-01-15T10:00:00'),
-//         endDateTime: new Date('2025-01-15T10:00:00'),
-//         caller: "Alice",
-//         receiver: "Bob",
-//         callType: CallTypes.INCOMING,
-//         durationSeconds: 5,
-//         recorder: "System1",
-//     },
+export const sampleCalls: ICall[] = [
+    {
+           id: 1,
+           caller: "Howard",
+           receiver: "Hotdog",
+           startDateTime: new Date('2024-02-01T11:30:00'),
+           endDateTime: new Date('2024-02-01T11:30:00'),
+           callType: "INCOMING",
+           isLive: true,
+           durationSeconds: 65, // Seconds
+           recorder: "System2",
+           streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+           downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    },
+    {
+           id: 2,
+           caller: "Charlie",
+           receiver: "Dana",
+           startDateTime: new Date('2024-02-01T11:30:00'),
+           endDateTime: new Date('2024-02-01T11:30:00'),
+           callType: "OUTGOING",
+           isLive: true,
+           durationSeconds: 65, // Seconds
+           recorder: "System2",
+           streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+           downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    },
+    {
+           id: 3,
+           caller: "Eve",
+           receiver: "Frank",
+           startDateTime: new Date('2025-01-05T12:15:00'),
+           endDateTime: new Date('2025-01-05T12:15:00'),
+           callType: "INCOMING",
+           isLive: true,
+           durationSeconds: 20, // Seconds
+           recorder: "System3",
+           streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+           downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    },
+    {
+           id: 4,
+           caller: "Grace",
+           receiver: "Hannah",
+           startDateTime: new Date('2025-01-01T13:00:00'),
+           endDateTime: new Date('2025-01-01T13:00:00'),
+           callType: "INTERNAL",
+           isLive: true,
+           durationSeconds: 20, // Seconds
+           recorder: "System1",
+           streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+           downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    },
+
 //     {
 //         id: 2,
 //         date: new Date('2024-02-01T11:30:00'),
@@ -20,6 +63,8 @@
 //         callType: CallTypes.OUTGOING,
 //         duration: 65,
 //         recorder: "System2",
+//         streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+//         downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
 //     },
 //     {
 //         id: 3,
@@ -29,6 +74,8 @@
 //         callType: CallTypes.INCOMING,
 //         duration: 20,
 //         recorder: "System3",
+//         streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+//         downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
 //     },
 //     {
 //         id: 4,
@@ -38,6 +85,8 @@
 //         callType: CallTypes.INTERNAL,
 //         duration: 20,
 //         recorder: "System1",
+//         streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+//         downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
 //     },
 //     {
 //         id: 5,
@@ -47,6 +96,8 @@
 //         callType: CallTypes.OUTGOING,
 //         duration: 3,
 //         recorder: "System2",
+//         streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+//         downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
 //     },
 //     {
 //         id: 6,
@@ -56,6 +107,8 @@
 //         callType: CallTypes.INCOMING,
 //         duration: 2,
 //         recorder: "System3",
+//         streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+//         downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
 //     },
 //     {
 //         id: 7,
@@ -65,6 +118,8 @@
 //         callType: CallTypes.INTERNAL,
 //         duration: 49,
 //         recorder: "System1",
+//         streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
+//         downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
 //     },
 //     {
 //         id: 8,
@@ -74,6 +129,8 @@
 //         callType: CallTypes.OUTGOING,
 //         duration: 45,
 //         recorder: "System2",
+//         streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+//         downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
 //     },
 //     {
 //         id: 9,
@@ -83,6 +140,8 @@
 //         callType: CallTypes.INCOMING,
 //         duration: 90,
 //         recorder: "System3",
+//         streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+//         downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
 //     },
 //     {
 //         id: 10,
@@ -92,5 +151,7 @@
 //         callType: CallTypes.INTERNAL,
 //         duration: 120,
 //         recorder: "System1",
+//         streamingUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
+//         downloadUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
 //     }
-// ];
+];
