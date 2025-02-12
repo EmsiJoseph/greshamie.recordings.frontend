@@ -56,10 +56,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ url }) => {
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
-      2,
-      "0"
-    )}`;
+    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,7 +163,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ url }) => {
         </div>
       </div>
 
-      {/* React Player */}
+      {/* ReactPlayer with crossOrigin config */}
       <ReactPlayer
         ref={playerRef}
         url={url}
@@ -178,6 +175,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ url }) => {
         onDuration={(d) => setDuration(d)}
         width="100%"
         height="0px"
+        config={{
+          file: {
+            attributes: {
+              crossOrigin: "anonymous",
+            },
+          },
+        }}
       />
     </div>
   );

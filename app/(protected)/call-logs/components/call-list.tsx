@@ -9,35 +9,25 @@ import {
 import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import React from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { formatDurationToHours } from "@/lib/utils/format-duration";
+import { ArrowRightLeft, CirclePlay, MoveDownLeft, MoveUpRight, Pause } from "lucide-react";
 import {
-  ArrowRightLeft,
-  CirclePlay,
-  MoveDownLeft,
-  MoveUpRight,
-  Pause,
-} from "lucide-react";
-
-interface CurrentAudio {
-  callId: string | number;
-  streamingUrl: string;
-}
-import { CallTypeWithIcon } from "./call-type-with-icon";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 
 interface CallListProps {
   calls?: ICall[];
   isFetching?: boolean;
   onPlayAudio?: (call: ICall | null) => void;
-  currentAudio?: CurrentAudio | null;
+  // activeCallId tells which call is currently playing
+  activeCallId?: string | number | null;
 }
-
-const callLabels: Record<string, string> = {
-  INCOMING: "Incoming",
-  OUTGOING: "Outgoing",
-  INTERNAL: "Internal",
-};
 
 const callIcons: Record<string, { icon: any; colorClass: string }> = {
   INCOMING: { icon: MoveDownLeft, colorClass: "text-green-700" },
@@ -51,18 +41,16 @@ const formatDuration = (seconds: number) => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-export const CallList = ({ calls, isFetching, onPlayAudio, currentAudio }: CallListProps) => {
-export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
-  const queryClient = useQueryClient();
-  const currentAudioUrl = queryClient.getQueryData<string | null>([
-    "currentAudio",
-  ]);
-
+export const CallList = ({
+  calls,
+  isFetching,
+  onPlayAudio,
+  activeCallId,
+}: CallListProps) => {
   if (isFetching) {
     return <CallListSkeleton />;
   }
 
-  console.log("CALLS LIST", calls);
   return (
     <div>
       <Table>
@@ -82,26 +70,22 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
         <TableBody>
           {calls && calls.length > 0 ? (
             calls.map((call) => (
-              <TableRow key={call?.id}>
-                <TableCell>{call?.caller}</TableCell>
-                <TableCell>{call?.receiver}</TableCell>
+              <TableRow key={call.id}>
+                <TableCell>{call.caller}</TableCell>
+                <TableCell>{call.receiver}</TableCell>
                 <TableCell>
-                  {call?.startDateTime instanceof Date
-                    ? call?.startDateTime.toLocaleString()
-                    : call?.startDateTime}
+                  {call.startDateTime instanceof Date
+                    ? call.startDateTime.toLocaleString()
+                    : call.startDateTime}
                 </TableCell>
                 <TableCell>
-                  {call?.endDateTime instanceof Date
-                    ? call?.endDateTime.toLocaleString()
-                    : call?.endDateTime}
+                  {call.endDateTime instanceof Date
+                    ? call.endDateTime.toLocaleString()
+                    : call.endDateTime}
                 </TableCell>
                 <TableCell>
                   {call.callType && callIcons[call.callType.toUpperCase()] ? (
-                    <div
-                      className={`flex items-center ${
-                        callIcons[call.callType].colorClass
-                      }`}
-                    >
+                    <div className={`flex items-center ${callIcons[call.callType].colorClass}`}>
                       {React.createElement(callIcons[call.callType].icon, {
                         className: "h-5 w-5",
                       })}
@@ -113,20 +97,14 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
                     <span>No Direction</span>
                   )}
                 </TableCell>
-                <TableCell>{call.isLive}</TableCell>
+                <TableCell>{call.isLive ? "True" : "False"}</TableCell>
                 <TableCell>
-                  {" "}
-                <TableCell><CallTypeWithIcon callType={call?.callType} /></TableCell>
-
-                <TableCell>{call?.isLive ? "True" : "False"}</TableCell>
-                <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
-                <TableCell>{call.recorder}</TableCell>
-                {/* <TableCell>
                   <div className="flex items-center space-x-2">
-                  <button
+                    <button
                       onClick={() => {
-                        // Toggle: if the current audio belongs to this call, pause it (by passing null)
-                        if (currentAudio && currentAudio.callId === call.id) {
+                        console.log("Play button clicked for call:", call.id);
+                        // Toggle play/pause: if this call is already active, pause it; otherwise, play it.
+                        if (activeCallId === call.id) {
                           onPlayAudio && onPlayAudio(null);
                         } else {
                           onPlayAudio && onPlayAudio(call);
@@ -134,7 +112,7 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
                       }}
                       className="text-gray-700 cursor-pointer"
                     >
-                      {currentAudio && currentAudio.callId === call.id ? (
+                      {activeCallId === call.id ? (
                         <Pause className="h-5 w-5 text-blue-500" />
                       ) : (
                         <CirclePlay className="h-5 w-5 text-green-500" />
@@ -144,7 +122,6 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
                   </div>
                 </TableCell>
                 <TableCell>{call.recorder}</TableCell>
-                </TableCell> */}
               </TableRow>
             ))
           ) : (
