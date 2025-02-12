@@ -4,6 +4,7 @@ import { EllipsisVertical, Trash2, Download, LogIn, Play, LogOut } from "lucide-
 import React from "react";
 import ActivityListSkeleton from "@/components/presentational/activity-list-skeleton";
 import ActivityListPagination from "@/components/presentational/activity-list-pagination";
+import { formatDate } from "@/lib/utils/format-date";
 
 interface ActivityListProps {
   activities?: IActivity[];
@@ -11,21 +12,30 @@ interface ActivityListProps {
 }
 
 
-// Map raw eventName types to display-friendly labels
+const sessionActivities = new Set(["User Logged In", "User Logged Out"]);
+
 const activityLabels: Record<string, string> = {
-  STARTED: "Session Started",
-  PLAYED: "Recording Played",
-  ENDED: "Session Ended",
-  EXPORTED: "Recording Exported",
-  DELETED: "Recording Deleted",
+  "User Logged In": "User Logged In",
+  "User Logged Out": "User Logged Out",
+  "Session Started": "Session Started",
+  "Recording Played": "Recording Played",
+  "Session Ended": "Session Ended",
+  "Recording Exported": "Recording Exported",
+  "Recording Deleted": "Recording Deleted",
+  "Manual Sync": "Manual Sync",
+  "Auto Sync": "Auto Sync",
 };
 
 const activityIcons: Record<string, { icon: React.ElementType; colorClass: string }> = {
-  STARTED: { icon: LogIn, colorClass: "text-green-700" },
-  PLAYED: { icon: Play, colorClass: "text-cyan-700" },
-  ENDED: { icon: LogOut, colorClass: "text-red-500" },
-  EXPORTED: { icon: Download, colorClass: "text-yellow-600" },
-  DELETED: { icon: Trash2, colorClass: "text-red-700" },
+  "User Logged In": { icon: LogIn, colorClass: "text-green-500" },
+  "User Logged Out": { icon: LogOut, colorClass: "text-red-500" },
+  "Session Started": { icon: LogIn, colorClass: "text-green-700" },
+  "Recording Played": { icon: Play, colorClass: "text-cyan-700" },
+  "Session Ended": { icon: LogOut, colorClass: "text-red-500" },
+  "Recording Exported": { icon: Download, colorClass: "text-yellow-600" },
+  "Recording Deleted": { icon: Trash2, colorClass: "text-red-700" },
+  "Manual Sync": { icon: Download, colorClass: "text-blue-600" }, // Choose a sync icon if available
+  "Auto Sync": { icon: Download, colorClass: "text-purple-600" },
 };
 
 export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
@@ -61,7 +71,8 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           {activities && activities.length > 0 ? (
             activities.map((activity) => (
               <TableRow key={activity.id}>
-                <TableCell>{activity.timestamp instanceof Date ? activity.timestamp.toLocaleString() : activity.timestamp}</TableCell>
+                <TableCell>{formatDate(activity.timestamp)}</TableCell>
+
                 <TableCell>{activity.userName}</TableCell>
                 <TableCell>{activity.recordingItem}</TableCell>
 

@@ -13,6 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { CallDirectionIcons } from "@/constants/call-types";
 import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
+import { formatDate } from "@/lib/utils/format-date";
 
 interface CallListProps {
   calls?: ICall[];
@@ -56,14 +57,10 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
                 <TableCell>{call.caller}</TableCell>
                 <TableCell>{call.receiver}</TableCell>
                 <TableCell>
-                  {call.startDateTime instanceof Date
-                    ? call.startDateTime.toLocaleString()
-                    : call.startDateTime}
+                  {formatDate(call.startDateTime)}
                 </TableCell>
                 <TableCell>
-                  {call.endDateTime instanceof Date
-                    ? call.endDateTime.toLocaleString()
-                    : call.endDateTime}
+                  {formatDate(call.endDateTime)}
                 </TableCell>
                 <TableCell>
                   {call.callType && callIcons[call.callType.toUpperCase()] ? (

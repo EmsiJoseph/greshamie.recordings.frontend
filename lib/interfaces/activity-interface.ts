@@ -2,6 +2,7 @@ import { ActivityTypes } from "@/constants/activity-types"
 
 export type TActivityType = typeof ActivityTypes[keyof typeof ActivityTypes]
 
+
 export interface IActivity {
     id: number,
     userName: string,
@@ -15,6 +16,6 @@ export interface IActivityFilters {
     eventName?: TActivityType[],
     startDate?: Date,
     endDate?: Date,
-    userName?: string,
+    user?: string,
     recordingItem?: string,
 }
