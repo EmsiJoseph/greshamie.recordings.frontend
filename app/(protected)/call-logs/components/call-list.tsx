@@ -13,6 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { CallDirectionIcons } from "@/constants/call-types";
 import { capitalizeFirstLetter } from "@/lib/utils/format-text";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
+import { ArrowRightLeft, CirclePlay, MoveDownLeft, MoveUpRight, Pause } from "lucide-react";
 
 interface CallListProps {
   calls?: ICall[];
@@ -124,7 +125,7 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
                       )}
                     </button>
 
-                    <span>{formatDuration(call.duration)}</span>
+                    <span>{formatDuration(call.durationSeconds)}</span>
                   </div>
                 </TableCell>
               </TableRow>
