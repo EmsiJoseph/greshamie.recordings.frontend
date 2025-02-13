@@ -7,27 +7,40 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowUpDown, ArrowUpWideNarrow, ArrowDownNarrowWide } from "lucide-react";
+import { ArrowUpDown, ArrowUpWideNarrow, ArrowDownNarrowWide, CirclePlay, Pause } from "lucide-react";
 import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
 import { CallTypeWithIcon } from "./call-type-with-icon";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { formatDate } from "@/lib/utils/format-date";
 import { sortCalls, SortConfig } from "@/lib/utils/sort-data";
 
 interface CallListProps {
   calls?: ICall[];
   isFetching?: boolean;
-  onPlayAudio?: (url: string | null) => void;
+  onPlayAudio?: (call: ICall | null) => void;
+  activeCallId?: string | number | null;
+  audioPlaying?: boolean;
+  onToggleAudio?: () => void;
 }
 
-export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
-  const queryClient = useQueryClient();
-  const currentAudioUrl = queryClient.getQueryData<string | null>([
-    "currentAudio",
-  ]);
+export const CallList = ({ 
+  calls, 
+  isFetching, 
+  onPlayAudio,
+  activeCallId,
+  audioPlaying,
+  onToggleAudio, }: CallListProps) => {
 
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
 
@@ -95,9 +108,32 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
                 <TableCell>{call?.receiver}</TableCell>
                 <TableCell>{formatDate(call?.startDateTime)}</TableCell>
                 <TableCell>{formatDate(call?.endDateTime)}</TableCell>
-                <TableCell><CallTypeWithIcon callType={call?.callType} /></TableCell>
+                <TableCell>
+                  <CallTypeWithIcon callType={call?.callType} />
+                </TableCell>
                 <TableCell>{call?.isLive ? "True" : "False"}</TableCell>
-                <TableCell>{formatDurationToHours(call.durationSeconds)}</TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => {
+                        console.log("Play button clicked for call:", call.id);
+                        if (activeCallId === call.id) {
+                          onToggleAudio && onToggleAudio();
+                        } else {
+                          onPlayAudio && onPlayAudio(call);
+                        }
+                      }}
+                      className="text-gray-700 cursor-pointer"
+                    >
+                      {activeCallId === call.id && audioPlaying ? (
+                        <Pause className="h-5 w-5 text-blue-500" />
+                      ) : (
+                        <CirclePlay className="h-5 w-5 text-green-500" />
+                      )}
+                    </button>
+                    <span>{formatDurationToHours(call.durationSeconds)}</span>
+                  </div>
+                </TableCell>
                 <TableCell>{call.recorder}</TableCell>
               </TableRow>
             ))

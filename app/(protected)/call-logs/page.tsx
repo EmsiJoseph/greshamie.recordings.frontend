@@ -12,14 +12,18 @@ import { AxiosResponse } from "axios";
 import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
 
-// currentAudio is just the streaming URL string (or null)
 type CurrentAudio = string | null;
 
 export default function CallLogPage() {
   const { retrievedFilters, resetCallFilters } = useCallFilters();
   const queryClient = useQueryClient();
-  // activeCallId tracks which call is currently playing
-  const [activeCallId, setActiveCallId] = useState<string | number | null>(null);
+
+  // State to keep track of the active call ID.
+  const [activeCallId, setActiveCallId] = useState<string | number | null>(
+    null
+  );
+  const [currentAudio, setCurrentAudio] = useState<CurrentAudio>(null);
+  const [audioPlaying, setAudioPlaying] = useState(false);
 
   // Convert any Date filters to ISO strings.
   let filters = { ...retrievedFilters } as Record<string, any>;
@@ -38,7 +42,7 @@ export default function CallLogPage() {
     queryFn: () => fetchCalls({ ...retrievedFilters }),
   });
 
-  // Mutation to fetch the streaming URL from the API.
+  // Mutation to fetch the streaming URL.
   const audioMutation = useMutation({
     mutationKey: ["currentAudio"],
     mutationFn: async (call: ICall | null): Promise<CurrentAudio> => {
@@ -49,17 +53,18 @@ export default function CallLogPage() {
       console.log("Fetching streaming URL for call:", call);
       const response: AxiosResponse<ICallLogs> = await fetchStreamingUrl(call);
       console.log("Received streaming URL response:", response.data);
-      // Return the streaming URL using the correct property name from the API response.
-      return response.data.StreamingUrl;
+      // Use the property name matching your API response (lowercase 'streamingUrl')
+      return response.data.streamingUrl;
     },
     onSuccess: (data, variables) => {
       console.log("Setting current audio:", data);
-      queryClient.setQueryData<CurrentAudio>(["currentAudio"], data);
-      // Update activeCallId based on the call passed in, or clear it when pausing.
+      setCurrentAudio(data);
       if (variables) {
         setActiveCallId(variables.id);
+        setAudioPlaying(true);
       } else {
         setActiveCallId(null);
+        setAudioPlaying(false);
       }
     },
   });
@@ -74,8 +79,16 @@ export default function CallLogPage() {
   }, [isError]);
 
   // Retrieve the current streaming URL from the query cache.
-  const currentAudio: CurrentAudio =
-    queryClient.getQueryData<CurrentAudio>(["currentAudio"]) || null;
+  const toggleAudio = () => {
+    setAudioPlaying((prev) => !prev);
+  };
+
+  // Reset audio state when AudioPlayer is closed.
+  const handleAudioClose = () => {
+    setCurrentAudio(null);
+    setActiveCallId(null);
+    setAudioPlaying(false);
+  };
 
   return (
     <div>
@@ -86,11 +99,32 @@ export default function CallLogPage() {
       <CallList
         calls={data?.data?.items}
         isFetching={isFetching}
-        onPlayAudio={audioMutation.mutate}
+        onPlayAudio={(call) => {
+          // If a new call is selected, fetch its streaming URL.
+          if (call && call.id !== activeCallId) {
+            audioMutation.mutate(call);
+          } else if (call && call.id === activeCallId) {
+            // If the same call is clicked, toggle play/pause.
+            toggleAudio();
+          } else {
+            // If null is passed, pause audio.
+            setAudioPlaying(false);
+            setActiveCallId(null);
+          }
+        }}
         activeCallId={activeCallId}
+        audioPlaying={audioPlaying}
+        onToggleAudio={toggleAudio}
       />
-      {/* Render the AudioPlayer only if a streaming URL exists */}
-      {currentAudio && <AudioPlayer url={currentAudio} />}
+      {/* Render AudioPlayer only if a streaming URL exists */}
+      {currentAudio && (
+        <AudioPlayer
+          url={currentAudio}
+          playing={audioPlaying}
+          onPlayPause={toggleAudio}
+          onClose={handleAudioClose}
+        />
+      )}
     </div>
   );
 }
