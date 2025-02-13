@@ -20,7 +20,7 @@ import {
 import { useRouter } from "next/navigation";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
 import { useAction } from "next-safe-action/hooks";
-import { getUserFromAuthCookie } from "@/lib/services/server-actions/cookie";
+import { getInitials, getUserInfo } from "@/lib/utils/format-user";
 
 export function UserNav() {
     const { executeAsync, isExecuting } = useAction(logoutUserAction);
@@ -40,51 +40,16 @@ export function UserNav() {
         }
     };
 
-    const getUserInfo = async () => {
-        const user = await getUserFromAuthCookie();
-        if (user) {
-            setUserName(user.user?.userName || "Guest"); // Set the state with user name
-        } else {
-            setUserName("Guest"); // Default to "Guest" if no user
-        }
-    };
-    
     useEffect(() => {
-        getUserInfo();
+        (async () => {
+            const name = await getUserInfo();
+            setUserName(name);
+        })();
     }, []);
-    
-    // const getUserNameFromCookies = () => {
 
-    //     const authCookie =
-    //     // Get the "auth" cookie
-    //     const cookies = document.cookie
-    //         .split("; ")
-    //         .find(row => row.startsWith("auth"));
-        
-    //     console.log("agaga", cookies)
-    
-    //     if (!cookies) return "Guest"; // If cookie doesn't exist
-    
-    //     try {
-    //         // Extract and decode the cookie value
-    //         const authValue = decodeURIComponent(cookies.split("=")[1] || "");
-    
-    //         if (!authValue) return "Guest"; // Ensure we have a value
-    
-    //         // Parse the JSON
-    //         const authData = JSON.parse(authValue);
-    
-    //         // Return the username or a default fallback
-    //         return authData?.user?.userName || "Guest";
-    //     } catch (error) {
-    //         console.error("Error parsing auth cookie:", error);
-    //         return "Guest";
-    //     }
-    // };
-    
-    // const userName = getUserNameFromCookies();
-    // console.log("User Name:", userName);
+    const initials = getInitials(userName);
 
+    
     return (
         <DropdownMenu>
             <TooltipProvider disableHoverableContent>
@@ -98,7 +63,7 @@ export function UserNav() {
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage src="#" alt="Avatar" />
                                     <AvatarFallback className="bg-transparent">
-                                        JB
+                                        {initials}
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>

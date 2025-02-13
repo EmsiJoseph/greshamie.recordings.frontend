@@ -14,7 +14,7 @@ interface ActivityListProps {
 
 export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
   const [page, setPage] = React.useState(1);
-  const totalPages = 5; // Temporary total pages
+  const [totalPages, setTotalPages] = React.useState(0);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -23,6 +23,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
   if (isFetching) {
     return <ActivityListSkeleton />;
   }
+
 
   return (
     <div>
@@ -65,7 +66,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
         </TableBody>
       </Table>
 
-      {/* <ActivityListPagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} /> */}
+      <ActivityListPagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
     </div>
   );
 };

@@ -9,7 +9,6 @@ export async function middleware(request: NextRequest) {
     const isRefreshTokenValid = await hasValidRefreshToken()
     const { pathname } = request.nextUrl
 
-
     // 01 Login success redirect
     const isLoginSuccess =
         isAccessTokenValid &&
@@ -34,6 +33,10 @@ export async function middleware(request: NextRequest) {
         if (isSuccessReauth) {
             return NextResponse.next()
         }
+    }
+
+    if (pathname === "/" && !pathname.startsWith("/login")) {
+        return NextResponse.redirect(new URL('/login', request.url))
     }
 
        // console.log("Bool values ", isAccessTokenValid, isRefreshTokenValid, shouldRedirectToLogin)
