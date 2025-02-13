@@ -19,8 +19,8 @@ export interface ICall {
 export interface ICallFilters {
     search?: string,
     callDirection?: TCallDirections,
-    startDate?: Date, // UTC Str
-    endDate?: Date, // UTC Str
+    startDate?: string, // UTC Str
+    endDate?: string, // UTC Str
     minimumDurationSeconds?: number,
     maximumDurationSeconds?: number,
     caller?: string,
@@ -43,8 +43,10 @@ export interface ICallLogs {
 }
 
 export interface ICallAdvanceFilterComponent {
-    startDate?: Date, // UTC Str
-    endDate?: Date, // UTC Str
+    startDate?: string, // UTC Str
+    endDate?: string, // UTC Str
+    startTime?: string, // [HH:mm (24-hour time format)]
+    endTime?: string, // [HH:mm (24-hour time format)]
     minimumDurationSeconds?: number,
     maximumDurationSeconds?: number,
     hasVideoRecording?: boolean,

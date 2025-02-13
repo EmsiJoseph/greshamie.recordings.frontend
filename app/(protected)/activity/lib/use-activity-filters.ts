@@ -7,11 +7,12 @@ export const useActivityFilters = () => {
 
     const retrieveActivityFilters = () => {
         const getUrlParams = useGetUrlParams();
-        const eventTypeParams = getUrlParams("search")?.split(",") || []; 
+        const eventTypeParams = getUrlParams("eventType")?.split(",") || []; 
 
         return {
             search: getUrlParams("search") || "",
-            eventType: eventTypeParams as TEventType[], // Ensure array type
+            // eventType: eventTypeParams as TEventType[], 
+            eventType: getUrlParams("eventType") as TEventType || undefined,
             startDate: getUrlParams("startDate") ? new Date(getUrlParams("startDate")) : undefined,
             endDate: getUrlParams("endDate") ? new Date(getUrlParams("endDate")) : undefined,
         };

@@ -1,4 +1,11 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { IActivity } from "@/lib/interfaces/activity-interface";
 import { EllipsisVertical } from "lucide-react";
 import React from "react";
@@ -6,7 +13,7 @@ import ActivityListSkeleton from "@/components/presentational/activity-list-skel
 import ActivityListPagination from "@/components/presentational/activity-list-pagination";
 import ActivityIcon from "./activity-type-with-icon";
 import { formatDate } from "@/lib/utils/format-date";
-
+import { eventDirectionIcons } from "@/constants/activity-types";
 interface ActivityListProps {
   activities?: IActivity[];
   isFetching: boolean;
@@ -41,14 +48,36 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           {activities && activities.length > 0 ? (
             activities.map((activity) => (
               <TableRow key={activity.id}>
-                <TableCell>
-                  {formatDate(activity.timestamp)}
-                </TableCell>
+                <TableCell>{formatDate(activity.timestamp)}</TableCell>
                 <TableCell>{activity.userName}</TableCell>
 
-                {/* Render the ActivityIcon component */}
-                <TableCell>
-                  <ActivityIcon eventName={activity.eventName} />
+                <TableCell className="flex items-center gap-2">
+                  {
+                    <>
+                      {React.createElement(
+                        eventDirectionIcons[activity.eventName.toUpperCase()]
+                          .icon,
+                        {
+                          className:
+                            eventDirectionIcons[
+                              activity.eventName.toUpperCase()
+                            ].colorClass,
+                          size: 20,
+                        }
+                      )}
+                      <span
+                        className={
+                          eventDirectionIcons[activity.eventName.toUpperCase()]
+                            .colorClass
+                        }
+                      >
+                        {
+                          eventDirectionIcons[activity.eventName.toUpperCase()]
+                            .value
+                        }
+                      </span>
+                    </>
+                  }
                 </TableCell>
 
                 <TableCell>
@@ -66,7 +95,11 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
         </TableBody>
       </Table>
 
-      <ActivityListPagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
+      <ActivityListPagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

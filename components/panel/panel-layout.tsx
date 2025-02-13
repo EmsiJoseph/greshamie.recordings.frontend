@@ -41,11 +41,10 @@ export default function PanelLayout({
           {/* Main content with margin adjustment */}
           <main
             className={cn(
-              "flex-1 min-h-screen overflow-x-auto dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300",
-              sidebar?.isOpen === false ? "lg:ml-72" : "lg:ml-96"
+              "flex-1 min-h-screen overflow-x-auto dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300 lg:ml-72"
             )}
           >
-            <div className="w-full min-w-[1200px] container pt-8 pb-8 px-4 sm:px-8">
+            <div className="w-full container pt-8 pb-8 px-4 sm:px-8">
               {children}
             </div>
           </main>

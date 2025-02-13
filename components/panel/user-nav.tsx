@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import { LogOut, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { logoutUserAction } from "@/lib/services/server-actions/authentication";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

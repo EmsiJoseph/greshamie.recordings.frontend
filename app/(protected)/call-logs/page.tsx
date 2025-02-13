@@ -36,7 +36,8 @@ export default function CallLogPage() {
   const filterValues = Object.values(filters).filter(Boolean) as string[];
   console.log("filter VALUES", filterValues);
 
-  // Fetch call data using React Query.
+  // Fetch call data using React Query
+
   const { data, isFetching, isError } = useQuery<AxiosResponse<ICallLogs>>({
     queryKey: ["calls", ...filterValues],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
