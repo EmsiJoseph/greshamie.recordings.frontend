@@ -129,7 +129,7 @@ export const CallListAdvanceFilters = ({
             <DialogTrigger asChild>
                 <Button variant="outline" onClick={() => setOpen(true)}><ListFilter /></Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] max-h-[500px] overflow-y-scroll">
+            <DialogContent className="sm:max-w-[600px] max-h-[700px] overflow-y-scroll">
                 <DialogHeader>
                     <DialogTitle>Advanced Filters</DialogTitle>
                 </DialogHeader>

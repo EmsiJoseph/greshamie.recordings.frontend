@@ -1,10 +1,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { IActivity } from "@/lib/interfaces/activity-interface";
+import { EllipsisVertical } from "lucide-react";
 import React from "react";
 import ActivityListSkeleton from "@/components/presentational/activity-list-skeleton";
+import ActivityListPagination from "@/components/presentational/activity-list-pagination";
+import ActivityIcon from "./activity-type-with-icon";
 import { formatDate } from "@/lib/utils/format-date";
-import { EventTypeWithIcon } from "./activity-type-with-icon";
-import { EllipsisVertical } from "lucide-react";
 
 interface ActivityListProps {
   activities?: IActivity[];
@@ -12,9 +13,17 @@ interface ActivityListProps {
 }
 
 export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
+  const [page, setPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(0);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
   if (isFetching) {
     return <ActivityListSkeleton />;
   }
+
 
   return (
     <div>
@@ -32,12 +41,14 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           {activities && activities.length > 0 ? (
             activities.map((activity) => (
               <TableRow key={activity.id}>
-                <TableCell>{formatDate(activity.timestamp)}</TableCell>
+                <TableCell>
+                  {formatDate(activity.timestamp)}
+                </TableCell>
                 <TableCell>{activity.userName}</TableCell>
 
-                {/* Use EventTypeWithIcon component */}
+                {/* Render the ActivityIcon component */}
                 <TableCell>
-                  <EventTypeWithIcon eventType={activity.eventName} />
+                  <ActivityIcon eventName={activity.eventName} />
                 </TableCell>
 
                 <TableCell>
@@ -47,13 +58,15 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={4} className="h-24 text-center">
+              <TableCell colSpan={5} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+
+      <ActivityListPagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
     </div>
   );
 };

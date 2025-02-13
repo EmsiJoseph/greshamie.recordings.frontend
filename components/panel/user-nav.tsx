@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { LogOut, User } from "lucide-react";
+import React, {useEffect, useState} from "react";
+import { LogOut } from "lucide-react";
 import { logoutUserAction } from "@/lib/services/server-actions/authentication";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -19,10 +19,12 @@ import {
 import { useRouter } from "next/navigation";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
 import { useAction } from "next-safe-action/hooks";
+import { getInitials, getUserInfo } from "@/lib/utils/format-user";
 
 export function UserNav() {
-    const { executeAsync, isExecuting } = useAction(logoutUserAction);
+    const { executeAsync } = useAction(logoutUserAction);
     const router = useRouter();
+    const [userName, setUserName] = useState<string>("Guest"); 
 
     const goToLogoutPage = async () => {
         const result = await executeAsync(); // Capture the result
@@ -37,6 +39,16 @@ export function UserNav() {
         }
     };
 
+    useEffect(() => {
+        (async () => {
+            const name = await getUserInfo();
+            setUserName(name);
+        })();
+    }, []);
+
+    const initials = getInitials(userName);
+
+    
     return (
         <DropdownMenu>
             <TooltipProvider disableHoverableContent>
@@ -50,44 +62,38 @@ export function UserNav() {
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage src="#" alt="Avatar" />
                                     <AvatarFallback className="bg-transparent">
-                                        JB
+                                        {initials}
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>
                         </DropdownMenuTrigger>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom">Profile</TooltipContent>
+                    <TooltipContent side="bottom">User</TooltipContent>
                 </Tooltip>
             </TooltipProvider>
 
             <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                            GHIE-API
+                        <p className="text-sm font-bold leading-none">
+                            {userName}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
-                            Berbon@.com
+                            Current User
                         </p>
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem className="hover:cursor-pointer" asChild>
-                        <Link href="/account" className="flex items-center">
-                            <User className="w-4 h-4 mr-3 text-muted-foreground" />
-                            Account
-                        </Link>
+                    <DropdownMenuItem
+                        className="hover:cursor-pointer"
+                        onClick={goToLogoutPage}
+                    >
+                        <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
+                        Sign out
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                    className="hover:cursor-pointer"
-                    onClick={goToLogoutPage}
-                >
-                    <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
-                    Sign out
-                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );

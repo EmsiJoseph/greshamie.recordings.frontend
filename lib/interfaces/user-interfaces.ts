@@ -1,5 +1,5 @@
 export interface IUser {
-    user_name?: string;
+    userName?: string;
 }
 
 export interface IAccessToken {

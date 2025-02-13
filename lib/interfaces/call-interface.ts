@@ -39,6 +39,7 @@ export interface ICallLogs {
     pageOffset?: number
     totalCount?: number,
     totalPages?: number
+    streamingUrl: string,
 }
 
 export interface ICallAdvanceFilterComponent {
