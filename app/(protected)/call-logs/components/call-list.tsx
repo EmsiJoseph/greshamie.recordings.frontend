@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ArrowUpDown, ArrowUpWideNarrow, ArrowDownNarrowWide } from "lucide-react";
 import { ICall } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,6 +15,7 @@ import { formatDurationToHours } from "@/lib/utils/format-duration";
 import { CallTypeWithIcon } from "./call-type-with-icon";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { formatDate } from "@/lib/utils/format-date";
+import { sortCalls, SortConfig } from "@/lib/utils/sort-data";
 
 interface CallListProps {
   calls?: ICall[];
@@ -27,44 +29,26 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
     "currentAudio",
   ]);
 
-  const [sortConfig, setSortConfig] = useState<{ key: keyof ICall; direction: string } | null>(null);
+  const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
 
-  const sortedCalls = React.useMemo(() => {
-    if (!calls) return [];
-    if (!sortConfig) return calls;
-
-    const sorted = [...calls].sort((a, b) => {
-      let aValue = a[sortConfig.key as keyof ICall];
-      let bValue = b[sortConfig.key as keyof ICall];
-
-      if (sortConfig.key === "startDateTime" || sortConfig.key === "endDateTime") {
-        aValue = typeof aValue === "boolean" ? 0 : new Date(aValue).getTime();
-        bValue = typeof bValue === "boolean" ? 0 : new Date(bValue).getTime();
-      }
-
-      if (aValue < bValue) {
-        return sortConfig.direction === "ascending" ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return sortConfig.direction === "ascending" ? 1 : -1;
-      }
-      return 0;
-    });
-
-    return sorted;
-  }, [calls, sortConfig]);
+  const sortedCalls = React.useMemo(() => sortCalls(calls ?? [], sortConfig), [calls, sortConfig]);
 
   const requestSort = (key: keyof ICall) => {
-    let direction = "ascending";
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending";
+    let direction: "ascending" | "descending" | null = "ascending";
+    if (sortConfig && sortConfig.key === key) {
+      if (sortConfig.direction === "ascending") {
+        direction = "descending";
+      } else if (sortConfig.direction === "descending") {
+        direction = null;
+      }
     }
-    setSortConfig({ key, direction });
+    setSortConfig(direction ? { key, direction } : null);
   };
 
   const getSortIcon = (key: string) => {
-    if (!sortConfig || sortConfig.key !== key) return null;
-    return sortConfig.direction === "ascending" ? "↑" : "↓";
+    if (!sortConfig) return <ArrowUpDown size={15} />;
+    if (sortConfig.key !== key) return <ArrowUpDown size={15} />;
+    return sortConfig.direction === "ascending" ? <ArrowUpWideNarrow size={15} /> : <ArrowDownNarrowWide size={15} />;
   };
 
   if (isFetching) {
@@ -95,7 +79,7 @@ export const CallList = ({ calls, isFetching, onPlayAudio }: CallListProps) => {
               Is Live {getSortIcon("isLive")}
             </TableHead>
             <TableHead onClick={() => requestSort("durationSeconds")}>
-              Duration (s) {getSortIcon("durationSeconds")}
+              Duration {getSortIcon("durationSeconds")}
             </TableHead>
             <TableHead onClick={() => requestSort("recorder")}>
               Recorder {getSortIcon("recorder")}

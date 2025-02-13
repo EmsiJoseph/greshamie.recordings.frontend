@@ -17,7 +17,7 @@ import { useState } from 'react';
 
 export function LoginForm() {
   const [error, setError] = useState<string | undefined>("");
-  const { executeAsync, isExecuting, result } = useAction(loginUserAction);
+  const { executeAsync, isExecuting } = useAction(loginUserAction);
   const form = useForm<TLoginFormValues>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
