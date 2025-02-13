@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchCalls } from "@/api/calls";
+import { useFetchCalls } from "@/api/calls";
 import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
@@ -11,12 +11,13 @@ import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
 import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
+import { fetchDownloadUrl } from "@/api/download";
 
 type CurrentAudio = string | null;
 
 export default function CallLogPage() {
   const { retrievedFilters, resetCallFilters } = useCallFilters();
-  const queryClient = useQueryClient();
+  const { fetchCalls } = useFetchCalls()
 
   // State to keep track of the active call ID.
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
@@ -24,20 +25,11 @@ export default function CallLogPage() {
   );
   const [currentAudio, setCurrentAudio] = useState<CurrentAudio>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  // Convert any Date filters to ISO strings.
-  let filters = { ...retrievedFilters } as Record<string, any>;
-  Object.entries(retrievedFilters).forEach(([key, value]) => {
-    if (value instanceof Date) {
-      filters[key] = value.toISOString();
-    }
-  });
-
-  const filterValues = Object.values(filters).filter(Boolean) as string[];
-  console.log("filter VALUES", filterValues);
-
+  // Remove Falsy values
+  const filterValues = Object.values(retrievedFilters).filter(Boolean);
   // Fetch call data using React Query
-
   const { data, isFetching, isError } = useQuery<AxiosResponse<ICallLogs>>({
     queryKey: ["calls", ...filterValues],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
@@ -55,7 +47,7 @@ export default function CallLogPage() {
       const response: AxiosResponse<ICallLogs> = await fetchStreamingUrl(call);
       console.log("Received streaming URL response:", response.data);
       // Use the property name matching your API response (lowercase 'streamingUrl')
-      return response.data.streamingUrl;
+      return response.data.streamingUrl ?? null;;
     },
     onSuccess: (data, variables) => {
       console.log("Setting current audio:", data);
@@ -67,6 +59,19 @@ export default function CallLogPage() {
         setActiveCallId(null);
         setAudioPlaying(false);
       }
+    },
+  });
+
+  const downloadMutation = useMutation({
+    mutationKey: ["downloadUrl"],
+    mutationFn: async (call: ICall | null): Promise<string | null> => {
+      if (!call) return null;
+      const response = await fetchDownloadUrl(call);
+      return response.data.downloadUrl ?? null;; // Make sure this matches your API response
+    },
+    onSuccess: (data) => {
+      console.log("Download URL received:", data);
+      setDownloadUrl(data);
     },
   });
 
@@ -101,14 +106,12 @@ export default function CallLogPage() {
         calls={data?.data?.items}
         isFetching={isFetching}
         onPlayAudio={(call) => {
-          // If a new call is selected, fetch its streaming URL.
           if (call && call.id !== activeCallId) {
-            audioMutation.mutate(call);
+            audioMutation.mutate(call); // Fetch streaming URL
+            downloadMutation.mutate(call); // Fetch download URL
           } else if (call && call.id === activeCallId) {
-            // If the same call is clicked, toggle play/pause.
             toggleAudio();
           } else {
-            // If null is passed, pause audio.
             setAudioPlaying(false);
             setActiveCallId(null);
           }
@@ -121,6 +124,7 @@ export default function CallLogPage() {
       {currentAudio && (
         <AudioPlayer
           url={currentAudio}
+          downloadUrl={downloadUrl ?? undefined} // Pass the fetched download URL
           playing={audioPlaying}
           onPlayPause={toggleAudio}
           onClose={handleAudioClose}

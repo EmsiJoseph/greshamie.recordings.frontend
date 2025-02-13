@@ -45,15 +45,34 @@ export const useUpdateUrlParams = () => {
 
   // TODO: USELESS, NOT UPDATING THE URL
   // Use reset instead
-  const deleteUrlParam = (key: string) => {
-    const params = new URLSearchParams(searchParams);
+  const deleteUrlParam = (param: string) => {
+    // Fetch the current URL
+    const url = new URL(window.location.href);
 
-    // Delete the parameter
-    params.delete(key);
+    // Get the query parameters from the URL
+    const params = new URLSearchParams(url.search);
 
-    // Update the URL with shallow routing
-    router.replace(`?${params.toString()}`);
+    // Delete the given query parameter
+    params.delete(param);
+
+    // Update the browser's URL with the new query parameters
+    window.history.replaceState(
+      null,
+      '',
+      `${url.pathname}?${params.toString()}`
+    );
   };
+
+  // const deleteUrlParam = (key: string) => {
+  //   const params = new URLSearchParams(searchParams);
+
+  //   // Delete the parameter
+  //   params.delete(key);
+
+  //   // Update the URL with shallow routing
+  //   const updatedParams = params.toString() ? `?${params.toString()}` : ""
+  //   router.replace(updatedParams);
+  // };
 
   return { updateUrlParams, resetUrlParams, deleteUrlParam };
 };
