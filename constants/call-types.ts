@@ -1,6 +1,6 @@
 import { ArrowRightLeft, MoveDownLeft, MoveUpRight } from "lucide-react";
 
-export const CallDirections = {
+export const CallDirections: Record<string, string> = {
     INCOMING: 'INCOMING',
     OUTGOING: 'OUTGOING',
     INTERNAL: 'INTERNAL',

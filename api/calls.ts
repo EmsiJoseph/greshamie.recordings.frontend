@@ -2,32 +2,56 @@ import { GreshamAxiosConfig } from "@/lib/config/main-backend-axios-config";
 import { ICallFilters, ICallLogs } from "@/lib/interfaces/call-interface";
 import { callsEndpoint } from "./endpoints/call-logs-endpoints";
 import { AxiosResponse } from "axios";
-export const fetchCalls = async (filters?: ICallFilters): Promise<AxiosResponse<ICallLogs>> => {
-    let finalEndpoint = callsEndpoint;
+import { CallDirections } from "@/constants/call-types";
+import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+export const useFetchCalls = () => {
+    const { deleteUrlParam } = useUpdateUrlParams(); // This should be called at the top level
+    const fetchCalls = async (filters?: ICallFilters): Promise<AxiosResponse<ICallLogs>> => {
+        let finalEndpoint = callsEndpoint;
+        if (filters) {
+            // Handle queryParams logic here without using hooks inside conditionals
+            const queryParams = Object.entries(filters)
+                .reduce((acc, [key, value]) => {
+                    // Handle falsy values
+                    if (!value) {
+                        deleteUrlParam(key); // Always call this at the top level, not inside filter/map
+                        return acc; // Skip adding this key-value pair
+                    }
 
-    if (filters) {
-        const queryParams = Object.entries(filters)
-            .filter(([key, value]) => {
-                // Check if the value is a non-empty array, or if it's a non-falsy string or number
-                return value && (Array.isArray(value) ? value.length > 0 : true);
-            })
-            .map(([key, value]) => {
-                // If the value is a Date, convert it to an ISO string
-                if (value instanceof Date) {
-                    value = value.toISOString();
-                }
-                return `${key}=${value}`;
-            })
-            .join('&'); // Join the query parameters with '&'
+                    // Handle startDate or endDate formatting
+                    if (key === "startDate" || key === "endDate") {
+                        try {
+                            new Date(value).toISOString();
+                        } catch {
+                            console.log(`Removing ${key} due to invalid date format`);
+                            deleteUrlParam(key);
+                            return acc;
+                        }
+                    }
 
-        if (queryParams) {
-            // If there are existing params in the endpoint, append with '&', else use '?'
-            finalEndpoint = callsEndpoint.includes('?')
-                ? `${callsEndpoint}&${queryParams}`
-                : `${callsEndpoint}?${queryParams}`;
+                    // Handle callDirection value
+                    if (key === "callDirection" && !(value?.toUpperCase() in CallDirections)) {
+                        deleteUrlParam(key);
+                        return acc;
+                    }
+
+                    // Accumulate valid key-value pairs
+                    acc.push(`${key}=${value}`);
+                    return acc;
+                }, [] as string[]) // Use reduce to accumulate valid params
+
+                .join('&')
+            if (queryParams) {
+                // If there are existing params in the endpoint, append with '&', else use '?'
+                finalEndpoint = callsEndpoint.includes('?')
+                    ? `${callsEndpoint}&${queryParams}`
+                    : `${callsEndpoint}?${queryParams}`;
+            }
         }
-    }
 
-    console.log(finalEndpoint); // Log the final endpoint with query params
-    return await GreshamAxiosConfig.get(finalEndpoint);
+        // console.log("FINAL ENDPOINT", finalEndpoint); 
+        return await GreshamAxiosConfig.get(finalEndpoint);
+    };
+
+    return { fetchCalls };
 };
