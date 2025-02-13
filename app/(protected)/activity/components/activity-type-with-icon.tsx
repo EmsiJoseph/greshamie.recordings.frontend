@@ -13,14 +13,15 @@ const EventTypeWithIcon: React.FC<ActivityIconProps> = ({ eventName }) => {
     return name.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (str) => str.toUpperCase());
   };
 
-  return activity ? (
-    <div className={`flex items-center ${activity.colorClass}`}>
-      {React.createElement(activity.icon, { className: "h-5 w-5" })}
-      <span className="ml-2 font-bold">{formatEventName(eventName)}</span>
-    </div>
-  ) : (
-    <span className="text-gray-500">Unknown Event</span>
-  );
+return (
+  <div className={`flex items-center ${eventDirectionIcons[eventName].colorClass}`}>
+    {React.createElement(eventDirectionIcons[eventName].icon, { 
+      className: "h-5 w-5" 
+    })}
+    <span className="ml-2 font-bold">{formatEventName(eventName) || "Unknown Event"}</span>
+  </div>
+  
+);
 };
 
 export default EventTypeWithIcon;

@@ -20,12 +20,12 @@ export const ActivityListFilters = ({ retrievedFilters, resetActivityFilters }: 
 
   // Handle reset call types
   const handleResetActionTypes = () => {
-    deleteUrlParam("search");
+    deleteUrlParam("eventType");
   };
 
   // Handle changes in SINGLE call type selection.
   const handleSelectActivityType = (value: TEventType) => {
-    updateUrlParams({ search: value });
+    updateUrlParams({ eventType: value });
   };
 
   const isResetButtonActive = retrievedFilters?.eventType ? retrievedFilters?.eventType?.length < 1 : false;
