@@ -35,11 +35,10 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // Remove Index Route as it is no longer needed
     if (pathname === "/" && !pathname.startsWith("/login")) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
-
-       // console.log("Bool values ", isAccessTokenValid, isRefreshTokenValid, shouldRedirectToLogin)
 }
 
 export const config = {
