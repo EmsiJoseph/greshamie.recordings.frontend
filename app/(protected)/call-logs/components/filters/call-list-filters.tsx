@@ -20,9 +20,7 @@ export const CallListFilters = ({ retrievedFilters, resetCallFilters }: CallList
     const handleSelectCallType = (value: TCallDirections) => {
         updateUrlParams({ callDirection: value });
     };
-
-    // const isResetButtonActive = retrievedFilters?.callDirection ? retrievedFilters?.callDirection?.length < 1 : false;
-
+    
     // 02 Search
     const [search, setSearch] = useState<ICallFilters['search']>("");
     // ---> Delay search update

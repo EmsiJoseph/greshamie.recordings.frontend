@@ -5,7 +5,7 @@ import { fetchActivity } from '@/api/activities';
 import { ActivityListFilters } from './components/filters/activity-list-filters';
 import { ActivityList } from '../activity/components/activity-list';
 import { useActivityFilters } from './lib/use-activity-filters';
-import { IActivityResponse } from '@/lib/interfaces/activity-interface';
+import { IActivity, IActivityResponse } from '@/lib/interfaces/activity-interface';
 import { AxiosResponse } from 'axios';
 import { useEffect } from 'react';
 import { handleApiClientSideError } from '@/lib/handlers/api-response-handlers/handle-use-client-response';
@@ -25,10 +25,9 @@ export default function ActivityPage() {
   const filterValues = Object.values(filters).filter(Boolean) as string[];
   console.log("filter VALUES", filterValues);
 
-  // --> Pass the filters as part of the query key
-  const { data, isFetching, isError } = useQuery<AxiosResponse<IActivityResponse>>({
+  const { data, isFetching, isError } = useQuery({
     queryKey: ['activities', ...filterValues],
-    queryFn: () => fetchActivity({ ...retrievedFilters }),
+    queryFn: () =>fetchActivity({ ...retrievedFilters }),
   });
 
   useEffect(() => {

@@ -6,11 +6,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IActivity } from "@/lib/interfaces/activity-interface";
+import { IActivity, IActivityResponse } from "@/lib/interfaces/activity-interface";
 import { EllipsisVertical } from "lucide-react";
 import React from "react";
 import ActivityListSkeleton from "@/components/presentational/activity-list-skeleton";
-import ActivityListPagination from "@/components/presentational/activity-list-pagination";
+import ActivityListPagination, { Pagination } from "@/components/common/pagination";
 import ActivityIcon from "./activity-type-with-icon";
 import { formatDate } from "@/lib/utils/format-date";
 import { eventDirectionIcons } from "@/constants/activity-types";
@@ -20,16 +20,21 @@ interface ActivityListProps {
 }
 
 export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
-  const [page, setPage] = React.useState(1);
-  const [totalPages, setTotalPages] = React.useState(0);
+  // const [page, setPage] = React.useState(activities?.pageOffset);
+  // const [totalPages, setTotalPages] = React.useState(activities?.totalPages);
+  // const [hasPrevious, setHasPrevious] = React.useState(activities?.hasPrevious);
+  // const [hasNext, setHasNext] = React.useState(activities?.hasNext);
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
+  // const handlePageChange = (newPage?: number) => {
+  //   if (!newPage) return;
+  //   setPage(newPage);
+  // };
+
 
   if (isFetching) {
     return <ActivityListSkeleton />;
   }
+
 
 
   return (
@@ -52,7 +57,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
                 <TableCell>{activity.userName}</TableCell>
 
                 <TableCell className="flex items-center gap-2">
-                  {
+                  { 
                     <>
                       {React.createElement(
                         eventDirectionIcons[activity.eventName.toUpperCase()]
@@ -94,12 +99,12 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           )}
         </TableBody>
       </Table>
-
-      <ActivityListPagination
+{/* 
+      <Pagination
         currentPage={page}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-      />
+      /> */}
     </div>
   );
 };
