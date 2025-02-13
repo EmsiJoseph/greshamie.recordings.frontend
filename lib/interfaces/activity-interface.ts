@@ -11,13 +11,13 @@ export interface IActivity {
     timestamp: Date,
 }
 export interface IActivityResponse {
-    items?: IActivity[] | [],
-    pageOffset?: number,
-    pageSize?: number,
-    totalPages?: number,
-    totalCount?: number,
-    hasPrevious?: boolean,
     hasNext?: boolean,
+    hasPrevious?: boolean,
+    items?: IActivity[] | [],
+    pageSize?: number
+    pageOffset?: number
+    totalCount?: number,
+    totalPages?: number
 }
 
 export interface IActivityFilters {
