@@ -37,6 +37,11 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [dragProgress, setDragProgress] = useState(0);
   const playerRef = useRef<ReactPlayer | null>(null);
   const progressBarRef = useRef<HTMLDivElement | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setError(null);
+  }, [url]);
 
   const handleProgress = (state: { played: number }) => {
     if (!isDragging) {
@@ -44,10 +49,19 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     }
   };
 
+  const handlePlayerError = (err: any) => {
+    setError(
+      "Error fetchhing audio file, please try again later or contact an Administrator."
+    );
+  };
+
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
+      2,
+      "0"
+    )}`;
   };
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,7 +129,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   }, [isDragging, dragProgress, duration]);
 
   return (
-    <div className="w-full bg-white p-4 rounded-lg shadow-lg flex flex-col relative mt-10">
+    // <div className="w-full bg-white p-4 rounded-lg shadow-lg flex flex-col relative mt-10">
+    <div className="fixed bottom-0 left-0  right-0 bg-white p-4 shadow-lg flex flex-col z-50">
+      {/* {error && (
+        <div className="flex justify-center text-red-500 text-center mt-2">
+          {error}
+        </div>
+      )} */}
       {/* Progress Bar */}
       <div
         className="w-full bg-gray-200 h-2 rounded relative cursor-pointer"
@@ -144,18 +164,26 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
           <button onClick={onPlayPause} className="text-xl">
             {playing ? <Pause /> : <Play />}
           </button>
-          <button onClick={() => {
-            if (playerRef.current) {
-              playerRef.current.seekTo(playerRef.current.getCurrentTime() - 10);
-            }
-          }}>
+          <button
+            onClick={() => {
+              if (playerRef.current) {
+                playerRef.current.seekTo(
+                  playerRef.current.getCurrentTime() - 10
+                );
+              }
+            }}
+          >
             <Undo />
           </button>
-          <button onClick={() => {
-            if (playerRef.current) {
-              playerRef.current.seekTo(playerRef.current.getCurrentTime() + 10);
-            }
-          }}>
+          <button
+            onClick={() => {
+              if (playerRef.current) {
+                playerRef.current.seekTo(
+                  playerRef.current.getCurrentTime() + 10
+                );
+              }
+            }}
+          >
             <Redo />
           </button>
           {/* Volume Control */}
@@ -186,11 +214,11 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
               {playbackRate}x
             </button>
             {showSpeedOptions && (
-              <div className="absolute bg-white shadow-md rounded-md p-2 top-full mt-1 right-0">
+              <div className="absolute bg-white shadow-md rounded-md p-2 bottom-full mb-1 left-0 flex flex-col gap-1">
                 {[0.5, 1, 1.5, 2].map((rate) => (
                   <button
                     key={rate}
-                    className={`block px-3 py-1 w-full text-left text-sm hover:bg-gray-200 ${
+                    className={`px-3 py-1 text-sm hover:bg-gray-200 ${
                       playbackRate === rate ? "font-bold" : ""
                     }`}
                     onClick={() => handlePlaybackRateChange(rate)}
@@ -227,6 +255,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         playbackRate={playbackRate}
         onProgress={handleProgress}
         onDuration={(d) => setDuration(d)}
+        onError={handlePlayerError}
         width="100%"
         height="0px"
         config={{
