@@ -8,33 +8,41 @@ export const useCallFilters = () => {
 
     const retrieveCallFilters = (): ICallFilters => {
         const getUrlParams = useGetUrlParams();
-        const callTypesParams = getUrlParams("callTypes")?.split(',');
-        // let callTypes: TCallDirections[] = [];
+        const minimumDurationSeconds =
+            getUrlParams("minimumDurationSeconds")
+                ? parseFloat(getUrlParams("minimumDurationSeconds")!)
+                : undefined
 
-        // if (callTypesParams.length > 1 || !callTypesParams.includes('')) {
-        //     callTypes = callTypesParams as TCallDirections[];
-        // }
+        const maximumDurationSeconds =
+            getUrlParams("maximumDurationSeconds")
+                ? parseFloat(getUrlParams("maximumDurationSeconds")!)
+                : undefined
+
+        const hasVideoRecording =
+            getUrlParams("hasVideoRecording") === "" ?
+                undefined :
+                getUrlParams("hasVideoRecording") === "true"
+
+        const hasPciCompliance =
+            getUrlParams("hasPciCompliance") === "" ?
+                undefined :
+                getUrlParams("hasPciCompliance") === "true"
+
+        const hasQualityEvaluation =
+            getUrlParams("hasPciCompliance") === "" ?
+                undefined :
+                getUrlParams("hasPciCompliance") === "true"
 
         return {
-            search: getUrlParams("search") || "",
-            // callDirection: callTypes as TCallDirections[],
+            search: getUrlParams("search") || undefined,
             callDirection: getUrlParams("callDirection") as TCallDirections || undefined,
-            startDate: getUrlParams("startDate") ? new Date(getUrlParams("startDate")) : undefined,
-            endDate: getUrlParams("endDate") ? new Date(getUrlParams("endDate")) : undefined,
-            minimumDurationSeconds: parseFloat(getUrlParams("minimumDurationSeconds") || ""),
-            maximumDurationSeconds: parseFloat(getUrlParams("maximumDurationSeconds") || ""),
-            hasVideoRecording:
-                getUrlParams("hasVideoRecording") === "" ?
-                    undefined :
-                    getUrlParams("hasVideoRecording") === "true",
-            hasPciCompliance:
-                getUrlParams("hasPciCompliance") === "" ?
-                    undefined :
-                    getUrlParams("hasPciCompliance") === "true",
-            hasQualityEvaluation:
-                getUrlParams("hasQualityEvaluation") === "" ?
-                    undefined :
-                    getUrlParams("hasQualityEvaluation") === "true",
+            startDate: getUrlParams("startDate") ?? undefined,
+            endDate: getUrlParams("endDate") ?? undefined,
+            minimumDurationSeconds,
+            maximumDurationSeconds,
+            hasVideoRecording,
+            hasPciCompliance,
+            hasQualityEvaluation,
         }
     }
 

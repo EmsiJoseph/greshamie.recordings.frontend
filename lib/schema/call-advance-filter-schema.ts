@@ -1,28 +1,52 @@
-import { start } from "node:repl";
-import { date, z } from "zod";
-
+import { z } from "zod";
+import { hhMmRegex, yyyyMmDdRegex } from "../regex/dateTimeRegex";
 export const CallAdvanceFilterSchema = z
     .object({
-        startDate: date()
-            .refine((date) => date <= new Date(), {
+        startDate: z
+            .string()
+            .nullable() // Allow null
+            .refine((dateStr) => {
+                if (dateStr === null) return true; // If it's null, it's valid
+                return yyyyMmDdRegex.test(dateStr); // Validate format with regex
+            }, {
+                message: "Start date must be in the format yyyy-mm-dd.",
+            })
+            .refine((dateStr) => {
+                if (dateStr === null) return true; // If it's null, it's valid
+                const date = new Date(dateStr);
+                return date <= new Date(); // If it's not null, ensure it's not in the future
+            }, {
                 message: "Start date should not be in the future.",
             })
             .optional(),
-        endDate: date()
-            .refine((date) => date <= new Date(), {
+
+        endDate: z
+            .string()
+            .nullable()
+            .refine((dateStr) => {
+                if (dateStr === null) return true; // If it's null, it's valid
+                return yyyyMmDdRegex.test(dateStr); // Validate format with regex
+            }, {
+                message: "End date must be in the format yyyy-mm-dd.",
+            })
+            .refine((dateStr) => {
+                if (dateStr === null) return true; // If it's null, it's valid
+                const date = new Date(dateStr);
+                return date <= new Date(); // If it's not null, ensure it's not in the future
+            }, {
                 message: "End date should not be in the future.",
             })
             .optional(),
         // Time format should be HH:mm (24-hour time format)
         startTime: z
             .string()
-            .regex(/^(?:[01]\d|2[0-3]):(?:[0-5]\d)$/, {
+            .regex(hhMmRegex, {
                 message: 'Start time should be in HH:mm (24-hour) format.',
             })
             .optional(),
         endTime: z
             .string()
-            .regex(/^(?:[01]\d|2[0-3]):(?:[0-5]\d)$/, {
+            .regex(hhMmRegex, {
                 message: 'End time should be in HH:mm (24-hour) format.',
             })
             .optional(),
@@ -72,27 +96,33 @@ export const CallAdvanceFilterSchema = z
     // ---> 03 Check Date time range [conditionally add the time if present]
     .refine(
         (data) => {
-            const startDate = data.startDate;
+            const startDateStr = data.startDate;
             const endDate = data.endDate
             const startTime = data.startTime
             const endTime = data.endTime
 
-            if (startDate) {
+            // Date obj later
+            let startDateObj = undefined;
+            let endDateObj = undefined;
+
+            if (startDateStr) {
                 if (startTime) {
                     const [startHours, startMinutes] = startTime.split(":").map(Number);  // Convert to numbers from string regex
-                    startDate.setHours(startHours, startMinutes, 0, 0) // Set hours, minutes, seconds, milliseconds
+                    startDateObj = new Date(startDateStr)
+                    startDateObj.setHours(startHours, startMinutes, 0, 0) // Set hours, minutes, seconds, milliseconds
                 }
             }
 
             if (endDate) {
                 if (endTime) {
                     const [endHours, endMinutes] = endTime.split(":").map(Number);
-                    endDate.setHours(endHours, endMinutes, 0, 0)
+                    endDateObj = new Date(endDate)
+                    endDateObj.setHours(endHours, endMinutes, 0, 0)
                 }
             }
 
-            if (startDate && endDate) {
-                return startDate <= endDate;
+            if (startDateObj && endDateObj) {
+                return startDateObj <= endDateObj;
             }
             return true;
         },

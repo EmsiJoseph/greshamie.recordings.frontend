@@ -13,9 +13,6 @@ import AudioPlayer from "../audio-player/audio-player";
 
 export default function CallLogPage() {
   const { retrievedFilters, resetCallFilters } = useCallFilters();
-
-  console.log(retrievedFilters)
-
   const queryClient = useQueryClient();
 
   let filters = retrievedFilters as Record<string, any>;
@@ -28,8 +25,6 @@ export default function CallLogPage() {
   });
 
   const filterValues = Object.values(filters).filter(Boolean) as string[];
-
-  console.log("filter VALUES", filterValues)
 
   // Fetch call data using React Query
   const { data, isFetching, isError } = useQuery<AxiosResponse<ICallLogs>>({
