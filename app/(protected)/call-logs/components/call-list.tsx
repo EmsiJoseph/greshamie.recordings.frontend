@@ -42,7 +42,7 @@ export const CallList = ({
   audioPlaying,
   onToggleAudio, }: CallListProps) => {
 
-  const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+  const [sortConfig, setSortConfig] = useState<SortConfig | null>({ key: "endDateTime", direction: "descending" });
 
   const sortedCalls = React.useMemo(() => sortCalls(calls ?? [], sortConfig), [calls, sortConfig]);
 

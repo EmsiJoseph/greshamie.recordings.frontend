@@ -45,7 +45,7 @@ export default function PanelLayout({
               sidebar?.isOpen === false ? "lg:ml-72" : "lg:ml-96"
             )}
           >
-            <div className="w-full min-w-[1200px] container pt-8 pb-8 px-4 sm:px-8">
+            <div className="w-full container pt-8 pb-8 px-4 sm:px-8">
               {children}
             </div>
           </main>

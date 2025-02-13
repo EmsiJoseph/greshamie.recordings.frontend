@@ -21,7 +21,7 @@ export const CallListFilters = ({ retrievedFilters, resetCallFilters }: CallList
         updateUrlParams({ callDirection: value });
     };
 
-    const isResetButtonActive = retrievedFilters?.callDirection ? retrievedFilters?.callDirection?.length < 1 : false;
+    // const isResetButtonActive = retrievedFilters?.callDirection ? retrievedFilters?.callDirection?.length < 1 : false;
 
     // 02 Search
     const [search, setSearch] = useState<ICallFilters['search']>("");
@@ -41,6 +41,7 @@ export const CallListFilters = ({ retrievedFilters, resetCallFilters }: CallList
                 onValueChange={handleSelectCallType}
                 options={CallDirections}
             />
+            
             <CallListAdvanceFilters retrievedCallFilters={retrievedFilters} resetCallFilters={resetCallFilters} />
             <div className="relative w-full">
                 <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
