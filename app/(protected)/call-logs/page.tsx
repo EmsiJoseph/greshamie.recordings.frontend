@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchCalls } from "@/api/calls";
+import { useFetchCalls } from "@/api/calls";
 import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
@@ -17,7 +17,7 @@ type CurrentAudio = string | null;
 
 export default function CallLogPage() {
   const { retrievedFilters, resetCallFilters } = useCallFilters();
-  const queryClient = useQueryClient();
+  const { fetchCalls } = useFetchCalls()
 
   // State to keep track of the active call ID.
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
@@ -27,19 +27,9 @@ export default function CallLogPage() {
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  // Convert any Date filters to ISO strings.
-  let filters = { ...retrievedFilters } as Record<string, any>;
-  Object.entries(retrievedFilters).forEach(([key, value]) => {
-    if (value instanceof Date) {
-      filters[key] = value.toISOString();
-    }
-  });
-
-  const filterValues = Object.values(filters).filter(Boolean) as string[];
-  console.log("filter VALUES", filterValues);
-
+  // Remove Falsy values
+  const filterValues = Object.values(retrievedFilters).filter(Boolean);
   // Fetch call data using React Query
-
   const { data, isFetching, isError } = useQuery<AxiosResponse<ICallLogs>>({
     queryKey: ["calls", ...filterValues],
     queryFn: () => fetchCalls({ ...retrievedFilters }),

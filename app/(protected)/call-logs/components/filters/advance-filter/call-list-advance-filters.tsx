@@ -12,7 +12,7 @@ import { FormStateError } from "@/components/common/form-state-error"
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params"
 import { useState, useEffect } from "react"
 import { DualRangeSliderCustomLabel } from "@/components/ui/slider"
-import { parseAdvanceFilterDefaults } from "../../../lib/parse-advance-filter-defaults"
+import { useParseAdvanceFilterDefaults } from "../../../lib/use-parse-advance-filter-defaults"
 import { handleSubmitFilter } from "./handle-submit-filter"
 
 interface AdvanceFiltersProps {
@@ -43,7 +43,8 @@ export const CallListAdvanceFilters = ({
     const [resetSlider, setResetSlider] = useState(false);
 
     const { updateUrlParams } = useUpdateUrlParams()
-    const defaultValues = parseAdvanceFilterDefaults(retrievedCallFilters)
+    const { parseFilterDefaults } = useParseAdvanceFilterDefaults()
+    const defaultValues = parseFilterDefaults(retrievedCallFilters)
     const { watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
         resolver: zodResolver(CallAdvanceFilterSchema),
         defaultValues,
@@ -77,7 +78,6 @@ export const CallListAdvanceFilters = ({
         } else {
             setValue(rhfKey, "");
         }
-
     };
 
 
