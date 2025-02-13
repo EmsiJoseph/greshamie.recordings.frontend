@@ -1,7 +1,6 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import Link from "next/link";
 import { LogOut, User } from "lucide-react";
 import { logoutUserAction } from "@/lib/services/server-actions/authentication";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,7 @@ import { useAction } from "next-safe-action/hooks";
 import { getInitials, getUserInfo } from "@/lib/utils/format-user";
 
 export function UserNav() {
-    const { executeAsync, isExecuting } = useAction(logoutUserAction);
+    const { executeAsync } = useAction(logoutUserAction);
     const router = useRouter();
     const [userName, setUserName] = useState<string>("Guest"); 
 
@@ -69,7 +68,7 @@ export function UserNav() {
                             </Button>
                         </DropdownMenuTrigger>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom">Profile</TooltipContent>
+                    <TooltipContent side="bottom">User</TooltipContent>
                 </Tooltip>
             </TooltipProvider>
 
@@ -86,21 +85,15 @@ export function UserNav() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem className="hover:cursor-pointer" asChild>
-                        <Link href="/account" className="flex items-center">
-                            <User className="w-4 h-4 mr-3 text-muted-foreground" />
-                            Account
-                        </Link>
+                    <DropdownMenuItem
+                        className="hover:cursor-pointer"
+                        onClick={goToLogoutPage}
+                    >
+                        <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
+                        Sign out
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                    className="hover:cursor-pointer"
-                    onClick={goToLogoutPage}
-                >
-                    <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
-                    Sign out
-                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );
