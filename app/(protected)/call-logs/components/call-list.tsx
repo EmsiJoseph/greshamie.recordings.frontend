@@ -23,7 +23,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { formatDate } from "@/lib/utils/format-date";
-import { sortCalls, SortConfig } from "@/lib/utils/sort-data";
+import { sortData, SortConfig } from "@/lib/utils/sort-data";
 
 interface CallListProps {
   calls?: ICall[];
@@ -42,9 +42,9 @@ export const CallList = ({
   audioPlaying,
   onToggleAudio, }: CallListProps) => {
 
-  const [sortConfig, setSortConfig] = useState<SortConfig | null>({ key: "endDateTime", direction: "descending" });
+    const [sortConfig, setSortConfig] = useState<SortConfig<ICall> | null>({ key: "endDateTime", direction: "descending" });
 
-  const sortedCalls = React.useMemo(() => sortCalls(calls ?? [], sortConfig), [calls, sortConfig]);
+    const sortedCalls = React.useMemo(() => sortData(calls ?? [], sortConfig), [calls, sortConfig]);
 
   const requestSort = (key: keyof ICall) => {
     let direction: "ascending" | "descending" | null = "ascending";

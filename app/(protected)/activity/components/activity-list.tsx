@@ -7,13 +7,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IActivity } from "@/lib/interfaces/activity-interface";
-import { EllipsisVertical } from "lucide-react";
-import React from "react";
+import { EllipsisVertical, ArrowUpDown, ArrowUpWideNarrow, ArrowDownNarrowWide } from "lucide-react";
+import React, { useState } from "react";
 import ActivityListSkeleton from "@/components/presentational/activity-list-skeleton";
 import ActivityListPagination from "@/components/presentational/activity-list-pagination";
 import ActivityIcon from "./activity-type-with-icon";
 import { formatDate } from "@/lib/utils/format-date";
 import { eventDirectionIcons } from "@/constants/activity-types";
+import { sortData, SortConfig } from "@/lib/utils/sort-data";
+
 interface ActivityListProps {
   activities?: IActivity[];
   isFetching: boolean;
@@ -27,26 +29,53 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
     setPage(newPage);
   };
 
+  const [sortConfig, setSortConfig] = useState<SortConfig<IActivity> | null>({ key: "timestamp", direction: "descending" });
+
+  const sortedActivities = React.useMemo(() => sortData(activities ?? [], sortConfig), [activities, sortConfig]);
+
+  const requestSort = (key: keyof IActivity) => {
+    let direction: "ascending" | "descending" | null = "ascending";
+    if (sortConfig && sortConfig.key === key) {
+      if (sortConfig.direction === "ascending") {
+        direction = "descending";
+      } else if (sortConfig.direction === "descending") {
+        direction = null;
+      }
+    }
+    setSortConfig(direction ? { key, direction } : null);
+  };
+
+  const getSortIcon = (key: string) => {
+    if (!sortConfig) return <ArrowUpDown size={15} />;
+    if (sortConfig.key !== key) return <ArrowUpDown size={15} />;
+    return sortConfig.direction === "ascending" ? <ArrowUpWideNarrow size={15} /> : <ArrowDownNarrowWide size={15} />;
+  };
+
   if (isFetching) {
     return <ActivityListSkeleton />;
   }
-
 
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>User</TableHead>
-            <TableHead>Action</TableHead>
+            <TableHead onClick={() => requestSort("timestamp")}>
+              Date {getSortIcon("timestamp")}
+            </TableHead>
+            <TableHead onClick={() => requestSort("userName")}>
+              User {getSortIcon("userName")}
+            </TableHead>
+            <TableHead>
+              Action
+            </TableHead>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {activities && activities.length > 0 ? (
-            activities.map((activity) => (
+          {sortedActivities && sortedActivities.length > 0 ? (
+            sortedActivities.map((activity) => (
               <TableRow key={activity.id}>
                 <TableCell>{formatDate(activity.timestamp)}</TableCell>
                 <TableCell>{activity.userName}</TableCell>

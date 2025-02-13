@@ -1,20 +1,18 @@
-import { ICall } from "../interfaces/call-interface";
-
-export interface SortConfig{
-    key: keyof ICall;
+export interface SortConfig<T> {
+    key: keyof T;
     direction: "ascending" | "descending";
 }
 
-export const sortCalls = (calls: ICall[], sortConfig: SortConfig | null) => {
-    if (!calls || !sortConfig) return calls;
+export const sortData = <T>(data: T[], sortConfig: SortConfig<T> | null): T[] => {
+    if (!data || !sortConfig) return data;
 
-    return [...calls].sort((a, b) => {
+    return [...data].sort((a, b) => {
         let aValue = a[sortConfig.key];
         let bValue = b[sortConfig.key];
 
         if (sortConfig.key === "startDateTime" || sortConfig.key === "endDateTime") {
-            aValue = typeof aValue === "boolean" ? 0 : new Date(aValue).getTime();
-            bValue = typeof bValue === "boolean" ? 0 : new Date(bValue).getTime();
+            aValue = typeof aValue === "boolean" ? 0 : new Date(aValue as unknown as string).getTime();
+            bValue = typeof bValue === "boolean" ? 0 : new Date(bValue as unknown as string).getTime();
         }
 
         if (aValue < bValue) {
