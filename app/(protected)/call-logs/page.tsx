@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFetchCalls } from "@/api/calls";
 import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import { CallList } from "./components/call-list";
@@ -13,45 +13,48 @@ import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
 import { fetchDownloadUrl } from "@/api/download";
 
-type CurrentAudio = string | null;
+type AudioData = {
+  streamingUrl: string | null;
+  downloadUrl: string | null;
+};
 
 export default function CallLogPage() {
   const { retrievedFilters, resetCallFilters } = useCallFilters();
-  const { fetchCalls } = useFetchCalls()
+  const { fetchCalls } = useFetchCalls();
 
-  // State to keep track of the active call ID.
-  const [activeCallId, setActiveCallId] = useState<string | number | null>(
-    null
-  );
-  const [currentAudio, setCurrentAudio] = useState<CurrentAudio>(null);
+  const [activeCallId, setActiveCallId] = useState<string | number | null>(null);
+  const [audioData, setAudioData] = useState<AudioData | null>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  // Remove Falsy values
+  // Remove falsy values
   const filterValues = Object.values(retrievedFilters).filter(Boolean);
+
   // Fetch call data using React Query
   const { data, isFetching, isError } = useQuery<AxiosResponse<ICallLogs>>({
     queryKey: ["calls", ...filterValues],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
   });
 
-  // Mutation to fetch the streaming URL.
-  const audioMutation = useMutation({
-    mutationKey: ["currentAudio"],
-    mutationFn: async (call: ICall | null): Promise<CurrentAudio> => {
-      if (!call) {
-        console.log("Pausing audio.");
-        return null;
-      }
-      console.log("Fetching streaming URL for call:", call);
-      const response: AxiosResponse<ICallLogs> = await fetchStreamingUrl(call);
-      console.log("Received streaming URL response:", response.data);
-      // Use the property name matching your API response (lowercase 'streamingUrl')
-      return response.data.streamingUrl ?? null;;
+  // Unified mutation for fetching streaming and download URLs
+  const fetchAudioData = useMutation({
+    mutationKey: ["audioData"],
+    mutationFn: async (call: ICall | null): Promise<AudioData | null> => {
+      if (!call) return null;
+      
+      const [streamingResponse, downloadResponse] = await Promise.all([
+        fetchStreamingUrl(call),
+        fetchDownloadUrl(call),
+      ]);
+      
+      return {
+        streamingUrl: streamingResponse.data.streamingUrl ?? null,
+        downloadUrl: downloadResponse.data.downloadUrl ?? null,
+      };
     },
     onSuccess: (data, variables) => {
-      console.log("Setting current audio:", data);
-      setCurrentAudio(data);
+      console.log("Fetched audio data:", data);
+      setAudioData(data);
+      
       if (variables) {
         setActiveCallId(variables.id);
         setAudioPlaying(true);
@@ -59,19 +62,6 @@ export default function CallLogPage() {
         setActiveCallId(null);
         setAudioPlaying(false);
       }
-    },
-  });
-
-  const downloadMutation = useMutation({
-    mutationKey: ["downloadUrl"],
-    mutationFn: async (call: ICall | null): Promise<string | null> => {
-      if (!call) return null;
-      const response = await fetchDownloadUrl(call);
-      return response.data.downloadUrl ?? null;; // Make sure this matches your API response
-    },
-    onSuccess: (data) => {
-      console.log("Download URL received:", data);
-      setDownloadUrl(data);
     },
   });
 
@@ -84,14 +74,12 @@ export default function CallLogPage() {
     }
   }, [isError]);
 
-  // Retrieve the current streaming URL from the query cache.
   const toggleAudio = () => {
     setAudioPlaying((prev) => !prev);
   };
 
-  // Reset audio state when AudioPlayer is closed.
   const handleAudioClose = () => {
-    setCurrentAudio(null);
+    setAudioData(null);
     setActiveCallId(null);
     setAudioPlaying(false);
   };
@@ -107,8 +95,7 @@ export default function CallLogPage() {
         isFetching={isFetching}
         onPlayAudio={(call) => {
           if (call && call.id !== activeCallId) {
-            audioMutation.mutate(call); // Fetch streaming URL
-            downloadMutation.mutate(call); // Fetch download URL
+            fetchAudioData.mutate(call);
           } else if (call && call.id === activeCallId) {
             toggleAudio();
           } else {
@@ -120,11 +107,10 @@ export default function CallLogPage() {
         audioPlaying={audioPlaying}
         onToggleAudio={toggleAudio}
       />
-      {/* Render AudioPlayer only if a streaming URL exists */}
-      {currentAudio && (
+      {audioData?.streamingUrl && (
         <AudioPlayer
-          url={currentAudio}
-          downloadUrl={downloadUrl ?? undefined} // Pass the fetched download URL
+          url={audioData.streamingUrl}
+          downloadUrl={audioData.downloadUrl ?? undefined}
           playing={audioPlaying}
           onPlayPause={toggleAudio}
           onClose={handleAudioClose}
