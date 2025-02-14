@@ -63,3 +63,5 @@ export interface ICallAdvanceFilterComponent {
     hasPciCompliance?: boolean,
     hasQualityEvaluation?: boolean,
 }
+
+export type TCallFilterKeys = keyof ICallFilters;

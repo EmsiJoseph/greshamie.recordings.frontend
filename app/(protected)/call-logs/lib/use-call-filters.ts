@@ -34,7 +34,7 @@ export const useCallFilters = () => {
       hasNext: getBooleanUrlParam("hasNext"),
       hasPrevious: getBooleanUrlParam("hasPrevious"),
       pageSize: getNumericUrlParam("pageSize"),
-      pageOffSet: getNumericUrlParam("pageOffset"),
+      pageOffSet: getNumericUrlParam("pageOffSet"),
       totalCount: getNumericUrlParam("totalCount"),
       totalPages: getNumericUrlParam("totalPages"),
     };

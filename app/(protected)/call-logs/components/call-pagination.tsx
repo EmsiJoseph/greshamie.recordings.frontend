@@ -17,31 +17,33 @@ export const CallPagination = ({ callLogs }: CallPaginationProps) => {
   const totalPages = retrievedFilters?.totalPages
   const hasNext = retrievedFilters?.hasNext
 
+  console.log("current page", currPage)
+
   const handlePageChange = (
     nextOrPrevOrSet?: "next" | "prev" | "set",
     page?: string | number
   ) => {
     if (nextOrPrevOrSet === "set") {
       page = page ? page : 1; // if undefined, set to 1
-      updateUrlParams({ "pageOffset": page })
+      updateUrlParams({ "pageOffSet": page })
       return
     }
 
     // For previous and next
     if (!currPage) {
       // if undefined, just set the page to 1
-      updateUrlParams({ "pageOffset": 1 })
+      updateUrlParams({ "pageOffSet": 1 })
       return
     }
 
     if (nextOrPrevOrSet === "next") {
-      updateUrlParams({ "pageOffset": currPage + 1 })
+      updateUrlParams({ "pageOffSet": currPage + 1 })
       return
     }
 
     if (nextOrPrevOrSet === "prev") {
       if (currPage >= 2) {
-        updateUrlParams({ "pageOffset": currPage - 1 })
+        updateUrlParams({ "pageOffSet": currPage - 1 })
         return
       }
     }
