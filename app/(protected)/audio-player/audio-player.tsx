@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactPlayer from "react-player";
 import {
   Download,
@@ -29,7 +28,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   onClose,
   downloadUrl,
 }) => {
-  const [played, setPlayed] = useState(0);
+  const [played, setPlayed] = useState<number>(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
@@ -99,12 +98,15 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     updateDragProgress(e.clientX);
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging) return;
-    updateDragProgress(e.clientX);
-  };
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging) return;
+      updateDragProgress(e.clientX);
+    },
+    [isDragging]
+  );
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     if (isDragging) {
       setIsDragging(false);
       const newTime = (isDragging ? dragProgress : played) * duration;
@@ -113,7 +115,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       }
       setPlayed(dragProgress);
     }
-  };
+  }, [isDragging, dragProgress, played, duration]);
 
   // Event listeners for Audio dragging.
   useEffect(() => {
@@ -128,7 +130,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, dragProgress, duration]);
+  }, [isDragging, dragProgress, duration, handleMouseMove, handleMouseUp]);
 
   return (
     // <div className="w-full bg-white p-4 rounded-lg shadow-lg flex flex-col relative mt-10">

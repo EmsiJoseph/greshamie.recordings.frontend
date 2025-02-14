@@ -237,7 +237,7 @@ export const CallListAdvanceFilters = ({
                                 </Label>
                                 <SingleToggleGroupFilter
                                     onValueChange={
-                                        (value: string) => handleBoolChange(value, "hasVideoRecording")
+                                        (defaultValue: string) => handleBoolChange(defaultValue, "hasVideoRecording")
                                     }
                                     options={hasVideoOptions}
                                     value={hasVideoRecording?.toString() || ""}

@@ -29,6 +29,15 @@ export interface ICallFilters {
     hasVideoRecording?: boolean,
     hasPciCompliance?: boolean,
     hasQualityEvaluation?: boolean,
+
+
+    // Pagination
+    hasNext?: boolean,
+    hasPrevious?: boolean,
+    pageSize?: number
+    pageOffset?: number
+    totalCount?: number,
+    totalPages?: number
 }
 
 export interface ICallLogs {

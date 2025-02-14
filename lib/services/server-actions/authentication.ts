@@ -42,7 +42,6 @@ export const loginUserAction = actionClient
             });
 
             if (response?.data?.accessToken) {
-                // console.log("AUTHENTICATION RES.DATA", response.data)
                 const isSetSuccessfully = await setAuthCookie(response?.data);
                 if (!isSetSuccessfully) {
                     throw new Error("Failed to set auth cookie");
@@ -73,7 +72,6 @@ export const reauthenticate = async (): Promise<boolean> => {
         const response = await GreshamAxiosConfig.post(reauthenticateEndpoint,
             { RefreshToken: refreshToken.value },  // Request body
         );
-        // console.log("reauthenticate, ", response.data)
 
 
         if (response?.status !== 200) {

@@ -39,7 +39,7 @@ export const ActivityListFilters = ({ retrievedFilters, resetActivityFilters }: 
   return (
     <div className="flex gap-4">
         <SingleToggleGroupFilter
-            value={retrievedFilters?.eventType}
+            defaultValue={retrievedFilters?.eventType}
             onValueChange={handleSelectActivityType}
             options={EventTypes}
         />
