@@ -1,58 +1,40 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy ASP.Net Core app to Azure Web App - gresham-recordings-app
+name: Deploy to Azure Web App
 
 on:
   push:
     branches:
-      - prod
-  workflow_dispatch:
+      - prod  # Change this if your production branch is different
 
 jobs:
-  build:
-    runs-on: windows-latest
-    permissions:
-      contents: read #This is required for actions/checkout
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          dotnet-version: '8.x'
+          node-version: 18  # Ensure the correct Node.js version for Next.js
+          cache: 'npm'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Install dependencies
+        run: npm ci
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+      - name: Build Next.js app
+        run: npm run build
 
-      - name: Upload artifact for deployment job
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: nextjs-build
+          path: .next/
 
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v2
         with:
-          app-name: 'gresham-recordings-app'
-          slot-name: 'Production'
-          package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7FCABC95BBB644BFB300C2BB5EDC0138 }}
+          app-name: 'gresham-recordings-app'  # Replace with your Azure Web App name
+          slot-name: 'production'  # If using deployment slots, otherwise omit
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: '.'  # Deploys the entire project folder
