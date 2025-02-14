@@ -39,6 +39,8 @@ export const CallListAdvanceFilters = ({
     retrievedCallFilters,
     resetCallFilters
 }: AdvanceFiltersProps) => {
+  console.log("Retrieveddd", retrievedCallFilters)
+
     const [open, setOpen] = useState(false);
     const [resetSlider, setResetSlider] = useState(false);
 
@@ -57,6 +59,8 @@ export const CallListAdvanceFilters = ({
     const endDate = watch("endDate")
     const endTime = watch("endTime")
 
+    console.log("start date", startDate)
+
     const handleDateChange = (
         event: React.ChangeEvent<HTMLInputElement>,
         rhfKey: keyof ICallAdvanceFilterComponent,
@@ -71,7 +75,7 @@ export const CallListAdvanceFilters = ({
             setValue(rhfKey, ""); // or you could use an empty string or undefined
         }
     };
-    const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>, rhfKey: keyof ICallAdvanceFilterComponent, currDateStr?: string) => {
+    const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>, rhfKey: keyof ICallAdvanceFilterComponent) => {
         const time = event.target.value;
         if (time) {
             setValue(rhfKey, time);
@@ -246,7 +250,7 @@ export const CallListAdvanceFilters = ({
                                 <FormStateError error={formError.hasVideoRecording?.message} />
                             </div>
                             {/* --> 02 Has PCI Compliance */}
-                            <div className="w-full">
+                            {/* <div className="w-full">
                                 <Label className="text-right">
                                     PCI Compliance
                                 </Label>
@@ -259,9 +263,9 @@ export const CallListAdvanceFilters = ({
                                     toggleItemClass={toggleItemClass}
                                 />
                                 <FormStateError error={formError.hasPciCompliance?.message} />
-                            </div>
+                            </div> */}
                             {/* --> 03 Has Quality Evaluation */}
-                            <div className="w-full">
+                            {/* <div className="w-full">
                                 <Label className="text-right">
                                     Quality Evaluation
                                 </Label>
@@ -274,7 +278,7 @@ export const CallListAdvanceFilters = ({
                                     toggleItemClass={toggleItemClass}
                                 />
                                 <FormStateError error={formError.hasQualityEvaluation?.message} />
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </form>

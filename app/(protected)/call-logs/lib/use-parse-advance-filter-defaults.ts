@@ -2,7 +2,6 @@ import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-pa
 import { ICallFilters } from "@/lib/interfaces/call-interface";
 
 export const useParseAdvanceFilterDefaults = () => {
-    const { deleteUrlParam } = useUpdateUrlParams()
     const parseFilterDefaults = (retrievedFilters?: ICallFilters) => {
         if (!retrievedFilters) {
             return {

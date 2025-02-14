@@ -5,7 +5,7 @@ export const useUpdateUrlParams = () => {
   const router = useRouter();
 
   // This function appends, updates, or deletes filters without replacing everything.
-  const updateUrlParams = <T extends Record<string, any>>(newFilters?: T) => {
+  const updateUrlParams = async <T extends Record<string, any>>(newFilters?: T) => {
     if (!newFilters) return;
 
     const params = new URLSearchParams(searchParams);
@@ -63,17 +63,6 @@ export const useUpdateUrlParams = () => {
       `${url.pathname}?${params.toString()}`
     );
   };
-
-  // const deleteUrlParam = (key: string) => {
-  //   const params = new URLSearchParams(searchParams);
-
-  //   // Delete the parameter
-  //   params.delete(key);
-
-  //   // Update the URL with shallow routing
-  //   const updatedParams = params.toString() ? `?${params.toString()}` : ""
-  //   router.replace(updatedParams);
-  // };
 
   return { updateUrlParams, resetUrlParams, deleteUrlParam };
 };
