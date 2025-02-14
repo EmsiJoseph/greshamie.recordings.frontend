@@ -13,8 +13,7 @@ import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
 import { CallTypeWithIcon } from "./call-type-with-icon";
 import { formatDate } from "@/lib/utils/format-date";
-import { sortCalls, SortConfig } from "@/lib/utils/sort-data";
-import Pagination from "@/components/common/pagination";
+import { sortData, ISortConfig } from "@/lib/utils/sort-data";
 import { CallPagination } from "./call-pagination";
 
 interface CallListProps {
@@ -34,9 +33,8 @@ export const CallList = ({
   audioPlaying,
   onToggleAudio, }: CallListProps) => {
 
-  const [sortConfig, setSortConfig] = useState<SortConfig | null>({ key: "endDateTime", direction: "descending" });
-
-  const sortedCalls = React.useMemo(() => sortCalls(calls?.items ?? [], sortConfig), [calls?.items, sortConfig]);
+  const [sortConfig, setSortConfig] = useState<ISortConfig<ICall> | null>({ key: "endDateTime", direction: "descending" });
+  const sortedCalls = React.useMemo(() => sortData(calls?.items ?? [], sortConfig), [calls?.items, sortConfig]);
 
   const requestSort = (key: keyof ICall) => {
     let direction: "ascending" | "descending" | null = "ascending";
@@ -94,7 +92,7 @@ export const CallList = ({
 
         <TableBody>
           {sortedCalls && sortedCalls.length > 0 ? (
-            sortedCalls.map((call) => (
+            sortedCalls.map((call: ICall) => (
               <TableRow key={call?.id}>
                 <TableCell>{call?.caller}</TableCell>
                 <TableCell>{call?.receiver}</TableCell>
@@ -139,7 +137,7 @@ export const CallList = ({
         </TableBody>
       </Table>
 
-      <CallPagination callLogs={calls}/>
+      <CallPagination callLogs={calls} />
     </div>
   );
 };

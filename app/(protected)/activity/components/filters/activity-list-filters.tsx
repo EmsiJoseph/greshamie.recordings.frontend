@@ -28,8 +28,6 @@ export const ActivityListFilters = ({ retrievedFilters, resetActivityFilters }: 
     updateUrlParams({ eventType: value });
   };
 
-  const isResetButtonActive = retrievedFilters?.eventType ? retrievedFilters?.eventType?.length < 1 : false;
-
   // 2. Search
   const [search, setSearch] = useState<IActivityFilters['search']>("");
   const debouncedSearch = useDebounce(search);

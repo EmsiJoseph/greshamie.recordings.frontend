@@ -13,7 +13,7 @@ export interface IActivity {
 export interface IActivityResponse {
     hasNext?: boolean,
     hasPrevious?: boolean,
-    items?: IActivity[] | [],
+    items: IActivity[] | [],
     pageSize?: number
     pageOffset?: number
     totalCount?: number,
@@ -23,8 +23,13 @@ export interface IActivityResponse {
 export interface IActivityFilters {
     search?: string,
     eventType?: TEventType,
-    startDate?: Date,
-    endDate?: Date,
-    user?: string,
-    recordingItem?: string,
+    startDate?: string,
+    endDate?: string,
+}
+
+export interface IActivityAdvanceFilterComponent {
+    startDate?: string,
+    endDate?: string,
+    startTime?: string,
+    endTime?: string,
 }

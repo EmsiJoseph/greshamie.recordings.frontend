@@ -19,6 +19,7 @@ interface AudioPlayerProps {
   playing: boolean;
   onPlayPause: () => void;
   onClose: () => void;
+  downloadUrl?: string;
 }
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({
@@ -26,6 +27,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   playing,
   onPlayPause,
   onClose,
+  downloadUrl,
 }) => {
   const [played, setPlayed] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -231,7 +233,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
           </div>
 
           {/* Download Button */}
-          <a href={url} download className="cursor-pointer">
+          <a
+            href={downloadUrl || "#"}
+            download={`call-recording-${new Date().toISOString()}.mp3`}
+            className={`cursor-pointer ${
+              downloadUrl ? "" : "opacity-50 pointer-events-none"
+            }`}
+          >
             <Download className="h-5 w-5 text-blue-500" />
           </a>
 

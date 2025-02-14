@@ -21,7 +21,6 @@ export const Pagination: React.FC<ActivityListPaginationProps> = ({
       onPageChange(value);
     }
   };
-
   const nextPage = currentPage ? currentPage + 1 : 1;
   const prevPage = currentPage ? currentPage - 1 : 1;
 
