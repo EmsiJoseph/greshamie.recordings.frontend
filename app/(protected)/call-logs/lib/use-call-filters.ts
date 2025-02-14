@@ -18,11 +18,14 @@ export const useCallFilters = () => {
       return parseBoolean(param);
     };
 
+    const startDate = getUrlParams("startDate") ?? undefined
+
+    console.log("start date hook", startDate)
     return {
       search: getUrlParams("search") || undefined,
       callDirection:
         (getUrlParams("callDirection") as TCallDirections) || undefined,
-      startDate: getUrlParams("startDate") ?? undefined,
+      startDate,
       endDate: getUrlParams("endDate") ?? undefined,
       minimumDurationSeconds: getNumericUrlParam("minimumDurationSeconds"),
       maximumDurationSeconds: getNumericUrlParam("maximumDurationSeconds"),

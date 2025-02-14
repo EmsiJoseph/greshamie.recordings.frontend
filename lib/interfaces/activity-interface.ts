@@ -1,4 +1,5 @@
 import { EventTypes } from "@/constants/activity-types"
+import { IPagination } from "./pagination-interface"
 
 export type TEventType = typeof EventTypes[keyof typeof EventTypes]
 
@@ -10,29 +11,15 @@ export interface IActivity {
     recordingId: string,
     timestamp: Date,
 }
-export interface IActivityResponse {
-    hasNext?: boolean,
-    hasPrevious?: boolean,
-    items: IActivity[] | [],
-    pageSize?: number
-    pageOffSet?: number
-    totalCount?: number,
-    totalPages?: number
+export interface IActivityResponse extends IPagination {
+    items: IActivity[] | []
 }
 
-export interface IActivityFilters {
+export interface IActivityFilters extends IPagination {
     search?: string,
     eventType?: TEventType,
     startDate?: string,
     endDate?: string,
-
-    // Pagination
-    hasNext?: boolean,
-    hasPrevious?: boolean,
-    pageSize?: number
-    pageOffSet?: number
-    totalCount?: number,
-    totalPages?: number
 }
 
 export interface IActivityAdvanceFilterComponent {

@@ -42,6 +42,21 @@ export default function CallLogPage() {
   });
 
   useEffect(() => {
+    const startDate = retrievedFilters.startDate
+    const endDate = retrievedFilters.endDate
+
+    const now = new Date();
+    const aWeekAgo = new Date(now);
+    aWeekAgo.setDate(now.getDate() - 7);
+
+    if (!startDate) {
+      updateUrlParams({ startDate: aWeekAgo.toISOString() })
+    }
+    if (!endDate) {
+      updateUrlParams({ endDate: now.toISOString() })
+    }
+
+
     if (isSuccess) {
       const paginationData: ICallFilters = {
         hasNext: data.data.hasNext,
