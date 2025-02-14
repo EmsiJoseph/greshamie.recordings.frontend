@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
 import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
+import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { fetchDownloadUrl } from "@/api/download";
 
 type AudioData = {
@@ -19,6 +20,7 @@ type AudioData = {
 };
 
 export default function CallLogPage() {
+  const { updateUrlParams } = useUpdateUrlParams()
   const { retrievedFilters, resetCallFilters } = useCallFilters();
   const { fetchCalls } = useFetchCalls();
 
@@ -30,10 +32,26 @@ export default function CallLogPage() {
   const filterValues = Object.values(retrievedFilters).filter(Boolean);
 
   // Fetch call data using React Query
-  const { data, isFetching, isError } = useQuery<AxiosResponse<ICallLogs>>({
+  const { data, isFetching, isError, isSuccess } = useQuery<AxiosResponse<ICallLogs>>({
     queryKey: ["calls", ...filterValues],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
   });
+
+  useEffect(() => {
+
+    console.log("PAGEE OFFSEEETTT", data)
+    if (isSuccess) {
+      const paginationData = {
+        hasNext: data.data.hasNext,
+        hasPrevious: data.data.hasPrevious,
+        pageSize: data.data.pageSize,
+        pageOffset: data.data.pageOffset,
+        totalCount: data.data.totalCount,
+        totalPages: data.data.totalPages,
+      }
+      updateUrlParams(paginationData)
+    }
+  }, [isSuccess, updateUrlParams])
 
   // Unified mutation for fetching streaming and download URLs
   const fetchAudioData = useMutation({
@@ -85,13 +103,13 @@ export default function CallLogPage() {
   };
 
   return (
-    <div>
+    <div className="flex flex-col gap-6 sm:gap-12">
       <CallListFilters
         retrievedFilters={retrievedFilters}
         resetCallFilters={resetCallFilters}
       />
       <CallList
-        calls={data?.data?.items}
+        calls={data?.data}
         isFetching={isFetching}
         onPlayAudio={(call) => {
           if (call && call.id !== activeCallId) {

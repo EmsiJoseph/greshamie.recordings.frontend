@@ -8,25 +8,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowUpDown, ArrowUpWideNarrow, ArrowDownNarrowWide, CirclePlay, Pause } from "lucide-react";
-import { ICall } from "@/lib/interfaces/call-interface";
+import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
-import { useQueryClient } from "@tanstack/react-query";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
 import { CallTypeWithIcon } from "./call-type-with-icon";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { formatDate } from "@/lib/utils/format-date";
-import { sortData, SortConfig } from "@/lib/utils/sort-data";
+import { sortData, ISortConfig } from "@/lib/utils/sort-data";
+import { CallPagination } from "./call-pagination";
 
 interface CallListProps {
-  calls?: ICall[];
+  calls?: ICallLogs;
   isFetching?: boolean;
   onPlayAudio?: (call: ICall | null) => void;
   activeCallId?: string | number | null;
@@ -34,17 +25,16 @@ interface CallListProps {
   onToggleAudio?: () => void;
 }
 
-export const CallList = ({ 
-  calls, 
-  isFetching, 
+export const CallList = ({
+  calls,
+  isFetching,
   onPlayAudio,
   activeCallId,
   audioPlaying,
   onToggleAudio, }: CallListProps) => {
 
-    const [sortConfig, setSortConfig] = useState<SortConfig<ICall> | null>({ key: "endDateTime", direction: "descending" });
-
-    const sortedCalls = React.useMemo(() => sortData(calls ?? [], sortConfig), [calls, sortConfig]);
+  const [sortConfig, setSortConfig] = useState<ISortConfig<ICall> | null>({ key: "endDateTime", direction: "descending" });
+  const sortedCalls = React.useMemo(() => sortData(calls?.items ?? [], sortConfig), [calls?.items, sortConfig]);
 
   const requestSort = (key: keyof ICall) => {
     let direction: "ascending" | "descending" | null = "ascending";
@@ -102,7 +92,7 @@ export const CallList = ({
 
         <TableBody>
           {sortedCalls && sortedCalls.length > 0 ? (
-            sortedCalls.map((call) => (
+            sortedCalls.map((call: ICall) => (
               <TableRow key={call?.id}>
                 <TableCell>{call?.caller}</TableCell>
                 <TableCell>{call?.receiver}</TableCell>
@@ -147,30 +137,7 @@ export const CallList = ({
         </TableBody>
       </Table>
 
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" isActive>
-              2
-            </PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      <CallPagination callLogs={calls} />
     </div>
   );
 };

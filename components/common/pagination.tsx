@@ -17,13 +17,12 @@ export const Pagination: React.FC<ActivityListPaginationProps> = ({
   const handlePageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!totalPages || !currentPage) return;
     let value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value >= 1 && value <= totalPages ) {
+    if (!isNaN(value) && value >= 1 && value <= totalPages) {
       onPageChange(value);
     }
   };
-
-  const nextPage = currentPage? currentPage + 1 : 1;
-  const prevPage = currentPage? currentPage - 1 : 1;
+  const nextPage = currentPage ? currentPage + 1 : 1;
+  const prevPage = currentPage ? currentPage - 1 : 1;
 
   return (
     <div className="flex items-center justify-between w-full mt-4">

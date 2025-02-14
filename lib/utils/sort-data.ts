@@ -1,9 +1,9 @@
-export interface SortConfig<T> {
+export interface ISortConfig<T> {
     key: keyof T;
     direction: "ascending" | "descending";
 }
 
-export const sortData = <T>(data: T[], sortConfig: SortConfig<T> | null): T[] => {
+export const sortData = <T>(data: T[], sortConfig: ISortConfig<T> | null): T[] => {
     if (!data || !sortConfig) return data;
 
     return [...data].sort((a, b) => {

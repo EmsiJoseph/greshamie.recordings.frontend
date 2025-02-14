@@ -1,48 +1,46 @@
 import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { ICallFilters, TCallDirections } from "@/lib/interfaces/call-interface";
+import { parseBoolean, parseNumber } from "@/lib/utils/parse-values";
 
 export const useCallFilters = () => {
-  const { resetUrlParams } = useUpdateUrlParams();
-  const getUrlParams = useGetUrlParams();
+    const { resetUrlParams } = useUpdateUrlParams()
 
-  const retrieveCallFilters = (): ICallFilters => {
-    const minimumDurationSeconds = getUrlParams("minimumDurationSeconds")
-      ? parseFloat(getUrlParams("minimumDurationSeconds")!)
-      : undefined;
 
-    const maximumDurationSeconds = getUrlParams("maximumDurationSeconds")
-      ? parseFloat(getUrlParams("maximumDurationSeconds")!)
-      : undefined;
 
-    const hasVideoRecording =
-      getUrlParams("hasVideoRecording") === ""
-        ? undefined
-        : getUrlParams("hasVideoRecording") === "true";
+    const retrieveCallFilters = (): ICallFilters => {
+        const getUrlParams = useGetUrlParams();
 
-    const hasPciCompliance =
-      getUrlParams("hasPciCompliance") === ""
-        ? undefined
-        : getUrlParams("hasPciCompliance") === "true";
+        const getNumericUrlParam = (key: string): number | undefined => {
+            const param = getUrlParams(key);
+            return parseNumber(param)
+        };
 
-    const hasQualityEvaluation =
-      getUrlParams("hasPciCompliance") === ""
-        ? undefined
-        : getUrlParams("hasPciCompliance") === "true";
+        const getBooleanUrlParam = (key: string): boolean | undefined => {
+            const param = getUrlParams(key);
+            return parseBoolean(param);
+        };
 
-    return {
-      search: getUrlParams("search") || undefined,
-      callDirection:
-        (getUrlParams("callDirection") as TCallDirections) || undefined,
-      startDate: getUrlParams("startDate") ?? undefined,
-      endDate: getUrlParams("endDate") ?? undefined,
-      minimumDurationSeconds,
-      maximumDurationSeconds,
-      hasVideoRecording,
-      hasPciCompliance,
-      hasQualityEvaluation,
-    };
-  };
+        return {
+            search: getUrlParams("search") || undefined,
+            callDirection: getUrlParams("callDirection") as TCallDirections || undefined,
+            startDate: getUrlParams("startDate") ?? undefined,
+            endDate: getUrlParams("endDate") ?? undefined,
+            minimumDurationSeconds: getNumericUrlParam("minimumDurationSeconds"),
+            maximumDurationSeconds: getNumericUrlParam("maximumDurationSeconds"),
+            hasVideoRecording: getBooleanUrlParam("hasVideoRecording"),
+            hasPciCompliance: getBooleanUrlParam("hasPciCompliance"),
+            hasQualityEvaluation: getBooleanUrlParam("hasQualityEvaluation"),
+
+            // Pagination
+            hasNext: getBooleanUrlParam("hasNext"),
+            hasPrevious: getBooleanUrlParam("hasPrevious"),
+            pageSize: getNumericUrlParam("pageSize"),
+            pageOffset: getNumericUrlParam("pageOffset"),
+            totalCount: getNumericUrlParam("totalCount"),
+            totalPages: getNumericUrlParam("totalPages")
+        }
+    }
 
   const retrievedFilters = retrieveCallFilters();
 

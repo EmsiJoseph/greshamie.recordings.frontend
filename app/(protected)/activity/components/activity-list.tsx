@@ -14,7 +14,7 @@ import ActivityListPagination, { Pagination } from "@/components/common/paginati
 import ActivityIcon from "./activity-type-with-icon";
 import { formatDate } from "@/lib/utils/format-date";
 import { eventDirectionIcons } from "@/constants/activity-types";
-import { sortData, SortConfig } from "@/lib/utils/sort-data";
+import { sortData, ISortConfig } from "@/lib/utils/sort-data";
 
 interface ActivityListProps {
   activities?: IActivity[];
@@ -29,7 +29,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
     setPage(newPage);
   };
 
-  const [sortConfig, setSortConfig] = useState<SortConfig<IActivity> | null>({ key: "timestamp", direction: "descending" });
+  const [sortConfig, setSortConfig] = useState<ISortConfig<IActivity> | null>({ key: "timestamp", direction: "descending" });
 
   const sortedActivities = React.useMemo(() => sortData(activities ?? [], sortConfig), [activities, sortConfig]);
 
