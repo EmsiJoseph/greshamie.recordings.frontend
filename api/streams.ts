@@ -30,7 +30,6 @@ export const fetchStreamingUrl = async (
 //     } as AxiosResponse<ICallLogs>;
 //   }
 
-  // console.log("Parsed call:", parsedCall);
 
   const params = new URLSearchParams();
   params.append("id", String(call.id));
@@ -53,7 +52,6 @@ export const fetchStreamingUrl = async (
   params.append("recorder", call.recorder);
 
   const finalEndpoint = `${streamRecordingEndpoint}?${params.toString()}`;
-  console.log("Final streaming URL endpoint:", finalEndpoint);
 
   return await GreshamAxiosConfig.get(finalEndpoint);
 };

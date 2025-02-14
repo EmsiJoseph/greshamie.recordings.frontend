@@ -44,7 +44,7 @@ export default function PanelLayout({
               "w-full flex-1 overflow-x-auto dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300 lg:ml-72"
             )}
           >
-            <div className="w-full container pt-8 pb-8 px-4 sm:px-8">
+            <div className="w-full pt-8 pb-8 px-4 sm:px-8">
               {children}
             </div>
           </main>

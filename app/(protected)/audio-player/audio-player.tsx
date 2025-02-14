@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactPlayer from "react-player";
 import {
@@ -29,7 +28,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   onClose,
   downloadUrl,
 }) => {
-  const [played, setPlayed] = useState(0);
+  const [played, setPlayed] = useState<number>(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
@@ -99,10 +98,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     updateDragProgress(e.clientX);
   };
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-    updateDragProgress(e.clientX);
-  }, [isDragging]);
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging) return;
+      updateDragProgress(e.clientX);
+    },
+    [isDragging]
+  );
 
   const handleMouseUp = useCallback(() => {
     if (isDragging) {

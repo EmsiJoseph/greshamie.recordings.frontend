@@ -23,7 +23,6 @@ export default function ActivityPage() {
 
   // --> Convert filters to an array and clean falsy values
   const filterValues = Object.values(filters).filter(Boolean) as string[];
-  console.log("filter VALUES", filterValues);
 
   const { data, isFetching, isError } = useQuery({
     queryKey: ['activities', ...filterValues],

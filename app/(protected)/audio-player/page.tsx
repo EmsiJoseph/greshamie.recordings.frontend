@@ -1,3 +1,4 @@
+'use client';
 import AudioPlayer from "./audio-player";
 export default function Page() {
   return (

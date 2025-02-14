@@ -106,7 +106,6 @@ export const CallList = ({
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => {
-                        console.log("Play button clicked for call:", call.id);
                         if (activeCallId === call.id) {
                           onToggleAudio && onToggleAudio();
                         } else {
