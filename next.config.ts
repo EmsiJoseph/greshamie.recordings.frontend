@@ -4,12 +4,8 @@ const clientAppUri = process.env.NEXT_PUBLIC_CLIENT_APP_URI || "http://localhost
 
 const nextConfig: NextConfig = {
     reactStrictMode: true,
-    experimental: {
-        serverActions: {
-            bodySizeLimit: '1mb', // Set your desired limit
-            allowedOrigins: [clientAppUri], // Add environment variable dynamically
-        },
-    },
+    distDir: "build",
+    output: "standalone"
 };
 
 export default nextConfig;
