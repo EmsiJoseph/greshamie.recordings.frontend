@@ -28,7 +28,6 @@ export const fetchDownloadUrl = async (
   params.append("recorder", call.recorder);
 
   const finalEndpoint = `${downloadRecordingEndpoint}?${params.toString()}`;
-  console.log("Final download URL endpoint:", finalEndpoint);
 
   return await GreshamAxiosConfig.get(finalEndpoint);
 };

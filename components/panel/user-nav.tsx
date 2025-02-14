@@ -28,7 +28,6 @@ export function UserNav() {
 
     const goToLogoutPage = async () => {
         const result = await executeAsync(); // Capture the result
-        console.log(result)
         router.replace("/login");
 
         if (!result?.data) {

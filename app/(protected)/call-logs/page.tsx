@@ -20,11 +20,13 @@ type AudioData = {
 };
 
 export default function CallLogPage() {
-  const { updateUrlParams } = useUpdateUrlParams()
+  const { updateUrlParams } = useUpdateUrlParams();
   const { retrievedFilters, resetCallFilters } = useCallFilters();
   const { fetchCalls } = useFetchCalls();
 
-  const [activeCallId, setActiveCallId] = useState<string | number | null>(null);
+  const [activeCallId, setActiveCallId] = useState<string | number | null>(
+    null
+  );
   const [audioData, setAudioData] = useState<AudioData | null>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
 
@@ -32,13 +34,18 @@ export default function CallLogPage() {
   const filterValues = Object.values(retrievedFilters).filter(Boolean);
 
   // Fetch call data using React Query
-  const { data, isFetching, isError, isSuccess } = useQuery<AxiosResponse<ICallLogs>>({
+  const { data, isFetching, isError, isSuccess } = useQuery<
+    AxiosResponse<ICallLogs>
+  >({
     queryKey: ["calls", ...filterValues],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
   });
 
   useEffect(() => {
+<<<<<<< HEAD
     console.log("PAGEE OFFSEEETTT", data)
+=======
+>>>>>>> 0a739f83ddb02694ba28d2a6358d1b81e0a5de73
     if (isSuccess) {
       const paginationData = {
         hasNext: data.data.hasNext,
@@ -47,31 +54,30 @@ export default function CallLogPage() {
         pageOffset: data.data.pageOffset ?? 1,
         totalCount: data.data.totalCount,
         totalPages: data.data.totalPages,
-      }
-      updateUrlParams(paginationData)
+      };
+      updateUrlParams(paginationData);
     }
-  }, [isSuccess, updateUrlParams])
+  }, [isSuccess, updateUrlParams, data]);
 
   // Unified mutation for fetching streaming and download URLs
   const fetchAudioData = useMutation({
     mutationKey: ["audioData"],
     mutationFn: async (call: ICall | null): Promise<AudioData | null> => {
       if (!call) return null;
-      
+
       const [streamingResponse, downloadResponse] = await Promise.all([
         fetchStreamingUrl(call),
         fetchDownloadUrl(call),
       ]);
-      
+
       return {
         streamingUrl: streamingResponse.data.streamingUrl ?? null,
         downloadUrl: downloadResponse.data.downloadUrl ?? null,
       };
     },
     onSuccess: (data, variables) => {
-      console.log("Fetched audio data:", data);
       setAudioData(data);
-      
+
       if (variables) {
         setActiveCallId(variables.id);
         setAudioPlaying(true);

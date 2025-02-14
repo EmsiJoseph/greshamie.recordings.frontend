@@ -23,7 +23,6 @@ export const useFetchCalls = () => {
                         try {
                             new Date(value).toISOString();
                         } catch {
-                            console.log(`Removing ${key} due to invalid date format`);
                             deleteUrlParam(key);
                             return acc;
                         }
@@ -49,7 +48,6 @@ export const useFetchCalls = () => {
             }
         }
 
-        // console.log("FINAL ENDPOINT", finalEndpoint); 
         return await GreshamAxiosConfig.get(finalEndpoint);
     };
 
