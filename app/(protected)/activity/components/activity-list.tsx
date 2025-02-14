@@ -69,7 +69,6 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
             <TableHead>
               Action
             </TableHead>
-            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
 
@@ -109,9 +108,6 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
                   }
                 </TableCell>
 
-                <TableCell>
-                  <EllipsisVertical className="h-4" />
-                </TableCell>
               </TableRow>
             ))
           ) : (
