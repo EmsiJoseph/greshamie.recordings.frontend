@@ -13,7 +13,7 @@ interface CallPaginationProps {
 export const CallPagination = ({ callLogs }: CallPaginationProps) => {
   const { retrievedFilters } = useCallFilters();
   const { updateUrlParams } = useUpdateUrlParams()
-  const currPage = retrievedFilters?.pageOffset
+  const currPage = retrievedFilters?.pageOffSet
   const totalPages = retrievedFilters?.totalPages
   const hasNext = retrievedFilters?.hasNext
 
