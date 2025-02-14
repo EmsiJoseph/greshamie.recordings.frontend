@@ -48,7 +48,7 @@ export const CallList = ({
     setSortConfig(direction ? { key, direction } : null);
   };
 
-  const getSortIcon = (key: string) => {
+  const getSortIcon = (key: keyof ICall) => {
     if (!sortConfig) return <ArrowUpDown size={15} />;
     if (sortConfig.key !== key) return <ArrowUpDown size={15} />;
     return sortConfig.direction === "ascending" ? <ArrowUpWideNarrow size={15} /> : <ArrowDownNarrowWide size={15} />;
@@ -93,7 +93,7 @@ export const CallList = ({
         <TableBody>
           {sortedCalls && sortedCalls.length > 0 ? (
             sortedCalls.map((call: ICall) => (
-              <TableRow key={call?.id}>
+              <TableRow key={String(call?.id)}>
                 <TableCell>{call?.caller}</TableCell>
                 <TableCell>{call?.receiver}</TableCell>
                 <TableCell>{formatDate(call?.startDateTime)}</TableCell>
