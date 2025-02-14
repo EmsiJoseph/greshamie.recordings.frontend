@@ -42,12 +42,16 @@ export default function CallLogPage() {
   });
 
   useEffect(() => {
+<<<<<<< HEAD
+    console.log("PAGEE OFFSEEETTT", data)
+=======
+>>>>>>> 0a739f83ddb02694ba28d2a6358d1b81e0a5de73
     if (isSuccess) {
       const paginationData = {
         hasNext: data.data.hasNext,
         hasPrevious: data.data.hasPrevious,
         pageSize: data.data.pageSize,
-        pageOffset: data.data.pageOffset,
+        pageOffset: data.data.pageOffset ?? 1,
         totalCount: data.data.totalCount,
         totalPages: data.data.totalPages,
       };
