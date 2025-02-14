@@ -30,18 +30,18 @@ export default function PanelLayout({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col w-full">
         <div className="sticky top-0 z-50 w-full">
           <Navbar />
         </div>
 
-        <div className="flex flex-1">
+        <div className="flex flex-1 w-full">
           <Sidebar />
 
           {/* Main content with margin adjustment */}
           <main
             className={cn(
-              "flex-1 min-h-screen overflow-x-auto dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300 lg:ml-72"
+              "w-full flex-1 overflow-x-auto dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300 lg:ml-72"
             )}
           >
             <div className="w-full container pt-8 pb-8 px-4 sm:px-8">

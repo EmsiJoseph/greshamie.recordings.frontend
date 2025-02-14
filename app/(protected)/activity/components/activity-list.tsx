@@ -56,7 +56,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
   }
 
   return (
-    <div>
+    <div className="w-full">
       <Table>
         <TableHeader>
           <TableRow>

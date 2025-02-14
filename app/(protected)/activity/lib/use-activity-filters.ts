@@ -4,9 +4,9 @@ import { IActivityFilters, TEventType } from "@/lib/interfaces/activity-interfac
 
 export const useActivityFilters = () => {
     const { resetUrlParams } = useUpdateUrlParams();
+    const getUrlParams = useGetUrlParams();
 
     const retrieveActivityFilters = (): IActivityFilters => {
-        const getUrlParams = useGetUrlParams();
 
         return {
             search: getUrlParams("search") || "",
