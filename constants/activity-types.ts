@@ -1,4 +1,4 @@
-import { LogIn, LogOut, Play, Download, Trash2 } from "lucide-react";
+import { LogIn, LogOut, Play, Download, Trash2, RefreshCw } from "lucide-react";
 
 export const EventTypes = {
   SESSION: "SESSION",
@@ -14,5 +14,6 @@ export const eventDirectionIcons: Record<string, any> = {
   RECORDDELETED: { icon: Trash2, colorClass: "text-red-700 font-bold", value: "Recording Deleted" },
   MANUALSYNC: { icon: Download, colorClass: "text-blue-600 font-bold", value: "Manual Sync" },
   AUTOSYNC: { icon: Download, colorClass: "text-purple-600 font-bold", value: "Auto Sync" },
+  TOKENREFRESHED: { icon: RefreshCw, colorClass: "text-green-800 font-bold", value: "Token Refreshed" },
 };
 
