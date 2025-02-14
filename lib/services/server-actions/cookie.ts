@@ -34,7 +34,6 @@ export const setAuthCookie = async (response: IUserWithToken): Promise<boolean> 
     //     response.accessToken.expiresAt = thirtyMinutesAgo.toISOString()
     //     response.refreshToken.expiresAt = thirtyMinutesAgo.toISOString()
 
-    //     console.log("TEST EXPIRED DATE", response.accessToken.expiresAt, now)
     // }
     // Store cookie using `auth` key
     

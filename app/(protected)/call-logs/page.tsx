@@ -42,7 +42,6 @@ export default function CallLogPage() {
   });
 
   useEffect(() => {
-    console.log("FETCHED DATA", data)
     if (isSuccess) {
       const paginationData: ICallFilters = {
         hasNext: data.data.hasNext,

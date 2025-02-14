@@ -29,6 +29,5 @@ import { AxiosResponse } from "axios";
             }
         }
     
-        console.log(finalEndpoint); // Log the final endpoint with query params
         return await GreshamAxiosConfig.get(finalEndpoint);
 }
