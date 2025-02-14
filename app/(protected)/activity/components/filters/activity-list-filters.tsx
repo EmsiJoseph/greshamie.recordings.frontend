@@ -55,7 +55,7 @@ export const ActivityListFilters = ({
           retrievedActivityFilters={retrievedFilters} resetActivityFilters={resetActivityFilters} 
         />
         <div className="relative w-full">
-          <Input className="pr-9" placeholder="Search phone number, participants, or date range..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
+          <Input className="pr-9" placeholder="Search phone number or participants..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
           <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
         </div>
     </div>
