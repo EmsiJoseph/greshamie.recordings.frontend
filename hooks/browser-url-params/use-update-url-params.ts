@@ -11,7 +11,7 @@ export const useUpdateUrlParams = () => {
     const params = new URLSearchParams(searchParams);
 
     Object.entries(newFilters).forEach(([key, value]) => {
-      if (value) {
+      if (value !== null && value !== undefined) { // Allow 0, false, etc.
         if (Array.isArray(value)) { // For multi select filters like calltypes
           if (value.length === 0) {
             params.delete(key);

@@ -8,25 +8,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowUpDown, ArrowUpWideNarrow, ArrowDownNarrowWide, CirclePlay, Pause } from "lucide-react";
-import { ICall } from "@/lib/interfaces/call-interface";
+import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
-import { useQueryClient } from "@tanstack/react-query";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
 import { CallTypeWithIcon } from "./call-type-with-icon";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { formatDate } from "@/lib/utils/format-date";
 import { sortCalls, SortConfig } from "@/lib/utils/sort-data";
+import Pagination from "@/components/common/pagination";
+import { CallPagination } from "./call-pagination";
 
 interface CallListProps {
-  calls?: ICall[];
+  calls?: ICallLogs;
   isFetching?: boolean;
   onPlayAudio?: (call: ICall | null) => void;
   activeCallId?: string | number | null;
@@ -34,9 +26,9 @@ interface CallListProps {
   onToggleAudio?: () => void;
 }
 
-export const CallList = ({ 
-  calls, 
-  isFetching, 
+export const CallList = ({
+  calls,
+  isFetching,
   onPlayAudio,
   activeCallId,
   audioPlaying,
@@ -44,7 +36,7 @@ export const CallList = ({
 
   const [sortConfig, setSortConfig] = useState<SortConfig | null>({ key: "endDateTime", direction: "descending" });
 
-  const sortedCalls = React.useMemo(() => sortCalls(calls ?? [], sortConfig), [calls, sortConfig]);
+  const sortedCalls = React.useMemo(() => sortCalls(calls?.items ?? [], sortConfig), [calls?.items, sortConfig]);
 
   const requestSort = (key: keyof ICall) => {
     let direction: "ascending" | "descending" | null = "ascending";
@@ -147,30 +139,7 @@ export const CallList = ({
         </TableBody>
       </Table>
 
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" isActive>
-              2
-            </PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      <CallPagination callLogs={calls}/>
     </div>
   );
 };
