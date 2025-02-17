@@ -39,10 +39,9 @@ export const CallListAdvanceFilters = ({
     retrievedCallFilters,
     resetCallFilters
 }: AdvanceFiltersProps) => {
-  console.log("Retrieveddd", retrievedCallFilters)
-  console.log('Backend URL:', process.env.NEXT_PUBLIC_GRESHAM_BACKEND);
-  
 
+    console.log("Retrieveddd", retrievedCallFilters)
+    console.log('Backend URL:', process.env.NEXT_PUBLIC_GRESHAM_BACKEND);
     const [open, setOpen] = useState(false);
     const [resetSlider, setResetSlider] = useState(false);
 
@@ -60,8 +59,6 @@ export const CallListAdvanceFilters = ({
     const startTime = watch("startTime")
     const endDate = watch("endDate")
     const endTime = watch("endTime")
-
-    console.log("start date", startDate)
 
     const handleDateChange = (
         event: React.ChangeEvent<HTMLInputElement>,

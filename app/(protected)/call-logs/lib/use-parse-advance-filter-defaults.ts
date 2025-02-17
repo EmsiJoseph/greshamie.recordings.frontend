@@ -1,20 +1,10 @@
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { ICallFilters } from "@/lib/interfaces/call-interface";
+import { defaultCallFilterValues } from "./default-filter-values";
 
 export const useParseAdvanceFilterDefaults = () => {
     const parseFilterDefaults = (retrievedFilters?: ICallFilters) => {
         if (!retrievedFilters) {
-            return {
-                startDate: undefined,
-                endDate: undefined,
-                startTime: undefined,
-                endTime: undefined,
-                minimumDurationSeconds: undefined,
-                maximumDurationSeconds: undefined,
-                hasPciCompliance: undefined,
-                hasQualityEvaluation: undefined,
-                hasVideoRecording: undefined,
-            }
+            return defaultCallFilterValues
         }
 
         let startDate: string | undefined;

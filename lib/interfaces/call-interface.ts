@@ -24,16 +24,13 @@ export interface ICallFilters extends IPagination{
     endDate?: string, // UTC Str
     minimumDurationSeconds?: number,
     maximumDurationSeconds?: number,
-    caller?: string,
-    receiver?: string,
-    recorder?: string,
     hasVideoRecording?: boolean,
     hasPciCompliance?: boolean,
     hasQualityEvaluation?: boolean,
 }
 
 export interface ICallLogs extends IPagination{
-    items: ICall[] | [],
+    items?: ICall[] | [],
     streamingUrl?: string,
     downloadUrl?: string,
 }
