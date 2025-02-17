@@ -6,13 +6,15 @@ import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AxiosResponse } from "axios";
 import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
 import { fetchDownloadUrl } from "@/api/download";
 import useFilterStore from "./lib/use-filter-store";
 import { useCallFilters } from "./lib/use-call-filters";
+import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+import { parseObjectToArray } from "@/lib/utils/parse-values";
 
 type AudioData = {
   streamingUrl: string | null;
@@ -20,25 +22,37 @@ type AudioData = {
 };
 
 export default function CallLogPage() {
-
+  const { updateUrlParams } = useUpdateUrlParams()
   const { retrievedFilters, resetCallFilters } = useCallFilters()
   const { fetchCalls } = useFetchCalls();
 
+  // Use effect to update url
+  useEffect(() => {
+    if (!retrievedFilters) {
+      window.location.href = "/400";
+      return
+    }
+    if (retrievedFilters !== undefined) {
+      updateUrlParams(retrievedFilters)
+    }
+  }, [retrievedFilters, updateUrlParams])
+
   // 01 Fetch call list using React Query
-  const filterValues = Object.values(retrievedFilters).filter(Boolean);
+  const filterValues = parseObjectToArray(retrievedFilters);
   const { data, isFetching } = useQuery<
     AxiosResponse<ICallLogs>
   >({
     queryKey: ["calls", ...filterValues],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
     enabled: !!retrievedFilters
-
   });
+
   // Bad Request
   if (data?.status === 400) {
     window.location.href = "/400";
     return null;
   }
+
 
 
   const [activeCallId, setActiveCallId] = useState<string | number | null>(

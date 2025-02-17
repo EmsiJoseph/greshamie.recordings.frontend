@@ -10,7 +10,7 @@ import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-grou
 import { SingleChoiceDropdown } from "@/components/common/single-choice-dropdown";
 
 interface CallListFiltersProps {
-  retrievedFilters: ICallFilters;
+  retrievedFilters?: ICallFilters;
   resetCallFilters: () => void;
 }
 

@@ -13,50 +13,10 @@ const getUtcDate = (daysAgo = 0) => {
 };
 
 export const useFetchCalls = () => {
-    const { updateUrlParams } = useUpdateUrlParams();
-
     const fetchCalls = async (filters: ICallFilters): Promise<AxiosResponse<ICallLogs>> => {
-        let redirect400 = false;
-        const finalFilters = { ...filters }
-        Object.entries(filters).forEach(([key, value]) => {
-            const filterKey = key as keyof ICallFilters;
-
-            // 01 Handle Start and End Dates 
-            if (key === 'startDate' || key === 'endDate') {
-                try {
-                    const parsedDate = new Date(value).toISOString();
-                    finalFilters[key] = parsedDate;
-                    return;
-                } catch {
-                    if (value) {
-                        redirect400 = true;
-                        return
-                    }
-                    const startOrEndDate = key === "startDate" ? 7 : 0;
-                    const utcString = getUtcDate(startOrEndDate);
-                    finalFilters[key] = utcString;
-                    return;
-                }
-            }
-
-            // 02 Handle CallDirections
-            if (key === 'callDirection' && value) {
-                const isValid = value.toUpperCase() in CallDirections;
-                if (!isValid) {
-                    redirect400 = true;
-                    return;
-                }
-                finalFilters[filterKey] = value;
-                return;
-            }
-
-            // 03 Handle falsy values (delete if necessary)
-            if (value === "" || value === undefined || value === null) {
-                delete finalFilters[filterKey];
-            }
-        });
-
-        if (redirect400) {
+        console.log("FILTERRRSS", filters)
+        
+        if (!filters) {
             return Promise.resolve({
                 data: { items: [] },
                 status: 400,
@@ -66,9 +26,58 @@ export const useFetchCalls = () => {
             });
         }
 
-        updateUrlParams(finalFilters);
-        const finalEndpoint = callsEndpoint + buildQueryParams(finalFilters);
+        const finalEndpoint = callsEndpoint + buildQueryParams(filters);
         return await GreshamAxiosConfig.get(finalEndpoint);
+        // const finalFilters = { ...filters }
+        // Object.entries(filters).forEach(([key, value]) => {
+        //     const filterKey = key as keyof ICallFilters;
+
+        //     // 01 Handle Start and End Dates 
+        //     if (key === 'startDate' || key === 'endDate') {
+        //         try {
+        //             const parsedDate = new Date(value).toISOString();
+        //             finalFilters[key] = parsedDate;
+        //             return;
+        //         } catch {
+        //             if (value) {
+        //                 redirect400 = true;
+        //                 return
+        //             }
+        //             const startOrEndDate = key === "startDate" ? 7 : 0;
+        //             const utcString = getUtcDate(startOrEndDate);
+        //             finalFilters[key] = utcString;
+        //             return;
+        //         }
+        //     }
+
+        //     // 02 Handle CallDirections
+        //     if (key === 'callDirection' && value) {
+        //         const isValid = value.toUpperCase() in CallDirections;
+        //         if (!isValid) {
+        //             redirect400 = true;
+        //             return;
+        //         }
+        //         finalFilters[filterKey] = value;
+        //         return;
+        //     }
+
+        //     // 03 Handle falsy values (delete if necessary)
+        //     if (value === "" || value === undefined || value === null) {
+        //         delete finalFilters[filterKey];
+        //     }
+        // });
+
+        // if (redirect400) {
+        //     return Promise.resolve({
+        //         data: { items: [] },
+        //         status: 400,
+        //         statusText: "Bad Request",
+        //         headers: new AxiosHeaders(),
+        //         config: { headers: new AxiosHeaders() },
+        //     });
+        // }
+
+        // updateUrlParams(finalFilters);
     }
 
     return { fetchCalls };

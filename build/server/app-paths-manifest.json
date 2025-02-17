@@ -1,4 +1,5 @@
 {
-  "/(auth)/login/page": "app/(auth)/login/page.js",
-  "/(protected)/call-logs/page": "app/(protected)/call-logs/page.js"
+  "/(errors)/400/page": "app/(errors)/400/page.js",
+  "/(protected)/call-logs/page": "app/(protected)/call-logs/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js"
 }

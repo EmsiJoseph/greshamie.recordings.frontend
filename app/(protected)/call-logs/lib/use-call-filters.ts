@@ -2,50 +2,71 @@ import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { ICallFilters, TCallDirections } from "@/lib/interfaces/call-interface";
 import { parseBoolean, parseNumber } from "@/lib/utils/parse-values";
+import { defaultCallFilterValues } from "./default-filter-values";
+import { CallDirections } from "@/constants/call-types";
 
-const filterKeys: Record<keyof ICallFilters, "string" | "number" | "boolean"> = {
-  search: "string",
-  callDirection: "string",
-  startDate: "string",
-  endDate: "string",
-  minimumDurationSeconds: "number",
-  maximumDurationSeconds: "number",
-  hasVideoRecording: "boolean",
-  hasPciCompliance: "boolean",
-  hasQualityEvaluation: "boolean",
-  hasNext: "boolean",
-  hasPrevious: "boolean",
-  pageSize: "number",
-  pageOffSet: "number",
-  totalCount: "number",
-  totalPages: "number",
+const getUtcDate = (daysAgo = 0) => {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() - daysAgo);
+  return date.toISOString();
 };
-
 
 export const useCallFilters = () => {
   const { resetUrlParams } = useUpdateUrlParams();
   const getUrlParams = useGetUrlParams();
 
-  const retrieveCallFilters = (): ICallFilters => {
-    return Object.keys(filterKeys).reduce((acc, key) => {
-      const type = filterKeys[key as keyof ICallFilters];
-      let value;
+  const retrieveCallFilters = (): ICallFilters | undefined => {
+    const finalFilters = { ...defaultCallFilterValues }
+    let redirect400 = false;
+    Object.keys(defaultCallFilterValues).forEach((key) => {
+      const filterKey = key as keyof ICallFilters;
+      const value = getUrlParams(key)
 
-      if (type === "number") {
-        value = parseNumber(getUrlParams(key));
-      } else if (type === "boolean") {
-        value = parseBoolean(getUrlParams(key));
-      } else if (type === "string") {
-        value = getUrlParams(key) === "" ? undefined : getUrlParams(key);
+      // 01 Handle Start and End Dates 
+      if (key === 'startDate' || key === 'endDate') {
+        try {
+          const parsedDate = new Date(value).toISOString();
+          finalFilters[key] = parsedDate;
+          return;
+        } catch {
+          if (value) {
+            redirect400 = true;
+            return
+          }
+          const startOrEndDate = key === "startDate" ? 7 : 0;
+          const utcString = getUtcDate(startOrEndDate);
+          finalFilters[key] = utcString;
+          return;
+        }
       }
 
-      return { ...acc, [key]: value };
-    }, {} as ICallFilters);
+      // 02 Handle CallDirections
+      if (key === 'callDirection' && value) {
+        const isValid = value.toUpperCase() in CallDirections;
+        if (!isValid) {
+          redirect400 = true;
+          return;
+        }
+        finalFilters[filterKey] = value as any;
+        return;
+      }
+
+      // 03 Handle falsy values (delete if necessary)
+      // Except for FALSE, 0
+      if (value === "" || value === undefined || value === null) {
+        delete finalFilters[filterKey];
+      }
+    });
+
+    if (redirect400) {
+      return undefined
+    }
+    console.log("Final filters", finalFilters)
+    return finalFilters
+
   };
 
   const retrievedFilters = retrieveCallFilters()
-
-
 
   const resetCallFilters = () => {
     resetUrlParams();
