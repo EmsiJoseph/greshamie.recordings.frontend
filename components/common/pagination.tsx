@@ -2,41 +2,65 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { parseNumber } from "@/lib/utils/parse-values";
 
-interface ActivityListPaginationProps {
-  currentPage?: number;
+interface PaginationProps {
+  hasNext?: boolean,
+  hasPrevious?: boolean,
+  pageSize?: number,
+  currentPage?: number; // PageOffSet
+  totalCount?: number;
   totalPages?: number;
-  onPageChange: (page?: number) => void;
+  onPageChange: (
+    nextOrPrevOrSet?: "next" | "prev" | "set",
+    page?: string | number
+  ) => void;
 }
 
-export const Pagination: React.FC<ActivityListPaginationProps> = ({
+export const Pagination = ({
   currentPage,
   totalPages,
+  pageSize,
   onPageChange,
-}) => {
-  const handlePageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!totalPages || !currentPage) return;
-    let value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value >= 1 && value <= totalPages) {
-      onPageChange(value);
+  hasNext
+}: PaginationProps) => {
+
+  const handleInputPage = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    nextOrPrevOrSet?: "next" | "prev" | "set"
+  ) => {
+    // For manual input of page number
+    if (e.target.value) {
+      const page = parseNumber(e.target.value)
+      if (page) {
+        onPageChange(nextOrPrevOrSet, Math.abs(page))
+        return
+      }
     }
-  };
-  const nextPage = currentPage ? currentPage + 1 : 1;
-  const prevPage = currentPage ? currentPage - 1 : 1;
+
+    if (nextOrPrevOrSet === "next") {
+      onPageChange(nextOrPrevOrSet, 1)
+    }
+    onPageChange(nextOrPrevOrSet, e.target.value)
+  }
+
+  const isNextDisabled = !hasNext ? true : false
+  const isPrevDisabled = currentPage === 1 || currentPage === 0
 
   return (
     <div className="flex items-center justify-between w-full mt-4">
       {/* Left Side: Page Input and Text */}
       <div className="flex items-center space-x-2">
         <span className="text-sm">Page</span>
-        <Input
+        <div>{currentPage}</div>
+        {/* <Input
           type="number"
           value={currentPage}
-          onChange={handlePageChange}
+          onChange={handleInputPage}
           className="w-12 text-center"
           min={1}
           max={totalPages}
-        />
+        /> */}
         <span className="text-sm">of {totalPages}</span>
       </div>
 
@@ -45,8 +69,8 @@ export const Pagination: React.FC<ActivityListPaginationProps> = ({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => onPageChange(prevPage)}
-          disabled={currentPage === 1}
+          onClick={() => onPageChange("prev")}
+          disabled={isPrevDisabled}
         >
           <ChevronLeft className="w-4 h-4" />
           Previous
@@ -55,8 +79,8 @@ export const Pagination: React.FC<ActivityListPaginationProps> = ({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => onPageChange(nextPage)}
-          disabled={currentPage === totalPages}
+          onClick={() => onPageChange("next")}
+          disabled={isNextDisabled}
         >
           Next
           <ChevronRight className="w-4 h-4" />

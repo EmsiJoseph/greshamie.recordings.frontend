@@ -5,13 +5,14 @@ export const useUpdateUrlParams = () => {
   const router = useRouter();
 
   // This function appends, updates, or deletes filters without replacing everything.
-  const updateUrlParams = <T extends Record<string, any>>(newFilters?: T) => {
+  const updateUrlParams = async <T extends Record<string, any>>(newFilters?: T) => {
     if (!newFilters) return;
 
     const params = new URLSearchParams(searchParams);
 
     Object.entries(newFilters).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) { // Allow 0, false, etc.
+      // if (value !== null && value !== undefined) { // Allow 0, false, etc.
+      if (value || value === false || value === 0) {
         if (Array.isArray(value)) { // For multi select filters like calltypes
           if (value.length === 0) {
             params.delete(key);
@@ -62,17 +63,6 @@ export const useUpdateUrlParams = () => {
       `${url.pathname}?${params.toString()}`
     );
   };
-
-  // const deleteUrlParam = (key: string) => {
-  //   const params = new URLSearchParams(searchParams);
-
-  //   // Delete the parameter
-  //   params.delete(key);
-
-  //   // Update the URL with shallow routing
-  //   const updatedParams = params.toString() ? `?${params.toString()}` : ""
-  //   router.replace(updatedParams);
-  // };
 
   return { updateUrlParams, resetUrlParams, deleteUrlParam };
 };
