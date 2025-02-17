@@ -11,7 +11,6 @@ import { AxiosResponse } from "axios";
 import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
 import { fetchDownloadUrl } from "@/api/download";
-import useFilterStore from "./lib/use-filter-store";
 import { useCallFilters } from "./lib/use-call-filters";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { parseObjectToArray } from "@/lib/utils/parse-values";
@@ -23,29 +22,41 @@ type AudioData = {
 
 export default function CallLogPage() {
   const { updateUrlParams } = useUpdateUrlParams()
-  const { retrievedFilters, resetCallFilters } = useCallFilters()
+  const { retrievedFilters, resetCallFilters, prevFilters } = useCallFilters()
   const { fetchCalls } = useFetchCalls();
 
-  // Use effect to update url
-  useEffect(() => {
-    if (!retrievedFilters) {
-      window.location.href = "/400";
-      return
-    }
-    if (retrievedFilters !== undefined) {
-      updateUrlParams(retrievedFilters)
-    }
-  }, [retrievedFilters, updateUrlParams])
+  console.log("retrieved", retrievedFilters)
 
+  const filterValues = useMemo(() => {
+    // Use `JSON.stringify` or a custom comparison to ensure no unnecessary updates
+    return JSON.stringify(retrievedFilters);
+  }, [retrievedFilters]);
+
+  // UseEffect to update URL only when necessary
   // 01 Fetch call list using React Query
-  const filterValues = parseObjectToArray(retrievedFilters);
+  const qKey = parseObjectToArray(retrievedFilters)
   const { data, isFetching } = useQuery<
     AxiosResponse<ICallLogs>
   >({
-    queryKey: ["calls", ...filterValues],
+    queryKey: ["calls", filterValues],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
     enabled: !!retrievedFilters
   });
+
+  useEffect(() => {
+    // If filters are not available, redirect to 400
+    if (!retrievedFilters) {
+      window.location.href = "/400";
+      return;
+    }
+
+    // Only update URL if filters have changed (and not on initial load)
+    if (prevFilters && JSON.stringify(prevFilters) !== JSON.stringify(retrievedFilters)) {
+      updateUrlParams(retrievedFilters);
+    }
+  }, [retrievedFilters, updateUrlParams, prevFilters]);
+
+
 
   // Bad Request
   if (data?.status === 400) {

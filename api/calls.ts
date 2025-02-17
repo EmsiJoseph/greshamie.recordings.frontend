@@ -14,8 +14,6 @@ const getUtcDate = (daysAgo = 0) => {
 
 export const useFetchCalls = () => {
     const fetchCalls = async (filters: ICallFilters): Promise<AxiosResponse<ICallLogs>> => {
-        console.log("FILTERRRSS", filters)
-        
         if (!filters) {
             return Promise.resolve({
                 data: { items: [] },

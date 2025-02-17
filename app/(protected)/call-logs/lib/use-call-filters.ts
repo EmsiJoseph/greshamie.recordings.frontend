@@ -4,6 +4,7 @@ import { ICallFilters, TCallDirections } from "@/lib/interfaces/call-interface";
 import { parseBoolean, parseNumber } from "@/lib/utils/parse-values";
 import { defaultCallFilterValues } from "./default-filter-values";
 import { CallDirections } from "@/constants/call-types";
+import { useEffect, useMemo, useRef } from "react";
 
 const getUtcDate = (daysAgo = 0) => {
   const date = new Date();
@@ -61,16 +62,23 @@ export const useCallFilters = () => {
     if (redirect400) {
       return undefined
     }
-    console.log("Final filters", finalFilters)
+    // console.log("Final filters", finalFilters)
     return finalFilters
 
   };
 
   const retrievedFilters = retrieveCallFilters()
 
+  const prevFiltersRef = useRef<ICallFilters | undefined>(undefined);
+
+  useEffect(() => {
+    prevFiltersRef.current = retrievedFilters;
+  }, [retrievedFilters]);
+  const prevFilters = prevFiltersRef.current;
+
   const resetCallFilters = () => {
     resetUrlParams();
   };
 
-  return { retrievedFilters, resetCallFilters };
+  return { retrievedFilters, resetCallFilters, prevFilters };
 };
