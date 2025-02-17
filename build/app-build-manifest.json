@@ -16,15 +16,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(protected)/call-logs/page.js"
     ],
-    "/(auth)/layout": [
+    "/(errors)/400/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(auth)/layout.js"
-    ],
-    "/(auth)/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(auth)/login/page.js"
+      "static/chunks/app/(errors)/400/page.js"
     ]
   }
 }
