@@ -17,7 +17,7 @@ import { useState } from 'react';
 
 export function LoginForm() {
   const [error, setError] = useState<string | undefined>("");
-  const { executeAsync, isExecuting } = useAction(loginUserAction);
+  const { executeAsync, isExecuting, hasSucceeded } = useAction(loginUserAction);
   const form = useForm<TLoginFormValues>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -80,9 +80,9 @@ export function LoginForm() {
             <Button
               type="submit"
               className="w-full bg-lime-600 dark:bg-lime-600 dark:text-white dark:hover:bg-lime-700 text-white py-3 rounded-md mt-4 text-lg font-medium hover:bg-lime-700 transition"
-              disabled={isExecuting}
+              disabled={isExecuting || hasSucceeded}
             >
-              {isExecuting ? "Logging in" : "Log in"}
+              {isExecuting || hasSucceeded ? "Logging in" : "Log in"}
             </Button>
           </form>
         </Form>
