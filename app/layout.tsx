@@ -26,6 +26,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log('Backend URL:', process.env.NEXT_PUBLIC_GRESHAM_BACKEND);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body

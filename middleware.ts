@@ -17,7 +17,6 @@ export async function middleware(request: NextRequest) {
     if (isLoginSuccess) {
         return NextResponse.redirect(new URL('/call-logs', request.url))
     }
-    console.log('Backend URL:', process.env.NEXT_PUBLIC_GRESHAM_BACKEND);
 
     // 02 Force Relogin
     const shouldRedirectToLogin =
