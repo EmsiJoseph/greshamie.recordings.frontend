@@ -39,9 +39,6 @@ export const CallListAdvanceFilters = ({
     retrievedCallFilters,
     resetCallFilters
 }: AdvanceFiltersProps) => {
-
-    console.log("Retrieveddd", retrievedCallFilters)
-    console.log('Backend URL:', process.env.NEXT_PUBLIC_GRESHAM_BACKEND);
     const [open, setOpen] = useState(false);
     const [resetSlider, setResetSlider] = useState(false);
 
