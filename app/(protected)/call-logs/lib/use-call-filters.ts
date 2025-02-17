@@ -24,22 +24,22 @@ export const useCallFilters = () => {
       const value = getUrlParams(key)
 
       // 01 Handle Start and End Dates 
-      if (key === 'startDate' || key === 'endDate') {
-        try {
-          const parsedDate = new Date(value).toISOString();
-          finalFilters[key] = parsedDate;
-          return;
-        } catch {
-          if (value) {
-            redirect400 = true;
-            return
-          }
-          const startOrEndDate = key === "startDate" ? 7 : 0;
-          const utcString = getUtcDate(startOrEndDate);
-          finalFilters[key] = utcString;
-          return;
-        }
-      }
+      // if (key === 'startDate' || key === 'endDate') {
+      //   try {
+      //     const parsedDate = new Date(value).toISOString();
+      //     finalFilters[key] = parsedDate;
+      //     return;
+      //   } catch {
+      //     if (value) {
+      //       redirect400 = true;
+      //       return
+      //     }
+      //     const startOrEndDate = key === "startDate" ? 7 : 0;
+      //     const utcString = getUtcDate(startOrEndDate);
+      //     finalFilters[key] = utcString;
+      //     return;
+      //   }
+      // }
 
       // 02 Handle CallDirections
       if (key === 'callDirection' && value) {

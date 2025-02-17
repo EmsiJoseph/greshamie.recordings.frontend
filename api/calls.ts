@@ -24,6 +24,8 @@ export const useFetchCalls = () => {
             });
         }
 
+        
+
         const finalEndpoint = callsEndpoint + buildQueryParams(filters);
         return await GreshamAxiosConfig.get(finalEndpoint);
         // const finalFilters = { ...filters }
