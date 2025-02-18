@@ -195,29 +195,6 @@ export const CallListAdvanceFilters = () => {
                     <div className="w-full">
                         <Label htmlFor="call-duration-range" className="font-semibold text-[1rem] ">Duration (Minutes)</Label>
                         <div className="h-4"></div>
-                        {/* // <div className="w-full">
-                            //     <Label className="text-right">
-                            //         Minimum
-                            //     </Label>
-                            //     <Input
-                            //         type="number"
-                            //         placeholder="0"
-                            //         {...register("minimumDurationSeconds")}
-                            //     />
-                            //     <FormStateError error={formError.minimumDurationSeconds?.message} />
-                            // </div>
-                            // <div className="w-full">
-                            //     <Label className="text-right">
-                            //         Maximum
-                            //     </Label>
-                            //     <Input
-                            //         type="number"
-                            //         placeholder="0"
-                            //         {...register("maximumDurationSeconds")}
-
-                            //     />
-                            //     <FormStateError error={formError.maximumDurationSeconds?.message} />
-                            // </div> */}
                         {/* New Range Input */}
                         <div className="flex gap-4 w-full" id="call-duration-range">
                             <DualRangeSliderCustomLabel

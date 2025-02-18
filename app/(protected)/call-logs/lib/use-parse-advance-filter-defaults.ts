@@ -50,6 +50,8 @@ export const useParseAdvanceFilterDefaults = () => {
             hasPciCompliance: retrievedFilters?.hasPciCompliance ?? undefined,
             hasQualityEvaluation: retrievedFilters?.hasQualityEvaluation ?? undefined,
             hasVideoRecording: retrievedFilters?.hasVideoRecording ?? undefined,
+            period: retrievedFilters?.
+            period ?? undefined,
         };
     };
 

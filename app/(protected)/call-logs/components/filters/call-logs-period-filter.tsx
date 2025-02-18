@@ -1,14 +1,19 @@
 import { CalendarClock } from "lucide-react";
 import { useState } from "react";
+import { PeriodTypes } from "@/constants/period-types";
+
+interface CallLogsPeriodFilter<T extends string> {
+    onPeriodChange?: (startDate: Date, endDate: Date, selectedPeriod: string) => void;
+    defaultPeriod?: string;
+    value?: T;
+}
 
 export const CallLogsPeriodFilter = ({
     onPeriodChange = () => {},
-    defaultPeriod = "Last Week",
-}: {
-    onPeriodChange?: (startDate: Date, endDate: Date, selectedPeriod: string) => void;
-    defaultPeriod?: string;
-}) => {
-    const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod);
+    defaultPeriod,
+    value,
+}: CallLogsPeriodFilter<string>) => {
+    const [selectedPeriod, setSelectedPeriod] = useState(value || defaultPeriod || "");
 
     const handlePeriodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const period = event.target.value;
@@ -34,11 +39,7 @@ export const CallLogsPeriodFilter = ({
                 break;
             case "All":
                 startDate = new Date(0);
-                break;
-            default:
-                startDate = endDate;
         }
-
         return { startDate, endDate };
     };
 
@@ -52,10 +53,12 @@ export const CallLogsPeriodFilter = ({
                     aria-label="Select period dropdown"
                     className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 >
-                    <option value="Last Week">Last Week</option>
-                    <option value="Last Month">Last Month</option>
-                    <option value="Last Year">Last Year</option>
-                    <option value="All">All</option>
+                    <option value="" disabled>Select a period</option>
+                    {Object.entries(PeriodTypes).map(([key, value]) => (
+                        <option key={value} value={value}>
+                            {key}
+                        </option>
+                    ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <CalendarClock className="w-4 h-4" />
