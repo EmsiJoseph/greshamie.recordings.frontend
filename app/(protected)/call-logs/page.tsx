@@ -19,40 +19,8 @@ type AudioData = {
 };
 
 export default function CallLogPage() {
-  const { retrievedFilters } = useCallFilters()
-  const { fetchCalls } = useFetchCalls();
-
-  // 01 Fetch call list using React Query
-  const qKey = JSON.stringify(retrievedFilters)
-  const { data, isFetching, isSuccess } = useQuery<
-    AxiosResponse<ICallLogs>
-  >({
-    queryKey: ["calls", qKey],
-    queryFn: () => fetchCalls({ ...retrievedFilters }),
-    enabled: !!retrievedFilters
-  });
-
-  useEffect(() => {
-    // If filters are not available, redirect to 400
-    if (!retrievedFilters) {
-      window.location.href = "/400";
-      return;
-    }
-
-  }, [retrievedFilters]);
-
-
-
-  // Bad Request
-  if (data?.status === 400) {
-    window.location.href = "/400";
-    return null;
-  }
-
-
-
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
-    null
+      null
   );
   const [audioData, setAudioData] = useState<AudioData | null>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
@@ -85,6 +53,40 @@ export default function CallLogPage() {
       }
     },
   });
+  
+  const { retrievedFilters } = useCallFilters()
+  const { fetchCalls } = useFetchCalls();
+
+  // 01 Fetch call list using React Query
+  const qKey = JSON.stringify(retrievedFilters)
+  const { data, isFetching, isSuccess } = useQuery<
+    AxiosResponse<ICallLogs>
+  >({
+    queryKey: ["calls", qKey],
+    queryFn: () => fetchCalls({ ...retrievedFilters }),
+    enabled: !!retrievedFilters
+  });
+
+  useEffect(() => {
+    // If filters are not available, redirect to 400
+    if (!retrievedFilters) {
+      window.location.href = "/400";
+      return;
+    }
+
+  }, [retrievedFilters]);
+
+
+
+  // Bad Request
+  if (data?.status === 400) {
+    window.location.href = "/400";
+    return null;
+  }
+
+
+
+ 
 
   // useEffect(() => {
   //   if (isError) {
