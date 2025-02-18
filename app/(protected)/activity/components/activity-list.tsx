@@ -19,7 +19,7 @@ import ActivityListPagination, {
   Pagination,
 } from "@/components/common/pagination";
 import ActivityIcon from "./activity-type-with-icon";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/date-utils";
 import { eventDirectionIcons } from "@/constants/activity-types";
 import { sortData, ISortConfig } from "@/lib/utils/sort-data";
 import { ActivityPagination } from "./activity-pagination";

@@ -51,12 +51,12 @@ export const CallListFilters = ({ retrievedFilters }: CallListFiltersProps) => {
         className="block lg:hidden"
       />
 
-      <CallListAdvanceFilters />
       <CallLogsPeriodFilter
         onPeriodChange={handlePeriodChange}
       />
 
       <CallListAdvanceFilters />
+      
       <div className="relative w-full">
         <Input
           className="pr-9"

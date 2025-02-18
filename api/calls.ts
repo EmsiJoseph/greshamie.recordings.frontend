@@ -4,18 +4,33 @@ import { callsEndpoint } from "./endpoints/call-logs-endpoints";
 import { AxiosHeaders, AxiosResponse } from "axios";
 import { buildQueryParams } from "@/lib/utils/build-query-params";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
-import { CallDirections } from "@/constants/call-types";
-
-const getUtcDate = (daysAgo = 0) => {
-    const date = new Date();
-    date.setUTCDate(date.getUTCDate() - daysAgo);
-    return date.toISOString();
-};
+import { operateOnDays, isValidDate, getDateString } from "@/lib/utils/date-utils";
 
 export const useFetchCalls = () => {
     const { updateUrlParams } = useUpdateUrlParams()
     const fetchCalls = async (filters: ICallFilters): Promise<AxiosResponse<ICallLogs>> => {
-        if (!filters) {
+        let redirect400 = false;
+
+        if (filters.startDate) {
+            const isValid = isValidDate(filters.startDate, "locale")
+            const isoString = getDateString(filters.startDate, "locale")
+            filters['startDate'] = isValid ? operateOnDays(isoString) : undefined
+            redirect400 = !isValid
+        } else {
+            filters['startDate'] = operateOnDays(undefined, -7)
+        }
+
+        if (filters.endDate) {
+            const isValid = isValidDate(filters.endDate, "locale")
+            const isoString = getDateString(filters.endDate, "locale")
+            filters['endDate'] = isValid ? operateOnDays(isoString) : undefined
+            redirect400 = !isValid
+        } else {
+            filters['endDate'] = operateOnDays()
+        }
+
+        // Invalid request
+        if (redirect400) {
             return Promise.resolve({
                 data: { items: [] },
                 status: 400,
@@ -25,17 +40,12 @@ export const useFetchCalls = () => {
             });
         }
 
-        if (!filters.startDate) {
-            filters['startDate'] = getUtcDate(7)
-        }
-
-        if (!filters.endDate) {
-            filters['endDate'] = getUtcDate()
-        }
-
-
-        updateUrlParams(filters)
-        console.log("Filter in calls: ", filters)
+        // Update browser params
+        // Convert back to en gb locale
+        const browserParams = { ...filters }
+        browserParams['startDate'] = getDateString(filters.startDate, "ISO")
+        browserParams['endDate'] = getDateString(filters.endDate, "ISO")
+        updateUrlParams(browserParams)
 
         const finalEndpoint = callsEndpoint + buildQueryParams(filters);
         return await GreshamAxiosConfig.get(finalEndpoint);
