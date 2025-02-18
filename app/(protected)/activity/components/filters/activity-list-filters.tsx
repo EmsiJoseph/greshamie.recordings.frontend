@@ -9,6 +9,7 @@ import { ActivityListAdvanceFilters } from "./activity-list-advance-filters";
 import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter";
 import { EventTypes } from "@/constants/activity-types";
 import { SingleChoiceDropdown } from "@/components/common/single-choice-dropdown";
+import { ActivityListPeriodFilter } from "./activity-list-period-filter";
 
 interface ActivityListFiltersProps {
   retrievedFilters: IActivityFilters
@@ -35,6 +36,11 @@ export const ActivityListFilters = ({
     updateUrlParams({ search: debouncedSearch })
 }, [debouncedSearch, updateUrlParams]);
 
+  // 3. Period
+  const handlePeriodChange = (startDate: Date, endDate: Date) => {
+    updateUrlParams({ startDate: startDate.toISOString(), endDate: endDate.toISOString() });
+  };
+
   return (
     <div className="flex gap-4">
         <SingleToggleGroupFilter
@@ -54,6 +60,8 @@ export const ActivityListFilters = ({
         <ActivityListAdvanceFilters 
           retrievedActivityFilters={retrievedFilters} resetActivityFilters={resetActivityFilters} 
         />
+        <ActivityListPeriodFilter 
+          onPeriodChange={handlePeriodChange}/>
         <div className="relative w-full">
           <Input className="pr-9" placeholder="Search phone number or participants..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
           <Search className="absolute right-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />

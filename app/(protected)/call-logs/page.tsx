@@ -2,17 +2,16 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFetchCalls } from "@/api/calls";
-import { ICall, ICallFilters, ICallLogs } from "@/lib/interfaces/call-interface";
+import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
-import { useCallFilters } from "./lib/use-call-filters";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
 import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
 import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
 import { fetchDownloadUrl } from "@/api/download";
+import { useCallFilters } from "./lib/use-call-filters";
 
 type AudioData = {
   streamingUrl: string | null;
@@ -20,55 +19,43 @@ type AudioData = {
 };
 
 export default function CallLogPage() {
-  const { updateUrlParams } = useUpdateUrlParams();
-  const { retrievedFilters, resetCallFilters } = useCallFilters();
+  const { retrievedFilters } = useCallFilters()
   const { fetchCalls } = useFetchCalls();
+
+  // 01 Fetch call list using React Query
+  const qKey = JSON.stringify(retrievedFilters)
+  const { data, isFetching, isSuccess } = useQuery<
+    AxiosResponse<ICallLogs>
+  >({
+    queryKey: ["calls", qKey],
+    queryFn: () => fetchCalls({ ...retrievedFilters }),
+    enabled: !!retrievedFilters
+  });
+
+  useEffect(() => {
+    // If filters are not available, redirect to 400
+    if (!retrievedFilters) {
+      window.location.href = "/400";
+      return;
+    }
+
+  }, [retrievedFilters]);
+
+
+
+  // Bad Request
+  if (data?.status === 400) {
+    window.location.href = "/400";
+    return null;
+  }
+
+
 
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
     null
   );
   const [audioData, setAudioData] = useState<AudioData | null>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
-
-  // Remove falsy values
-  const filterValues = Object.values(retrievedFilters).filter(Boolean);
-
-  // Fetch call data using React Query
-  const { data, isFetching, isError, isSuccess } = useQuery<
-    AxiosResponse<ICallLogs>
-  >({
-    queryKey: ["calls", ...filterValues],
-    queryFn: () => fetchCalls({ ...retrievedFilters }),
-  });
-
-  useEffect(() => {
-    const startDate = retrievedFilters.startDate
-    const endDate = retrievedFilters.endDate
-
-    const now = new Date();
-    const aWeekAgo = new Date(now);
-    aWeekAgo.setDate(now.getDate() - 7);
-
-    if (!startDate) {
-      updateUrlParams({ startDate: aWeekAgo.toISOString() })
-    }
-    if (!endDate) {
-      updateUrlParams({ endDate: now.toISOString() })
-    }
-
-
-    if (isSuccess) {
-      const paginationData: ICallFilters = {
-        hasNext: data.data.hasNext,
-        hasPrevious: data.data.hasPrevious,
-        pageSize: data.data.pageSize,
-        pageOffSet: data.data.pageOffSet,
-        totalCount: data.data.totalCount,
-        totalPages: data.data.totalPages,
-      };
-      updateUrlParams(paginationData);
-    }
-  }, [isSuccess, updateUrlParams, data]);
 
   // Unified mutation for fetching streaming and download URLs
   const fetchAudioData = useMutation({
@@ -99,14 +86,14 @@ export default function CallLogPage() {
     },
   });
 
-  useEffect(() => {
-    if (isError) {
-      handleApiClientSideError({
-        error: "Something went wrong. Try again later.",
-        isSuccessToast: false,
-      });
-    }
-  }, [isError]);
+  // useEffect(() => {
+  //   if (isError) {
+  //     handleApiClientSideError({
+  //       error: "Something went wrong. Try again later.",
+  //       isSuccessToast: false,
+  //     });
+  //   }
+  // }, [isError]);
 
   const toggleAudio = () => {
     setAudioPlaying((prev) => !prev);
@@ -120,10 +107,7 @@ export default function CallLogPage() {
 
   return (
     <div className="flex flex-col gap-6 sm:gap-12">
-      <CallListFilters
-        retrievedFilters={retrievedFilters}
-        resetCallFilters={resetCallFilters}
-      />
+      <CallListFilters retrievedFilters={retrievedFilters} />
       <CallList
         calls={data?.data}
         isFetching={isFetching}

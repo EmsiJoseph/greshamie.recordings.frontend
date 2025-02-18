@@ -5,8 +5,8 @@ import {
   Download,
   Pause,
   Play,
-  Redo,
-  Undo,
+  RedoDot,
+  UndoDot,
   Volume1,
   Volume2,
   VolumeX,
@@ -87,64 +87,69 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     if (progressBarRef.current) {
       const rect = progressBarRef.current.getBoundingClientRect();
       let newProgress = (clientX - rect.left) / rect.width;
-      if (newProgress < 0) newProgress = 0;
-      if (newProgress > 1) newProgress = 1;
+      newProgress = Math.max(0, Math.min(newProgress, 1));
       setDragProgress(newProgress);
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleStart = (
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+  ) => {
     setIsDragging(true);
-    updateDragProgress(e.clientX);
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    updateDragProgress(clientX);
   };
 
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
+  const handleMove = useCallback(
+    (e: MouseEvent | TouchEvent) => {
       if (!isDragging) return;
-      updateDragProgress(e.clientX);
+      const clientX =
+        "touches" in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+      updateDragProgress(clientX);
     },
     [isDragging]
   );
 
-  const handleMouseUp = useCallback(() => {
+  const handleEnd = useCallback(() => {
     if (isDragging) {
       setIsDragging(false);
-      const newTime = (isDragging ? dragProgress : played) * duration;
+      const newTime = dragProgress * duration;
       if (playerRef.current) {
         playerRef.current.seekTo(newTime, "seconds");
       }
       setPlayed(dragProgress);
     }
-  }, [isDragging, dragProgress, played, duration]);
+  }, [isDragging, dragProgress, duration]);
 
   // Event listeners for Audio dragging.
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
+      window.addEventListener("mousemove", handleMove);
+      window.addEventListener("mouseup", handleEnd);
+      window.addEventListener("touchmove", handleMove);
+      window.addEventListener("touchend", handleEnd);
     } else {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleEnd);
+      window.removeEventListener("touchmove", handleMove);
+      window.removeEventListener("touchend", handleEnd);
     }
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleEnd);
+      window.removeEventListener("touchmove", handleMove);
+      window.removeEventListener("touchend", handleEnd);
     };
-  }, [isDragging, dragProgress, duration, handleMouseMove, handleMouseUp]);
+  }, [isDragging, dragProgress, duration, handleMove, handleEnd]);
 
   return (
-    // <div className="w-full bg-white p-4 rounded-lg shadow-lg flex flex-col relative mt-10">
-    <div className="fixed bottom-0 left-0  right-0 bg-white p-4 shadow-lg flex flex-col z-50">
-      {/* {error && (
-        <div className="flex justify-center text-red-500 text-center mt-2">
-          {error}
-        </div>
-      )} */}
+    <div className="fixed bottom-0 left-0 right-0 bg-white p-2 md:p-4 shadow-lg flex flex-col z-50">
       {/* Progress Bar */}
       <div
         className="w-full bg-gray-200 h-2 rounded relative cursor-pointer"
         ref={progressBarRef}
-        onMouseDown={handleMouseDown}
+        onMouseDown={handleStart}
+        onTouchStart={handleStart}
       >
         <div
           className="absolute top-0 left-0 h-2 bg-green-500 rounded"
@@ -154,18 +159,20 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         />
         {/* Draggable Handle */}
         <div
-          className="absolute top-[-4px] w-4 h-4 bg-green-500 rounded-full cursor-pointer"
+          className="absolute top-[-4px] bg-green-500 rounded-full cursor-pointer 
+                     w-3 h-3 md:w-4 md:h-4"
           style={{
             left: `calc(${(isDragging ? dragProgress : played) * 100}% - 8px)`,
           }}
-          onMouseDown={handleMouseDown}
+          onMouseDown={handleStart}
+          onTouchStart={handleStart}
         />
       </div>
 
       {/* Controls */}
       <div className="flex items-center justify-between mt-3 text-gray-700 w-full">
-        <div className="flex items-center gap-4">
-          <button onClick={onPlayPause} className="text-xl">
+        <div className="flex items-center gap-2 md:gap-4">
+          <button onClick={onPlayPause} className="text-base md:text-xl">
             {playing ? <Pause /> : <Play />}
           </button>
           <button
@@ -176,8 +183,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
                 );
               }
             }}
+            className="text-base md:text-xl"
           >
-            <Undo />
+            <UndoDot />
           </button>
           <button
             onClick={() => {
@@ -187,12 +195,18 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
                 );
               }
             }}
+            className="text-base md:text-xl"
           >
-            <Redo />
+            <RedoDot />
           </button>
           {/* Volume Control */}
-          <div className="flex items-center gap-2">
-            <button onClick={() => setMuted(!muted)}>{getVolumeIcon()}</button>
+          <div className="relative flex items-center gap-1 md:gap-2">
+            <button
+              onClick={() => setMuted(!muted)}
+              className="text-base md:text-xl"
+            >
+              {getVolumeIcon()}
+            </button>
             <input
               type="range"
               min="0"
@@ -200,21 +214,24 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
               step="0.05"
               value={muted ? 0 : volume}
               onChange={handleVolumeChange}
-              className="w-32 h-1 bg-gray-300 rounded appearance-none cursor-pointer"
+              className="w-12 md:w-20 h-1 bg-gray-300 rounded appearance-none cursor-pointer"
             />
           </div>
         </div>
 
         {/* Time Display */}
-        <span className="text-sm flex-1 text-center">
+        <span className="text-xs md:text-sm flex-1 text-center">
           {formatTime((isDragging ? dragProgress : played) * duration)} /{" "}
           {formatTime(duration)}
         </span>
 
         {/* Playback Speed Control */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           <div className="relative">
-            <button onClick={() => setShowSpeedOptions(!showSpeedOptions)}>
+            <button
+              onClick={() => setShowSpeedOptions(!showSpeedOptions)}
+              className="text-xs md:text-sm"
+            >
               {playbackRate}x
             </button>
             {showSpeedOptions && (
@@ -222,7 +239,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
                 {[0.5, 1, 1.5, 2].map((rate) => (
                   <button
                     key={rate}
-                    className={`px-3 py-1 text-sm hover:bg-gray-200 ${
+                    className={`px-2 py-1 text-xs md:text-sm hover:bg-gray-200 ${
                       playbackRate === rate ? "font-bold" : ""
                     }`}
                     onClick={() => handlePlaybackRateChange(rate)}
@@ -242,16 +259,16 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
               downloadUrl ? "" : "opacity-50 pointer-events-none"
             }`}
           >
-            <Download className="h-5 w-5 text-blue-500" />
+            <Download className="h-4 w-4 md:h-5 md:w-5 text-black-500" />
           </a>
 
           {/* Close Button */}
           <div
-            className="flex items-center text-red-500 cursor-pointer"
+            className="flex items-center text-red-500 cursor-pointer gap-1"
             onClick={onClose}
           >
-            <X className="cursor-pointer text-red-500" />
-            <span>Close</span>
+            <X className="h-4 w-4 md:h-5 md:w-5 text-red-500" />
+            <span className="text-xs md:text-sm">Close</span>
           </div>
         </div>
       </div>
