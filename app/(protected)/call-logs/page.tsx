@@ -12,6 +12,8 @@ import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
 import { fetchDownloadUrl } from "@/api/download";
 import { useCallFilters } from "./lib/use-call-filters";
+import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+import { getDateString, operateOnDays } from "@/lib/utils/date-utils";
 
 type AudioData = {
   streamingUrl: string | null;
@@ -19,6 +21,7 @@ type AudioData = {
 };
 
 export default function CallLogPage() {
+  const { updateUrlParams } = useUpdateUrlParams()
   const { retrievedFilters } = useCallFilters()
   const { fetchCalls } = useFetchCalls();
 
@@ -32,19 +35,32 @@ export default function CallLogPage() {
     enabled: !!retrievedFilters
   });
 
-  useEffect(() => {
-    // If filters are not available, redirect to 400
-    if (!retrievedFilters || retrievedFilters === undefined) {
-      window.location.href = "/400";
-      return;
-    }
-  }, [retrievedFilters]);
+  // useEffect(() => {
+  //   // If filters are not available, redirect to 400
+  //   if (retrievedFilters === undefined) {
+  //     window.location.href = "/400";
+  //     return;
+  //   }
+  // }, [retrievedFilters]);
 
-  // // Bad Request
-  // if (data?.status === 400) {
-  //   window.location.href = "/400";
-  //   return null;
-  // }
+  useEffect(() => {
+    if (!retrievedFilters?.startDate) {
+      let startDate = operateOnDays(undefined, -7)
+      let endDate = operateOnDays()
+
+      // Convert to Locale
+      startDate = getDateString(startDate, "ISO")
+      endDate = getDateString(endDate, "ISO")
+      updateUrlParams({ startDate, endDate })
+    }
+  }, [])
+
+  // Bad Request
+  if (data?.status === 400) {
+    console.log("ERROR 400 on react query")
+    window.location.href = "/400";
+    return null;
+  }
 
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
     null

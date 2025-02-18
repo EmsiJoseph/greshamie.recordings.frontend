@@ -5,6 +5,7 @@ import { parseBoolean, parseNumber } from "@/lib/utils/parse-values";
 import { defaultCallFilterValues } from "./default-filter-values";
 import { CallDirections } from "@/constants/call-types";
 import { useEffect, useMemo, useRef } from "react";
+import { isValidDate } from "@/lib/utils/date-utils";
 
 const getUtcDate = (daysAgo = 0) => {
   const date = new Date();
@@ -24,26 +25,10 @@ export const useCallFilters = () => {
       const value = getUrlParams(key)
 
       // 01 Handle Start and End Dates 
-      // if (key === 'startDate' || key === 'endDate') {
-      //   try {
-      //     const parsedDate = new Date(value).toISOString();
-      //     finalFilters[key] = parsedDate;
-      //     return;
-      //   } catch {
-      //     if (value) {
-      //       redirect400 = true;
-      //       return
-      //     }
-      //     const startOrEndDate = key === "startDate" ? 7 : 0;
-      //     const utcString = getUtcDate(startOrEndDate);
-      //     finalFilters[key] = utcString;
-      //     return;
-      //   }
-      // }
-
       if (key === 'startDate' || key === 'endDate') {
-        finalFilters[key] = value
-        return
+        const isValid = isValidDate(value, "locale")
+        // redirect400 = !isValid
+        finalFilters[key as keyof ICallFilters] = value as any
       }
 
 
