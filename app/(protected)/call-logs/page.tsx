@@ -6,14 +6,12 @@ import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
 import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
 import { fetchDownloadUrl } from "@/api/download";
 import { useCallFilters } from "./lib/use-call-filters";
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
-import { parseObjectToArray } from "@/lib/utils/parse-values";
 
 type AudioData = {
   streamingUrl: string | null;
@@ -21,24 +19,15 @@ type AudioData = {
 };
 
 export default function CallLogPage() {
-  const { updateUrlParams } = useUpdateUrlParams()
-  const { retrievedFilters, resetCallFilters, prevFilters } = useCallFilters()
+  const { retrievedFilters } = useCallFilters()
   const { fetchCalls } = useFetchCalls();
 
-  console.log("retrieved", retrievedFilters)
-
-  const filterValues = useMemo(() => {
-    // Use `JSON.stringify` or a custom comparison to ensure no unnecessary updates
-    return JSON.stringify(retrievedFilters);
-  }, [retrievedFilters]);
-
-  // UseEffect to update URL only when necessary
   // 01 Fetch call list using React Query
-  const qKey = parseObjectToArray(retrievedFilters)
-  const { data, isFetching } = useQuery<
+  const qKey = JSON.stringify(retrievedFilters)
+  const { data, isFetching, isSuccess } = useQuery<
     AxiosResponse<ICallLogs>
   >({
-    queryKey: ["calls", filterValues],
+    queryKey: ["calls", qKey],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
     enabled: !!retrievedFilters
   });
@@ -50,11 +39,7 @@ export default function CallLogPage() {
       return;
     }
 
-    // Only update URL if filters have changed (and not on initial load)
-    if (prevFilters && JSON.stringify(prevFilters) !== JSON.stringify(retrievedFilters)) {
-      updateUrlParams(retrievedFilters);
-    }
-  }, [retrievedFilters, updateUrlParams, prevFilters]);
+  }, [retrievedFilters]);
 
 
 
@@ -122,10 +107,7 @@ export default function CallLogPage() {
 
   return (
     <div className="flex flex-col gap-6 sm:gap-12">
-      <CallListFilters
-        retrievedFilters={retrievedFilters}
-        resetCallFilters={resetCallFilters}
-      />
+      <CallListFilters retrievedFilters={retrievedFilters} />
       <CallList
         calls={data?.data}
         isFetching={isFetching}

@@ -23,6 +23,7 @@ export const useCallFilters = () => {
       const filterKey = key as keyof ICallFilters;
       const value = getUrlParams(key)
 
+      console.log("Pre ops", key, value)
       // 01 Handle Start and End Dates 
       // if (key === 'startDate' || key === 'endDate') {
       //   try {
@@ -40,6 +41,11 @@ export const useCallFilters = () => {
       //     return;
       //   }
       // }
+
+      if (key === 'startDate' || key === 'endDate') {
+        finalFilters[key] = value
+      }
+
 
       // 02 Handle CallDirections
       if (key === 'callDirection' && value) {
@@ -62,23 +68,16 @@ export const useCallFilters = () => {
     if (redirect400) {
       return undefined
     }
-    // console.log("Final filters", finalFilters)
+    console.log("Final filters", finalFilters)
     return finalFilters
 
   };
 
   const retrievedFilters = retrieveCallFilters()
 
-  const prevFiltersRef = useRef<ICallFilters | undefined>(undefined);
-
-  useEffect(() => {
-    prevFiltersRef.current = retrievedFilters;
-  }, [retrievedFilters]);
-  const prevFilters = prevFiltersRef.current;
-
   const resetCallFilters = () => {
     resetUrlParams();
   };
 
-  return { retrievedFilters, resetCallFilters, prevFilters };
+  return { retrieveCallFilters, retrievedFilters, resetCallFilters };
 };
