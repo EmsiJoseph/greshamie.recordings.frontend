@@ -60,6 +60,7 @@ export const CallListFilters = ({ retrievedFilters }: CallListFiltersProps) => {
       />
 
       <CallListAdvanceFilters />
+      
       <div className="relative w-full">
         <Input
           className="pr-9"
