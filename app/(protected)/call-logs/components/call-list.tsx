@@ -12,7 +12,7 @@ import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
 import { CallTypeWithIcon } from "./call-type-with-icon";
-import { formatDate } from "@/lib/utils/format-date";
+import { formatDate } from "@/lib/utils/date-utils";
 import { sortData, ISortConfig } from "@/lib/utils/sort-data";
 import { CallPagination } from "./call-pagination";
 
