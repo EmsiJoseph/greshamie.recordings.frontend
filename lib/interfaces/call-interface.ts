@@ -27,6 +27,7 @@ export interface ICallFilters extends IPagination{
     hasVideoRecording?: boolean,
     hasPciCompliance?: boolean,
     hasQualityEvaluation?: boolean,
+    period?: string,
 }
 
 export interface ICallLogs extends IPagination{
