@@ -52,16 +52,7 @@ export const Pagination = ({
       {/* Left Side: Page Input and Text */}
       <div className="flex items-center space-x-2">
         <span className="text-sm">Page</span>
-        <div>{currentPage}</div>
-        {/* <Input
-          type="number"
-          value={currentPage}
-          onChange={handleInputPage}
-          className="w-12 text-center"
-          min={1}
-          max={totalPages}
-        /> */}
-        <span className="text-sm">of {totalPages}</span>
+        <span className="text-sm">{currentPage} of {totalPages}</span>
       </div>
 
       {/* Right Side: Previous and Next Buttons */}
