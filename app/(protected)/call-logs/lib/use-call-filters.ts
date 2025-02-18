@@ -1,6 +1,6 @@
 import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
-import { ICallFilters, TCallDirections } from "@/lib/interfaces/call-interface";
+import { ICall, ICallFilters, TCallDirections } from "@/lib/interfaces/call-interface";
 import { parseBoolean, parseNumber } from "@/lib/utils/parse-values";
 import { defaultCallFilterValues } from "./default-filter-values";
 import { CallDirections } from "@/constants/call-types";
@@ -23,7 +23,6 @@ export const useCallFilters = () => {
       const filterKey = key as keyof ICallFilters;
       const value = getUrlParams(key)
 
-      console.log("Pre ops", key, value)
       // 01 Handle Start and End Dates 
       // if (key === 'startDate' || key === 'endDate') {
       //   try {
@@ -44,6 +43,7 @@ export const useCallFilters = () => {
 
       if (key === 'startDate' || key === 'endDate') {
         finalFilters[key] = value
+        return
       }
 
 
@@ -62,15 +62,14 @@ export const useCallFilters = () => {
       // Except for FALSE, 0
       if (value === "" || value === undefined || value === null) {
         delete finalFilters[filterKey];
+        return
       }
+
+      // Else
+      finalFilters[key as keyof ICallFilters] = value as any
     });
 
-    if (redirect400) {
-      return undefined
-    }
-    console.log("Final filters", finalFilters)
-    return finalFilters
-
+    return redirect400 ? undefined : finalFilters
   };
 
   const retrievedFilters = retrieveCallFilters()

@@ -34,22 +34,17 @@ export default function CallLogPage() {
 
   useEffect(() => {
     // If filters are not available, redirect to 400
-    if (!retrievedFilters) {
+    if (!retrievedFilters || retrievedFilters === undefined) {
       window.location.href = "/400";
       return;
     }
-
   }, [retrievedFilters]);
 
-
-
-  // Bad Request
-  if (data?.status === 400) {
-    window.location.href = "/400";
-    return null;
-  }
-
-
+  // // Bad Request
+  // if (data?.status === 400) {
+  //   window.location.href = "/400";
+  //   return null;
+  // }
 
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
     null
