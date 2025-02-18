@@ -5,19 +5,15 @@ import { ICallFilters, TCallDirections } from "@/lib/interfaces/call-interface";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
-import { CallListAdvanceFilters } from "./advance-filter/call-list-advance-filters";
 import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter";
 import { SingleChoiceDropdown } from "@/components/common/single-choice-dropdown";
+import { CallListAdvanceFilters } from "./advance-filter/call-list-advance-filters";
 
 interface CallListFiltersProps {
-  retrievedFilters: ICallFilters;
-  resetCallFilters: () => void;
+  retrievedFilters?: ICallFilters;
 }
 
-export const CallListFilters = ({
-  retrievedFilters,
-  resetCallFilters,
-}: CallListFiltersProps) => {
+export const CallListFilters = ({ retrievedFilters }: CallListFiltersProps) => {
   const { updateUrlParams } = useUpdateUrlParams();
   // 01 Call Types
   // ---> Handle changes in call type selection.
@@ -52,10 +48,7 @@ export const CallListFilters = ({
         className="block lg:hidden"
       />
 
-      <CallListAdvanceFilters
-        retrievedCallFilters={retrievedFilters}
-        resetCallFilters={resetCallFilters}
-      />
+      <CallListAdvanceFilters />
       <div className="relative w-full">
         <Input
           className="pr-9"

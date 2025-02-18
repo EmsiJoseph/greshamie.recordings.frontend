@@ -14,11 +14,7 @@ import { useState, useEffect } from "react"
 import { DualRangeSliderCustomLabel } from "@/components/ui/slider"
 import { useParseAdvanceFilterDefaults } from "../../../lib/use-parse-advance-filter-defaults"
 import { handleSubmitFilter } from "./handle-submit-filter"
-
-interface AdvanceFiltersProps {
-    retrievedCallFilters?: ICallFilters,
-    resetCallFilters: () => void
-}
+import { useCallFilters } from "../../../lib/use-call-filters"
 
 const hasVideoOptions = {
     true: { label: <div className="flex gap-2 items-center"><Video /> <p>With Video</p></div>, value: "true" },
@@ -35,20 +31,29 @@ const hasQualityOptions = {
 const toggleItemClass = "border data-[state=on]:bg-[#f8ffe8] data-[state=on]:border-[#65a30d] w-full flex-row"
 const customInputClass = "w-full outline-solid border-solid border-[1.5px] rounded-md h-10 p-4";
 
-export const CallListAdvanceFilters = ({
-    retrievedCallFilters,
-    resetCallFilters
-}: AdvanceFiltersProps) => {
+export const CallListAdvanceFilters = () => {
+    const { retrievedFilters, resetCallFilters } = useCallFilters();
+    const { parseFilterDefaults } = useParseAdvanceFilterDefaults()
+    const { updateUrlParams } = useUpdateUrlParams()
+
     const [open, setOpen] = useState(false);
     const [resetSlider, setResetSlider] = useState(false);
 
-    const { updateUrlParams } = useUpdateUrlParams()
-    const { parseFilterDefaults } = useParseAdvanceFilterDefaults()
-    const defaultValues = parseFilterDefaults(retrievedCallFilters)
-    const { watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
+    // Instantiate useForm with default values
+    const defaultValues = parseFilterDefaults(retrievedFilters)
+    const { watch, setValue, formState, handleSubmit, reset, getValues } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
         resolver: zodResolver(CallAdvanceFilterSchema),
         defaultValues,
     })
+
+    // !!! Needed to set default values
+    useEffect(() => {
+        const currentValues = getValues();
+        // Check if the current form values are different from the new defaultValues
+        if (defaultValues && JSON.stringify(currentValues) !== JSON.stringify(defaultValues)) {
+            reset(defaultValues); // Only reset if values are different
+        }
+    }, [defaultValues]);
     const formError = formState.errors;
 
     // ---> Date and Time
