@@ -7,6 +7,7 @@ import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Navbar } from "@/components/panel/navbar";
 import { Toaster } from "../ui/toaster";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 export default function PanelLayout({
   children
@@ -30,6 +31,7 @@ export default function PanelLayout({
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <div className="flex flex-col w-full">
         <div className="sticky top-0 z-50 w-full">
           <Navbar />

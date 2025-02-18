@@ -3,8 +3,10 @@ import { defaultCallFilterValues } from "./default-filter-values";
 
 export const useParseAdvanceFilterDefaults = () => {
     const parseFilterDefaults = (retrievedFilters?: ICallFilters) => {
+        console.log("use parse advance: ", retrievedFilters);
+
         if (!retrievedFilters) {
-            return defaultCallFilterValues
+            return defaultCallFilterValues;
         }
 
         let startDate: string | undefined;
@@ -12,42 +14,42 @@ export const useParseAdvanceFilterDefaults = () => {
         let startTime: string | undefined;
         let endTime: string | undefined;
 
-        if (retrievedFilters?.startDate) {
+        const formatDateAndTime = (isoString: string) => {
             try {
-                // Convert to UTC Date to check validity
-                const dateObj = new Date(retrievedFilters.startDate)
-                const [date, time] = dateObj.toISOString().split("T");
-                startDate = date; // Time format: <input type="date" /> 
+                const dateObj = new Date(isoString);
 
-                // Split the time and format
-                const [hh, mm] = time.split(":")
-                startTime = `${hh}:${mm}` // Time format: <input type="time" />
-            } catch {
-                // deleteUrlParam("startDate") Cannot update a component (`Router`) while rendering a different component (`CallListAdvanceFilters`). 
-                startDate = undefined
-                startTime = undefined
+                if (isNaN(dateObj.getTime())) throw new Error("Invalid Date");
+
+                // Extract local date and time separately
+                const date = dateObj.toISOString().split("T")[0]; // YYYY-MM-DD
+                const hours = dateObj.getUTCHours().toString().padStart(2, "0");
+                const minutes = dateObj.getUTCMinutes().toString().padStart(2, "0");
+
+                console.log("fasfsa: ", {
+                    date,
+                    hours,
+                    minutes
+                })
+
+                return { date, time: `${hours}:${minutes}` };
+            } catch (error) {
+                console.error("Date parsing error:", error);
+                return { date: undefined, time: undefined };
             }
+        };
+
+        if (retrievedFilters?.startDate) {
+            const formatted = formatDateAndTime(retrievedFilters.startDate);
+            startDate = formatted.date;
+            startTime = formatted.time;
         }
 
         if (retrievedFilters?.endDate) {
-            try {
-                // Convert to UTC Date to check validity
-                const dateObj = new Date(retrievedFilters.endDate)
-                const [date, time] = dateObj.toISOString().split("T");
-                endDate = date // Time format: <input type="date" /> 
-
-                // Split the time and format
-                const [hh, mm] = time.split(":")
-                endTime = `${hh}:${mm}` // Time format: <input type="time" />
-
-            } catch {
-                // deleteUrlParam("endDate") Cannot update a component (`Router`) while rendering a different component (`CallListAdvanceFilters`). 
-                endDate = undefined
-                endTime = undefined
-            }
+            const formatted = formatDateAndTime(retrievedFilters.endDate);
+            endDate = formatted.date;
+            endTime = formatted.time;
         }
-
-        const parsedValues = {
+        console.log("final adv filter ", {
             startDate,
             endDate,
             startTime,
@@ -57,9 +59,19 @@ export const useParseAdvanceFilterDefaults = () => {
             hasPciCompliance: retrievedFilters?.hasPciCompliance ?? undefined,
             hasQualityEvaluation: retrievedFilters?.hasQualityEvaluation ?? undefined,
             hasVideoRecording: retrievedFilters?.hasVideoRecording ?? undefined,
-        }
-        return parsedValues
-    }
+        })
+        return {
+            startDate,
+            endDate,
+            startTime,
+            endTime,
+            minimumDurationSeconds: retrievedFilters?.minimumDurationSeconds ?? undefined,
+            maximumDurationSeconds: retrievedFilters?.maximumDurationSeconds ?? undefined,
+            hasPciCompliance: retrievedFilters?.hasPciCompliance ?? undefined,
+            hasQualityEvaluation: retrievedFilters?.hasQualityEvaluation ?? undefined,
+            hasVideoRecording: retrievedFilters?.hasVideoRecording ?? undefined,
+        };
+    };
 
-    return { parseFilterDefaults }
-}
+    return { parseFilterDefaults };
+};
