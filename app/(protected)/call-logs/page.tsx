@@ -6,12 +6,11 @@ import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
 import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
 import { fetchDownloadUrl } from "@/api/download";
-import useFilterStore from "./lib/use-filter-store";
 import { useCallFilters } from "./lib/use-call-filters";
 
 type AudioData = {
@@ -20,25 +19,36 @@ type AudioData = {
 };
 
 export default function CallLogPage() {
-
-  const { retrievedFilters, resetCallFilters } = useCallFilters()
+  const { retrievedFilters } = useCallFilters()
   const { fetchCalls } = useFetchCalls();
 
   // 01 Fetch call list using React Query
-  const filterValues = Object.values(retrievedFilters).filter(Boolean);
-  const { data, isFetching } = useQuery<
+  const qKey = JSON.stringify(retrievedFilters)
+  const { data, isFetching, isSuccess } = useQuery<
     AxiosResponse<ICallLogs>
   >({
-    queryKey: ["calls", ...filterValues],
+    queryKey: ["calls", qKey],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
     enabled: !!retrievedFilters
-
   });
+
+  useEffect(() => {
+    // If filters are not available, redirect to 400
+    if (!retrievedFilters) {
+      window.location.href = "/400";
+      return;
+    }
+
+  }, [retrievedFilters]);
+
+
+
   // Bad Request
   if (data?.status === 400) {
     window.location.href = "/400";
     return null;
   }
+
 
 
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
@@ -97,10 +107,7 @@ export default function CallLogPage() {
 
   return (
     <div className="flex flex-col gap-6 sm:gap-12">
-      <CallListFilters
-        retrievedFilters={retrievedFilters}
-        resetCallFilters={resetCallFilters}
-      />
+      <CallListFilters retrievedFilters={retrievedFilters} />
       <CallList
         calls={data?.data}
         isFetching={isFetching}
