@@ -1,10 +1,15 @@
 import { ICallFilters } from "@/lib/interfaces/call-interface";
 import { defaultCallFilterValues } from "./default-filter-values";
 import { isValidDate } from "@/lib/utils/date-utils";
+import { useCallFilters } from "./use-call-filters";
+import { useMemo } from "react";
 
 export const useParseAdvanceFilterDefaults = () => {
-    const parseFilterDefaults = (retrievedFilters?: ICallFilters) => {
-        if (!retrievedFilters) {
+    const { retrievedFilters } = useCallFilters()
+
+    const parseFilterDefaults = () => {
+        const hasValue = Object.keys(retrievedFilters).length !== 0
+        if (!hasValue) {
             return defaultCallFilterValues;
         }
 
@@ -27,6 +32,7 @@ export const useParseAdvanceFilterDefaults = () => {
 
             return { date: `${year}-${month}-${day}`, time: `${hours}:${minutes}` }
         };
+
 
         if (retrievedFilters?.startDate) {
             const formatted = formatDateAndTime(retrievedFilters.startDate);
@@ -53,5 +59,9 @@ export const useParseAdvanceFilterDefaults = () => {
         };
     };
 
-    return { parseFilterDefaults };
+    const parsedValues = parseFilterDefaults();
+
+    const parsedFilterDefaults = useMemo(() => parsedValues, [parsedValues]);
+
+    return { parsedFilterDefaults };
 };

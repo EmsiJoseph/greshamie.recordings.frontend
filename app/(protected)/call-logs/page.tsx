@@ -22,45 +22,36 @@ type AudioData = {
 
 export default function CallLogPage() {
   const { updateUrlParams } = useUpdateUrlParams()
-  const { retrievedFilters } = useCallFilters()
+  const { retrievedFilters, hasInvalidFilter, shouldAppendDates } = useCallFilters()
   const { fetchCalls } = useFetchCalls();
 
   // 01 Fetch call list using React Query
-  const qKey = JSON.stringify(retrievedFilters)
+  const queryKey = JSON.stringify(retrievedFilters)
+  const isAutoFetchEnabled = Object.keys(retrievedFilters).length === 0 ? false : true
   const { data, isFetching, isSuccess } = useQuery<
     AxiosResponse<ICallLogs>
   >({
-    queryKey: ["calls", qKey],
+    queryKey: ["calls", queryKey],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
-    enabled: !!retrievedFilters
+    enabled: isAutoFetchEnabled
   });
 
-  // useEffect(() => {
-  //   // If filters are not available, redirect to 400
-  //   if (retrievedFilters === undefined) {
-  //     window.location.href = "/400";
-  //     return;
-  //   }
-  // }, [retrievedFilters]);
-
   useEffect(() => {
-    if (!retrievedFilters?.startDate) {
-      let startDate = operateOnDays(undefined, -7)
-      let endDate = operateOnDays()
-
-      // Convert to Locale
-      startDate = getDateString(startDate, "ISO")
-      endDate = getDateString(endDate, "ISO")
+    // Append start and end dates onto the URL
+    if (shouldAppendDates) {
+      // Convert ISO to Locale
+      const startDate = getDateString(operateOnDays(undefined, -7), "ISO") // 7 days ago
+      const endDate = getDateString(operateOnDays(), "ISO") // now
       updateUrlParams({ startDate, endDate })
     }
-  }, [])
 
-  // Bad Request
-  if (data?.status === 400) {
-    console.log("ERROR 400 on react query")
-    window.location.href = "/400";
-    return null;
-  }
+    // Redirect to /400
+    if (hasInvalidFilter) {
+      window.location.href = "/400";
+      return;
+    }
+  }, [retrievedFilters, operateOnDays, updateUrlParams, getDateString])
+
 
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
     null
