@@ -4,7 +4,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { ICallFilters, TCallDirections } from "@/lib/interfaces/call-interface";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+import { useUpdateUrlParams } from "@/hooks/use-url-params";
 import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter";
 import { SingleChoiceDropdown } from "@/components/common/single-choice-dropdown";
 import { CallListAdvanceFilters } from "./advance-filter/call-list-advance-filters";

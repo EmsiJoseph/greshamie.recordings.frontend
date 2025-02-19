@@ -4,6 +4,10 @@ export const useUpdateUrlParams = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const getUrlParams = (param: string) => {
+    return searchParams.get(param) || "";
+  };
+
   // This function appends, updates, or deletes filters without replacing everything.
   const updateUrlParams = async <T extends Record<string, any>>(newFilters?: T) => {
     if (!newFilters) return;
@@ -64,5 +68,5 @@ export const useUpdateUrlParams = () => {
     );
   };
 
-  return { updateUrlParams, resetUrlParams, deleteUrlParam };
+  return { getUrlParams, updateUrlParams, resetUrlParams, deleteUrlParam };
 };

@@ -4,7 +4,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { IActivityFilters, TEventType } from "@/lib/interfaces/activity-interface";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+import { useUpdateUrlParams } from "@/hooks/use-url-params";
 import { ActivityListAdvanceFilters } from "./activity-list-advance-filters";
 import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter";
 import { EventTypes } from "@/constants/activity-types";

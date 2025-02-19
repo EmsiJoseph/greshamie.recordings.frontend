@@ -59,7 +59,7 @@ export const CallList = ({
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-5">
       <Table>
         <TableHeader>
           <TableRow>
@@ -91,8 +91,10 @@ export const CallList = ({
         </TableHeader>
 
         <TableBody>
-          {sortedCalls && sortedCalls.length > 0 ? (
-            sortedCalls.map((call: ICall) => (
+          {/* {sortedCalls && sortedCalls.length > 0 ? (
+            sortedCalls.map((call: ICall) => ( */}
+          {calls?.items && calls?.items.length > 0 ? (
+            calls?.items.map((call: ICall) => (
               <TableRow key={String(call?.id)}>
                 <TableCell>{call?.caller}</TableCell>
                 <TableCell>{call?.receiver}</TableCell>
@@ -136,7 +138,7 @@ export const CallList = ({
         </TableBody>
       </Table>
 
-      {calls && calls.items && <CallPagination callLogs={calls} />}
+      {calls && calls.items && <CallPagination />}
     </div>
   );
 };

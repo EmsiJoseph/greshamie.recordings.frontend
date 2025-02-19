@@ -12,7 +12,7 @@ import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
 import { fetchDownloadUrl } from "@/api/download";
 import { useCallFilters } from "./lib/use-call-filters";
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+import { useUpdateUrlParams } from "@/hooks/use-url-params";
 import { getDateString, operateOnDays } from "@/lib/utils/date-utils";
 
 type AudioData = {
@@ -22,8 +22,10 @@ type AudioData = {
 
 export default function CallLogPage() {
   const { updateUrlParams } = useUpdateUrlParams()
+
   const {
     retrievedFilters,
+    queryKey,
     hasInvalidFilter,
     shouldAppendDefaultParams,
     isAutoFetchEnabled
@@ -31,12 +33,12 @@ export default function CallLogPage() {
   const { fetchCalls } = useFetchCalls();
 
   // 01 Fetching Call logs and filtering
-  const queryKey = JSON.stringify(retrievedFilters)
+  const qKeyStr = JSON.stringify(queryKey)
   const { data, isFetching, isError } = useQuery<
     AxiosResponse<ICallLogs>
   >({
-    queryKey: ["calls", queryKey],
-    queryFn: () => fetchCalls({ ...retrievedFilters }),
+    queryKey: ["calls", qKeyStr],
+    queryFn: () => fetchCalls({ ...queryKey }),
     enabled: isAutoFetchEnabled
   });
 
@@ -52,35 +54,31 @@ export default function CallLogPage() {
       let defaultParams: ICallFilters = {};
       defaultParams['startDate'] = retrievedFilters.startDate ? retrievedFilters.startDate : startDate
       defaultParams['endDate'] = retrievedFilters.endDate ? retrievedFilters.endDate : endDate
-      // defaultParams['pageOffSet'] = retrievedFilters.pageOffSet ? retrievedFilters.pageOffSet : pageOffSet
-      // defaultParams['pageSize'] = retrievedFilters.pageSize ? retrievedFilters.pageSize : pageSize
-
+      defaultParams['pageOffSet'] = retrievedFilters.pageOffSet ? retrievedFilters.pageOffSet : pageOffSet
+      defaultParams['pageSize'] = retrievedFilters.pageSize ? retrievedFilters.pageSize : pageSize
 
       updateUrlParams(defaultParams)
     }
 
     // Redirect to /400
     if (hasInvalidFilter) {
-      console.log('invalid filter', hasInvalidFilter)
       window.location.href = "/400";
       return;
     }
   }, [shouldAppendDefaultParams, hasInvalidFilter, operateOnDays, updateUrlParams, getDateString])
 
+  // Append the pagination data after a fetch
+  useEffect(() => {
+    if (data?.data) {
+      const pagination = { ...data?.data }
+      delete pagination.items
 
-  // useEffect(() => {
-  //   if (data?.data) {
-  //     const pagination = data?.data
-  //     delete pagination.items
-  //     // delete pagination.pageOffSet
+      const pageOffSet = pagination?.pageOffSet ? pagination?.pageOffSet + 1 : 1
+      pagination.pageOffSet = pageOffSet;
 
-  //     pagination.pageOffSet = pagination.pageOffSet === 0 ? 1 : pagination.pageOffSet;
-
-  //     updateUrlParams(pagination)
-  //   }
-  // }, [data?.data])
-  console.log("Fetch data", data?.data)
-
+      updateUrlParams(pagination)
+    }
+  }, [data?.data])
 
   // 02 Audio Player
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
@@ -140,25 +138,24 @@ export default function CallLogPage() {
   return (
     <div className="flex flex-col gap-6 sm:gap-12">
       <CallListFilters retrievedFilters={retrievedFilters} />
-      {data && data?.data &&
-        <CallList
-          calls={data?.data}
-          isFetching={isFetching}
-          onPlayAudio={(call) => {
-            if (call && call.id !== activeCallId) {
-              fetchAudioData.mutate(call);
-            } else if (call && call.id === activeCallId) {
-              toggleAudio();
-            } else {
-              setAudioPlaying(false);
-              setActiveCallId(null);
-            }
-          }}
-          activeCallId={activeCallId}
-          audioPlaying={audioPlaying}
-          onToggleAudio={toggleAudio}
-        />
-      }
+      <CallList
+        calls={data?.data}
+        isFetching={isFetching}
+        onPlayAudio={(call) => {
+          if (call && call.id !== activeCallId) {
+            fetchAudioData.mutate(call);
+          } else if (call && call.id === activeCallId) {
+            toggleAudio();
+          } else {
+            setAudioPlaying(false);
+            setActiveCallId(null);
+          }
+        }}
+        activeCallId={activeCallId}
+        audioPlaying={audioPlaying}
+        onToggleAudio={toggleAudio}
+      />
+
       {audioData?.streamingUrl && (
         <AudioPlayer
           url={audioData.streamingUrl}

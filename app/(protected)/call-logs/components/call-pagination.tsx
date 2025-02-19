@@ -1,25 +1,13 @@
-import Pagination from '@/components/common/pagination';
-import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
-import { useCallFilters } from '../lib/use-call-filters';
-import { ICallLogs } from '@/lib/interfaces/call-interface';
-import { useUpdateUrlParams } from '@/hooks/browser-url-params/use-update-url-params';
-import { parseNumber } from '@/lib/utils/parse-values';
-import { useGetUrlParams } from '@/hooks/browser-url-params/use-get-url-params';
+import { useUpdateUrlParams } from '@/hooks/use-url-params';
+import { parseBoolean, parseNumber } from '@/lib/utils/parse-values';
+import DynamicPagination from '@/components/common/pagination2';
 
-interface CallPaginationProps {
-  callLogs?: ICallLogs
-}
-
-export const CallPagination = ({ callLogs }: CallPaginationProps) => {
-  const { retrievedFilters } = useCallFilters()
-  const getUrlParams = useGetUrlParams()
-  const { updateUrlParams } = useUpdateUrlParams()
+export const CallPagination = () => {
+  const { updateUrlParams, getUrlParams } = useUpdateUrlParams()
   const currPage = parseNumber(getUrlParams("pageOffSet"))
   const totalPages = parseNumber(getUrlParams("totalPages"))
-  const hasNext = retrievedFilters?.hasNext
-  const hasPrev = getUrlParams("hasPrevious")
-
+  const hasNext = parseBoolean(getUrlParams("hasNext"))
+  const hasPrev = parseBoolean(getUrlParams("hasPrevious"))
 
   const handlePageChange = (
     nextOrPrevOrSet?: "next" | "prev" | "set",
@@ -52,10 +40,11 @@ export const CallPagination = ({ callLogs }: CallPaginationProps) => {
   }
 
   return (
-    <Pagination
+    <DynamicPagination
       currentPage={currPage}
       totalPages={totalPages}
       hasNext={hasNext}
+      hasPrev={hasPrev}
       onPageChange={handlePageChange}
     />
   );
