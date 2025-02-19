@@ -12,6 +12,8 @@ import AudioPlayer from "../audio-player/audio-player";
 import { fetchStreamingUrl } from "@/api/streams";
 import { fetchDownloadUrl } from "@/api/download";
 import { useCallFilters } from "./lib/use-call-filters";
+import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+import { getDateString, operateOnDays } from "@/lib/utils/date-utils";
 
 type AudioData = {
   streamingUrl: string | null;
@@ -19,32 +21,37 @@ type AudioData = {
 };
 
 export default function CallLogPage() {
-  const { retrievedFilters } = useCallFilters()
+  const { updateUrlParams } = useUpdateUrlParams()
+  const { retrievedFilters, hasInvalidFilter, shouldAppendDates } = useCallFilters()
   const { fetchCalls } = useFetchCalls();
 
   // 01 Fetch call list using React Query
-  const qKey = JSON.stringify(retrievedFilters)
+  const queryKey = JSON.stringify(retrievedFilters)
+  const isAutoFetchEnabled = Object.keys(retrievedFilters).length === 0 ? false : true
   const { data, isFetching, isSuccess } = useQuery<
     AxiosResponse<ICallLogs>
   >({
-    queryKey: ["calls", qKey],
+    queryKey: ["calls", queryKey],
     queryFn: () => fetchCalls({ ...retrievedFilters }),
-    enabled: !!retrievedFilters
+    enabled: isAutoFetchEnabled
   });
 
   useEffect(() => {
-    // If filters are not available, redirect to 400
-    if (!retrievedFilters || retrievedFilters === undefined) {
+    // Append start and end dates onto the URL
+    if (shouldAppendDates) {
+      // Convert ISO to Locale
+      const startDate = getDateString(operateOnDays(undefined, -7), "ISO") // 7 days ago
+      const endDate = getDateString(operateOnDays(), "ISO") // now
+      updateUrlParams({ startDate, endDate })
+    }
+
+    // Redirect to /400
+    if (hasInvalidFilter) {
       window.location.href = "/400";
       return;
     }
-  }, [retrievedFilters]);
+  }, [retrievedFilters, operateOnDays, updateUrlParams, getDateString])
 
-  // // Bad Request
-  // if (data?.status === 400) {
-  //   window.location.href = "/400";
-  //   return null;
-  // }
 
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
     null

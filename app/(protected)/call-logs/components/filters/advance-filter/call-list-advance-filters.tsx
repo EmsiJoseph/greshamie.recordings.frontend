@@ -32,28 +32,30 @@ const toggleItemClass = "border data-[state=on]:bg-[#f8ffe8] data-[state=on]:bor
 const customInputClass = "w-full outline-solid border-solid border-[1.5px] rounded-md h-10 p-4";
 
 export const CallListAdvanceFilters = () => {
-    const { retrievedFilters, resetCallFilters } = useCallFilters();
-    const { parseFilterDefaults } = useParseAdvanceFilterDefaults()
+    const { resetCallFilters } = useCallFilters();
+    const { parsedFilterDefaults } = useParseAdvanceFilterDefaults()
     const { updateUrlParams } = useUpdateUrlParams()
 
     const [open, setOpen] = useState(false);
     const [resetSlider, setResetSlider] = useState(false);
 
     // Instantiate useForm with default values
-    const defaultValues = parseFilterDefaults(retrievedFilters)
     const { watch, setValue, formState, handleSubmit, reset, getValues } = useForm<z.infer<typeof CallAdvanceFilterSchema>>({
         resolver: zodResolver(CallAdvanceFilterSchema),
-        defaultValues,
+        defaultValues: parsedFilterDefaults,
     })
-
-    // !!! Needed to set default values
     useEffect(() => {
-        const currentValues = getValues();
-        // Check if the current form values are different from the new defaultValues
-        if (defaultValues && JSON.stringify(currentValues) !== JSON.stringify(defaultValues)) {
-            reset(defaultValues); // Only reset if values are different
-        }
-    }, [defaultValues]);
+        reset(parsedFilterDefaults);
+    }, [parsedFilterDefaults, reset]);
+    // !!! Needed to set default values
+    // useEffect(() => {
+    //     const currentValues = getValues();
+    //     // Check if the current form values are different from the new defaultValues
+    //     if (defaultValues && JSON.stringify(currentValues) !== JSON.stringify(defaultValues)) {
+    //         reset(defaultValues); // Only reset if values are different
+    //     }
+    // }, [defaultValues]);
+
     const formError = formState.errors;
 
     // ---> Date and Time

@@ -1,82 +1,87 @@
 import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
-import { ICall, ICallFilters, TCallDirections } from "@/lib/interfaces/call-interface";
+import { ICallFilters } from "@/lib/interfaces/call-interface";
 import { parseBoolean, parseNumber } from "@/lib/utils/parse-values";
 import { defaultCallFilterValues } from "./default-filter-values";
 import { CallDirections } from "@/constants/call-types";
-import { useEffect, useMemo, useRef } from "react";
-
-const getUtcDate = (daysAgo = 0) => {
-  const date = new Date();
-  date.setUTCDate(date.getUTCDate() - daysAgo);
-  return date.toISOString();
-};
+import { isValidDate } from "@/lib/utils/date-utils";
 
 export const useCallFilters = () => {
   const { resetUrlParams } = useUpdateUrlParams();
   const getUrlParams = useGetUrlParams();
+  let shouldAppendDates = false
+  let hasInvalidFilter = false;
 
-  const retrieveCallFilters = (): ICallFilters | undefined => {
+  const retrieveCallFilters = (): ICallFilters => {
     const finalFilters = { ...defaultCallFilterValues }
-    let redirect400 = false;
     Object.keys(defaultCallFilterValues).forEach((key) => {
       const filterKey = key as keyof ICallFilters;
       const value = getUrlParams(key)
 
       // 01 Handle Start and End Dates 
-      // if (key === 'startDate' || key === 'endDate') {
-      //   try {
-      //     const parsedDate = new Date(value).toISOString();
-      //     finalFilters[key] = parsedDate;
-      //     return;
-      //   } catch {
-      //     if (value) {
-      //       redirect400 = true;
-      //       return
-      //     }
-      //     const startOrEndDate = key === "startDate" ? 7 : 0;
-      //     const utcString = getUtcDate(startOrEndDate);
-      //     finalFilters[key] = utcString;
-      //     return;
-      //   }
-      // }
-
       if (key === 'startDate' || key === 'endDate') {
+        if (!value) {
+          delete finalFilters[filterKey];
+          return
+        }
+
+        // Check for valid date
+        const isValid = isValidDate(value, "locale");
+        if (!isValid) { hasInvalidFilter = true; return }
+
+        // All checks are made, append to finalFilters
         finalFilters[key] = value
         return
       }
-
 
       // 02 Handle CallDirections
       if (key === 'callDirection' && value) {
         const isValid = value.toUpperCase() in CallDirections;
         if (!isValid) {
-          redirect400 = true;
+          hasInvalidFilter = true;
           return;
         }
-        finalFilters[filterKey] = value as any;
+        finalFilters[key] = value;
         return;
       }
 
+      /***
+       * 
+       * NOTE: ADD VALIDATION FOR STRINGS (or other data types except number and bool) HERE
+       * 
+       */
+
+      // 03 Numeric and Boolean values
+      if (value) {
+        const isBoolean = parseBoolean(value);
+        const isNumeric = parseNumber(value)
+
+        if (!isBoolean && !isNumeric) {
+          hasInvalidFilter = true;
+          return
+        }
+
+        finalFilters[key as keyof ICallFilters] = value as any
+      }
+
       // 03 Handle falsy values (delete if necessary)
-      // Except for FALSE, 0
+      // Except for 'false' && 0
       if (value === "" || value === undefined || value === null) {
         delete finalFilters[filterKey];
         return
       }
-
-      // Else
-      finalFilters[key as keyof ICallFilters] = value as any
     });
 
-    return redirect400 ? undefined : finalFilters
+    shouldAppendDates = Object.keys(finalFilters).length === 0 // Only implementation of this var
+
+    return finalFilters
   };
 
-  const retrievedFilters = retrieveCallFilters()
+  const retrievedFilters = retrieveCallFilters() // Empty object at the very least
 
   const resetCallFilters = () => {
     resetUrlParams();
   };
 
-  return { retrieveCallFilters, retrievedFilters, resetCallFilters };
+  return { retrievedFilters, hasInvalidFilter, shouldAppendDates, resetCallFilters };
 };
