@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFetchCalls } from "@/api/calls";
-import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
+import { ICall, ICallFilters, ICallLogs } from "@/lib/interfaces/call-interface";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
@@ -25,7 +25,7 @@ export default function CallLogPage() {
   const {
     retrievedFilters,
     hasInvalidFilter,
-    shouldAppendDates,
+    shouldAppendDefaultParams,
     isAutoFetchEnabled
   } = useCallFilters()
   const { fetchCalls } = useFetchCalls();
@@ -42,19 +42,44 @@ export default function CallLogPage() {
 
   useEffect(() => {
     // Append start and end dates onto the URL
-    if (shouldAppendDates) {
+    if (shouldAppendDefaultParams) {
       // Convert ISO to Locale
       const startDate = getDateString(operateOnDays(undefined, -7), "ISO") // 7 days ago
       const endDate = getDateString(operateOnDays(), "ISO") // now
-      updateUrlParams({ startDate, endDate })
+      const pageOffSet = 1;
+      const pageSize = 10;
+
+      let defaultParams: ICallFilters = {};
+      defaultParams['startDate'] = retrievedFilters.startDate ? retrievedFilters.startDate : startDate
+      defaultParams['endDate'] = retrievedFilters.endDate ? retrievedFilters.endDate : endDate
+      // defaultParams['pageOffSet'] = retrievedFilters.pageOffSet ? retrievedFilters.pageOffSet : pageOffSet
+      // defaultParams['pageSize'] = retrievedFilters.pageSize ? retrievedFilters.pageSize : pageSize
+
+
+      updateUrlParams(defaultParams)
     }
 
     // Redirect to /400
     if (hasInvalidFilter) {
+      console.log('invalid filter', hasInvalidFilter)
       window.location.href = "/400";
       return;
     }
-  }, [retrievedFilters, operateOnDays, updateUrlParams, getDateString])
+  }, [shouldAppendDefaultParams, hasInvalidFilter, operateOnDays, updateUrlParams, getDateString])
+
+
+  // useEffect(() => {
+  //   if (data?.data) {
+  //     const pagination = data?.data
+  //     delete pagination.items
+  //     // delete pagination.pageOffSet
+
+  //     pagination.pageOffSet = pagination.pageOffSet === 0 ? 1 : pagination.pageOffSet;
+
+  //     updateUrlParams(pagination)
+  //   }
+  // }, [data?.data])
+  console.log("Fetch data", data?.data)
 
 
   // 02 Audio Player
@@ -115,23 +140,25 @@ export default function CallLogPage() {
   return (
     <div className="flex flex-col gap-6 sm:gap-12">
       <CallListFilters retrievedFilters={retrievedFilters} />
-      <CallList
-        calls={data?.data}
-        isFetching={isFetching}
-        onPlayAudio={(call) => {
-          if (call && call.id !== activeCallId) {
-            fetchAudioData.mutate(call);
-          } else if (call && call.id === activeCallId) {
-            toggleAudio();
-          } else {
-            setAudioPlaying(false);
-            setActiveCallId(null);
-          }
-        }}
-        activeCallId={activeCallId}
-        audioPlaying={audioPlaying}
-        onToggleAudio={toggleAudio}
-      />
+      {data && data?.data &&
+        <CallList
+          calls={data?.data}
+          isFetching={isFetching}
+          onPlayAudio={(call) => {
+            if (call && call.id !== activeCallId) {
+              fetchAudioData.mutate(call);
+            } else if (call && call.id === activeCallId) {
+              toggleAudio();
+            } else {
+              setAudioPlaying(false);
+              setActiveCallId(null);
+            }
+          }}
+          activeCallId={activeCallId}
+          audioPlaying={audioPlaying}
+          onToggleAudio={toggleAudio}
+        />
+      }
       {audioData?.streamingUrl && (
         <AudioPlayer
           url={audioData.streamingUrl}

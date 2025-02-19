@@ -6,7 +6,6 @@ import { parseNumber } from "@/lib/utils/parse-values";
 
 interface PaginationProps {
   hasNext?: boolean,
-  hasPrevious?: boolean,
   pageSize?: number,
   currentPage?: number; // PageOffSet
   totalCount?: number;
@@ -45,7 +44,7 @@ export const Pagination = ({
   }
 
   const isNextDisabled = !hasNext ? true : false
-  const isPrevDisabled = currentPage === 1 || currentPage === 0
+  const isPrevDisabled = currentPage === 1
 
   return (
     <div className="flex items-center justify-between w-full mt-4">
