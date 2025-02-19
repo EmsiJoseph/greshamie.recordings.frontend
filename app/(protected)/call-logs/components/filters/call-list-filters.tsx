@@ -26,14 +26,14 @@ export const CallListFilters = ({ retrievedFilters }: CallListFiltersProps) => {
   // ---> Delay search update
   const debouncedSearch = useDebounce(search); // always refer to debounced value
 
-  useEffect(() => {
-    updateUrlParams({ search: debouncedSearch });
-  }, [debouncedSearch, updateUrlParams]);
-
   // 3. Period
   const handlePeriodChange = (startDate: Date, endDate: Date, selectedPeriod: string) => {
     updateUrlParams({ startDate: startDate.toISOString(), endDate: endDate.toISOString(), period: selectedPeriod });
   };
+
+  useEffect(() => {
+    updateUrlParams({ search: debouncedSearch });
+  }, [debouncedSearch, updateUrlParams]);
 
   return (
     <div className="flex gap-4">
@@ -51,8 +51,12 @@ export const CallListFilters = ({ retrievedFilters }: CallListFiltersProps) => {
         className="block lg:hidden"
       />
 
+      <CallListAdvanceFilters />
+
       <CallLogsPeriodFilter
+        value={retrievedFilters?.period}
         onPeriodChange={handlePeriodChange}
+
       />
 
       <CallListAdvanceFilters />

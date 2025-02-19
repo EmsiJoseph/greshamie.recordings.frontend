@@ -20,6 +20,7 @@ export interface IActivityFilters extends IPagination {
     eventType?: TEventType,
     startDate?: string,
     endDate?: string,
+    period?: string,
 }
 
 export interface IActivityAdvanceFilterComponent {
