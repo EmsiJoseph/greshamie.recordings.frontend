@@ -22,13 +22,17 @@ type AudioData = {
 
 export default function CallLogPage() {
   const { updateUrlParams } = useUpdateUrlParams()
-  const { retrievedFilters, hasInvalidFilter, shouldAppendDates } = useCallFilters()
+  const {
+    retrievedFilters,
+    hasInvalidFilter,
+    shouldAppendDates,
+    isAutoFetchEnabled
+  } = useCallFilters()
   const { fetchCalls } = useFetchCalls();
 
-  // 01 Fetch call list using React Query
+  // 01 Fetching Call logs and filtering
   const queryKey = JSON.stringify(retrievedFilters)
-  const isAutoFetchEnabled = Object.keys(retrievedFilters).length === 0 ? false : true
-  const { data, isFetching, isSuccess } = useQuery<
+  const { data, isFetching, isError } = useQuery<
     AxiosResponse<ICallLogs>
   >({
     queryKey: ["calls", queryKey],
@@ -53,6 +57,7 @@ export default function CallLogPage() {
   }, [retrievedFilters, operateOnDays, updateUrlParams, getDateString])
 
 
+  // 02 Audio Player
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
     null
   );
@@ -88,14 +93,14 @@ export default function CallLogPage() {
     },
   });
 
-  // useEffect(() => {
-  //   if (isError) {
-  //     handleApiClientSideError({
-  //       error: "Something went wrong. Try again later.",
-  //       isSuccessToast: false,
-  //     });
-  //   }
-  // }, [isError]);
+  useEffect(() => {
+    if (isError) {
+      handleApiClientSideError({
+        error: "Something went wrong. Try again later.",
+        isSuccessToast: false,
+      });
+    }
+  }, [isError]);
 
   const toggleAudio = () => {
     setAudioPlaying((prev) => !prev);
