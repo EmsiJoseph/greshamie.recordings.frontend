@@ -9,6 +9,7 @@ import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-grou
 import { SingleChoiceDropdown } from "@/components/common/single-choice-dropdown";
 import { CallListAdvanceFilters } from "./advance-filter/call-list-advance-filters";
 import { CallLogsPeriodFilter } from "./call-logs-period-filter";
+import { getDateString } from "@/lib/utils/date-utils";
 interface CallListFiltersProps {
   retrievedFilters?: ICallFilters;
 }
@@ -27,8 +28,10 @@ export const CallListFilters = ({ retrievedFilters }: CallListFiltersProps) => {
   const debouncedSearch = useDebounce(search); // always refer to debounced value
 
   // 3. Period
-  const handlePeriodChange = (startDate: Date, endDate: Date, selectedPeriod: string) => {
-    updateUrlParams({ startDate: startDate.toISOString(), endDate: endDate.toISOString(), period: selectedPeriod });
+  const handlePeriodChange = (startDate: Date, endDate: Date) => {
+    const formattedStartDate = getDateString(startDate.toDateString(), "ISO") 
+    const formattedEndDate = getDateString(endDate.toDateString(), "ISO") 
+    updateUrlParams({ startDate: formattedStartDate, endDate: formattedEndDate });
   };
 
   useEffect(() => {
