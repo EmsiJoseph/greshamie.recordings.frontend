@@ -51,7 +51,7 @@ export const CallLogsPeriodFilter = ({
                     value={selectedPeriod}
                     onChange={handlePeriodChange}
                     aria-label="Select period dropdown"
-                    className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 dark:bg-black dark:text-white"
                 >
                     <option value="" disabled>Select a period</option>
                     {Object.entries(PeriodTypes).map(([key, value]) => (
