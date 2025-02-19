@@ -11,16 +11,19 @@ export const useCallFilters = () => {
   const getUrlParams = useGetUrlParams();
   let shouldAppendDates = false
   let hasInvalidFilter = false;
+  let isAutoFetchEnabled = false;
 
   const retrieveCallFilters = (): ICallFilters => {
     const finalFilters = { ...defaultCallFilterValues }
     Object.keys(defaultCallFilterValues).forEach((key) => {
       const filterKey = key as keyof ICallFilters;
       const value = getUrlParams(key)
+      console.log(key, value)
 
       // 01 Handle Start and End Dates 
       if (key === 'startDate' || key === 'endDate') {
         if (!value) {
+          shouldAppendDates = true
           delete finalFilters[filterKey];
           return
         }
@@ -53,15 +56,16 @@ export const useCallFilters = () => {
 
       // 03 Numeric and Boolean values
       if (value) {
-        const isBoolean = parseBoolean(value);
-        const isNumeric = parseNumber(value)
+        const booleanValue = parseBoolean(value); // True | False | Undefined
+        const numericValue = parseNumber(value) // Number | Undefined
 
-        if (!isBoolean && !isNumeric) {
+        if (booleanValue === undefined && !numericValue) {
           hasInvalidFilter = true;
           return
         }
 
         finalFilters[key as keyof ICallFilters] = value as any
+        return
       }
 
       // 03 Handle falsy values (delete if necessary)
@@ -72,16 +76,25 @@ export const useCallFilters = () => {
       }
     });
 
-    shouldAppendDates = Object.keys(finalFilters).length === 0 // Only implementation of this var
-
+    shouldAppendDates = shouldAppendDates ? shouldAppendDates : Object.keys(finalFilters).length === 0
     return finalFilters
   };
 
   const retrievedFilters = retrieveCallFilters() // Empty object at the very least
+  const hasFilterValues = Object.keys(retrievedFilters).length > 0
+  
+  // Enable if: 01. Has filter values, 02. Has no invalid filters, 03. If dates are present already
+  isAutoFetchEnabled = hasFilterValues && !hasInvalidFilter && !shouldAppendDates
 
   const resetCallFilters = () => {
     resetUrlParams();
   };
 
-  return { retrievedFilters, hasInvalidFilter, shouldAppendDates, resetCallFilters };
+  return {
+    retrievedFilters,
+    hasInvalidFilter,
+    shouldAppendDates,
+    isAutoFetchEnabled,
+    resetCallFilters
+  };
 };
