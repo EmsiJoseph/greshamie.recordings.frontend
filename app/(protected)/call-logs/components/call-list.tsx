@@ -136,7 +136,7 @@ export const CallList = ({
         </TableBody>
       </Table>
 
-      <CallPagination callLogs={calls} />
+      {calls && calls.items && <CallPagination callLogs={calls} />}
     </div>
   );
 };

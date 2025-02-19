@@ -30,8 +30,8 @@ export const ActivityListAdvanceFilters = ({
         const { updateUrlParams } = useUpdateUrlParams()
         const defaultValues = parseAdvanceFilterDefaults(retrievedActivityFilters);
         const { watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof ActivityAdvanceFilterSchema>>({
-          resolver: zodResolver(ActivityAdvanceFilterSchema),
-          defaultValues,
+            resolver: zodResolver(ActivityAdvanceFilterSchema),
+            defaultValues,
         })
         
         const formError = formState.errors;

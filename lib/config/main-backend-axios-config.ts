@@ -28,4 +28,26 @@ GreshamAxiosConfig.interceptors.request.use(
   }
 );
 
-export { GreshamAxiosConfig };
+
+const GreshamAxiosConfigAuth = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_GRESHAM_AUTH,
+  // timeout: 5000,
+  headers: regularHeaders,
+});
+
+// Inject auth token by default
+GreshamAxiosConfigAuth.interceptors.request.use(
+  async (config) => {
+    const bearerToken = await getAccessToken();
+    if (bearerToken) {
+      config.headers.Authorization = `Bearer ${bearerToken.value}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export { GreshamAxiosConfig, GreshamAxiosConfigAuth };

@@ -2,7 +2,7 @@
 
 import { AxiosResponse } from "axios";
 import { flattenValidationErrors } from "next-safe-action";
-import { GreshamAxiosConfig } from "@/lib/config/main-backend-axios-config";
+import { GreshamAxiosConfig, GreshamAxiosConfigAuth } from "@/lib/config/main-backend-axios-config";
 import { loginEndpoint, logoutEndpoint, reauthenticateEndpoint } from "@/api/endpoints/auth-endpoints";
 import { LoginSchema } from "@/lib/schema/authentication-schema";
 import { actionClient } from "@/lib/config/safe-action";
@@ -32,7 +32,7 @@ export const loginUserAction = actionClient
             const request = async (): Promise<AxiosResponse<IUserWithToken>> => {
                 let requestBody = { username, password };
 
-                return GreshamAxiosConfig.post<IUserWithToken>(loginEndpoint, requestBody);
+                return GreshamAxiosConfigAuth.post<IUserWithToken>(loginEndpoint, requestBody);
             };
 
             // Handle the response
@@ -52,7 +52,7 @@ export const loginUserAction = actionClient
     );
 
 export const logoutUserAction = actionClient.action(async (): Promise<boolean> => {
-    const response = await GreshamAxiosConfig.post(logoutEndpoint);
+    const response = await GreshamAxiosConfigAuth.post(logoutEndpoint);
     if (response.status === 200) {
         await deleteAuthCookie();
         return true
@@ -69,7 +69,7 @@ export const reauthenticate = async (): Promise<boolean> => {
             return false;
         }
 
-        const response = await GreshamAxiosConfig.post(reauthenticateEndpoint,
+        const response = await GreshamAxiosConfigAuth.post(reauthenticateEndpoint,
             { RefreshToken: refreshToken.value },  // Request body
         );
 

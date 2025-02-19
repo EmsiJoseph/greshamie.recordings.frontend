@@ -1,4 +1,5 @@
 import { CallDirections } from "@/constants/call-types"
+import { IPagination } from "./pagination-interface"
 
 export type TCallDirections = typeof CallDirections[keyof typeof CallDirections]
 
@@ -16,38 +17,20 @@ export interface ICall {
     downloadUrl: string,
 }
 
-export interface ICallFilters {
+export interface ICallFilters extends IPagination{
     search?: string,
     callDirection?: TCallDirections,
     startDate?: string, // UTC Str
     endDate?: string, // UTC Str
     minimumDurationSeconds?: number,
     maximumDurationSeconds?: number,
-    caller?: string,
-    receiver?: string,
-    recorder?: string,
     hasVideoRecording?: boolean,
     hasPciCompliance?: boolean,
     hasQualityEvaluation?: boolean,
-
-
-    // Pagination
-    hasNext?: boolean,
-    hasPrevious?: boolean,
-    pageSize?: number
-    pageOffSet?: number
-    totalCount?: number,
-    totalPages?: number
 }
 
-export interface ICallLogs {
-    hasNext?: boolean,
-    hasPrevious?: boolean,
-    items: ICall[] | [],
-    pageSize?: number
-    pageOffSet?: number
-    totalCount?: number,
-    totalPages?: number
+export interface ICallLogs extends IPagination{
+    items?: ICall[] | [],
     streamingUrl?: string,
     downloadUrl?: string,
 }
@@ -63,5 +46,3 @@ export interface ICallAdvanceFilterComponent {
     hasPciCompliance?: boolean,
     hasQualityEvaluation?: boolean,
 }
-
-export type TCallFilterKeys = keyof ICallFilters;

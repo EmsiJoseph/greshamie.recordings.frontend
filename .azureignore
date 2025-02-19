@@ -1,0 +1,34 @@
+# Ignore node modules and dependencies
+node_modules/
+.npm/
+.pnp/
+.pnp.js
+.next/cache/
+.next/standalone/
+
+# Ignore logs and debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# Ignore environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Ignore editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Ignore build files (if deploying separately)
+.next/
+out/
+dist/
+coverage/

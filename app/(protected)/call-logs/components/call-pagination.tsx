@@ -5,17 +5,18 @@ import { useCallFilters } from '../lib/use-call-filters';
 import { ICallLogs } from '@/lib/interfaces/call-interface';
 import { useUpdateUrlParams } from '@/hooks/browser-url-params/use-update-url-params';
 import { parseNumber } from '@/lib/utils/parse-values';
+import useFilterStore from '../lib/use-filter-store';
 
 interface CallPaginationProps {
   callLogs?: ICallLogs
 }
 
 export const CallPagination = ({ callLogs }: CallPaginationProps) => {
-  const { retrievedFilters } = useCallFilters();
+  const { filters } = useFilterStore()
   const { updateUrlParams } = useUpdateUrlParams()
-  const currPage = retrievedFilters?.pageOffSet
-  const totalPages = retrievedFilters?.totalPages
-  const hasNext = retrievedFilters?.hasNext
+  const currPage = filters?.pageOffSet
+  const totalPages = filters?.totalPages
+  const hasNext = filters?.hasNext
 
 
   const handlePageChange = (

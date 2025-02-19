@@ -5,19 +5,15 @@ import { ICallFilters, TCallDirections } from "@/lib/interfaces/call-interface";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
-import { CallListAdvanceFilters } from "./advance-filter/call-list-advance-filters";
 import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-group-filter";
 import { SingleChoiceDropdown } from "@/components/common/single-choice-dropdown";
-
+import { CallListAdvanceFilters } from "./advance-filter/call-list-advance-filters";
+import { CallLogsPeriodFilter } from "./call-logs-period-filter";
 interface CallListFiltersProps {
-  retrievedFilters: ICallFilters;
-  resetCallFilters: () => void;
+  retrievedFilters?: ICallFilters;
 }
 
-export const CallListFilters = ({
-  retrievedFilters,
-  resetCallFilters,
-}: CallListFiltersProps) => {
+export const CallListFilters = ({ retrievedFilters }: CallListFiltersProps) => {
   const { updateUrlParams } = useUpdateUrlParams();
   // 01 Call Types
   // ---> Handle changes in call type selection.
@@ -34,7 +30,10 @@ export const CallListFilters = ({
     updateUrlParams({ search: debouncedSearch });
   }, [debouncedSearch, updateUrlParams]);
 
-  // 02 Advance Filters
+  // 3. Period
+  const handlePeriodChange = (startDate: Date, endDate: Date, selectedPeriod: string) => {
+    updateUrlParams({ startDate: startDate.toISOString(), endDate: endDate.toISOString(), period: selectedPeriod });
+  };
 
   return (
     <div className="flex gap-4">
@@ -52,10 +51,12 @@ export const CallListFilters = ({
         className="block lg:hidden"
       />
 
-      <CallListAdvanceFilters
-        retrievedCallFilters={retrievedFilters}
-        resetCallFilters={resetCallFilters}
+      <CallListAdvanceFilters />
+      <CallLogsPeriodFilter
+        onPeriodChange={handlePeriodChange}
       />
+
+      <CallListAdvanceFilters />
       <div className="relative w-full">
         <Input
           className="pr-9"
