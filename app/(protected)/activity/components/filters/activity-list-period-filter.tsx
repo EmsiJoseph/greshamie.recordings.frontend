@@ -54,7 +54,7 @@ export const ActivityListPeriodFilter = ({
                     value={selectedPeriod}
                     onChange={handlePeriodChange}
                     aria-label="Select period dropdown"
-                    className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 dark:bg-black dark:text-white"
                 >
                     <option value="" disabled>Select a period</option>
                     {Object.entries(PeriodTypes).map(([key, value]) => (
@@ -63,7 +63,7 @@ export const ActivityListPeriodFilter = ({
                         </option>
                     ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-white">
                     <CalendarClock className="w-4 h-4" />
                 </div>
             </div>
