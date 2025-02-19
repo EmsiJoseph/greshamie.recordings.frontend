@@ -54,12 +54,18 @@ export const useCallFilters = () => {
        * 
        */
 
-      // 03 Numeric and Boolean values
-      if (value) {
-        const booleanValue = parseBoolean(value); // True | False | Undefined
-        const numericValue = parseNumber(value) // Number | Undefined
+      // 03 Numeric values
+      if (key === "minDurationSeconds" || key === "maxDurationSeconds" && value) {
+        const numericValue = parseNumber(value)
+        if (!numericValue) { hasInvalidFilter = true; return; }
 
-        if (booleanValue === undefined && !numericValue) {
+        finalFilters[key as keyof ICallFilters] = value as any
+      }
+
+      // 04 Boolean values
+      if (key === "hasVideoRecording" && value) {
+        const booleanValue = parseBoolean(value); // True | False | Undefined
+        if (booleanValue === undefined) {
           hasInvalidFilter = true;
           return
         }
@@ -74,6 +80,9 @@ export const useCallFilters = () => {
         delete finalFilters[filterKey];
         return
       }
+
+      // For all other strings
+      finalFilters[key as keyof ICallFilters] = value as any
     });
 
     shouldAppendDates = shouldAppendDates ? shouldAppendDates : Object.keys(finalFilters).length === 0
@@ -82,7 +91,7 @@ export const useCallFilters = () => {
 
   const retrievedFilters = retrieveCallFilters() // Empty object at the very least
   const hasFilterValues = Object.keys(retrievedFilters).length > 0
-  
+
   // Enable if: 01. Has filter values, 02. Has no invalid filters, 03. If dates are present already
   isAutoFetchEnabled = hasFilterValues && !hasInvalidFilter && !shouldAppendDates
 
