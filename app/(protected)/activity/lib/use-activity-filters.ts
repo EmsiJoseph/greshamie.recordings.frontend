@@ -1,5 +1,4 @@
-import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+import { useUpdateUrlParams } from "@/hooks/use-url-params";
 import {
   IActivityFilters,
   TEventType,
@@ -7,8 +6,7 @@ import {
 import { parseBoolean, parseNumber } from "@/lib/utils/parse-values";
 
 export const useActivityFilters = () => {
-  const { resetUrlParams } = useUpdateUrlParams();
-  const getUrlParams = useGetUrlParams();
+  const { resetUrlParams, getUrlParams } = useUpdateUrlParams();
 
   const retrieveActivityFilters = (): IActivityFilters => {
     const getNumericUrlParam = (key: string): number | undefined => {

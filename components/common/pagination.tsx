@@ -6,6 +6,7 @@ import { parseNumber } from "@/lib/utils/parse-values";
 
 interface PaginationProps {
   hasNext?: boolean,
+  hasPrev?: boolean,
   pageSize?: number,
   currentPage?: number; // PageOffSet
   totalCount?: number;
@@ -21,7 +22,8 @@ export const Pagination = ({
   totalPages,
   pageSize,
   onPageChange,
-  hasNext
+  hasNext,
+  hasPrev
 }: PaginationProps) => {
 
   const handleInputPage = (
@@ -43,9 +45,6 @@ export const Pagination = ({
     onPageChange(nextOrPrevOrSet, e.target.value)
   }
 
-  const isNextDisabled = !hasNext ? true : false
-  const isPrevDisabled = currentPage === 1
-
   return (
     <div className="flex items-center justify-between w-full mt-4">
       {/* Left Side: Page Input and Text */}
@@ -60,7 +59,7 @@ export const Pagination = ({
           variant="outline"
           size="sm"
           onClick={() => onPageChange("prev")}
-          disabled={isPrevDisabled}
+          disabled={!hasPrev}
         >
           <ChevronLeft className="w-4 h-4" />
           Previous
@@ -70,7 +69,7 @@ export const Pagination = ({
           variant="outline"
           size="sm"
           onClick={() => onPageChange("next")}
-          disabled={isNextDisabled}
+          disabled={!hasNext}
         >
           Next
           <ChevronRight className="w-4 h-4" />

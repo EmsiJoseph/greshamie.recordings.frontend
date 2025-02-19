@@ -13,7 +13,7 @@ import {
 import { AxiosResponse } from "axios";
 import { useEffect } from "react";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+import { useUpdateUrlParams } from "@/hooks/use-url-params";
 
 export default function ActivityPage() {
   const { updateUrlParams } = useUpdateUrlParams();
