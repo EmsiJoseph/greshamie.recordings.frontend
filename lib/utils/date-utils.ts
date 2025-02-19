@@ -28,19 +28,30 @@ export const isValidDate = (dateString: string | undefined, type: 'ISO' | 'local
 
   let parsedDate;
 
-  if (type === 'ISO') {
-    // For ISO format with time: 'yyyy-MM-dd' or 'yyyy-MM-ddTHH:mm:ss'
-    parsedDate = new Date(dateString);  // This will be valid if the string is in ISO format (with or without time)
-    return !isNaN(parsedDate.getTime()); // Returns true if valid, false if invalid
+  try {
+    if (type === 'ISO') {
+      // For ISO format with time: 'yyyy-MM-dd' or 'yyyy-MM-ddTHH:mm:ss'
+      parsedDate = new Date(dateString);  // This will be valid if the string is in ISO format (with or without time)
+      if (isNaN(parsedDate.getTime())) {
+        throw new Error('Invalid ISO date');
+      }
+      return true; // Return true if valid ISO date
+    }
+
+    if (type === 'locale') {
+      // For Local (en-GB) format with time: 'dd/MM/yyyy HH:mm:ss'
+      parsedDate = parse(dateString, enGbFormat, new Date());
+      if (isNaN(parsedDate.getTime())) {
+        console.log("dateString is NAN")
+        throw new Error('Invalid local date');
+      }
+      return true; // Return true if valid local date
+    }
+  } catch (error) {
+    return false; // Return false if any error occurs during parsing
   }
 
-  if (type === 'locale') {
-    // For Local (en-GB) format with time: 'dd/MM/yyyy HH:mm:ss'
-    parsedDate = parse(dateString, enGbFormat, new Date());
-    return !isNaN(parsedDate.getTime()); // Returns true if valid, false if invalid
-  }
-
-  return false;
+  return false;  // Return false if no valid format is provided
 };
 
 // Converts between ISO and en-GB
