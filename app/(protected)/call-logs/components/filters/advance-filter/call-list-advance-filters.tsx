@@ -44,18 +44,7 @@ export const CallListAdvanceFilters = () => {
         resolver: zodResolver(CallAdvanceFilterSchema),
         defaultValues: parsedFilterDefaults,
     })
-    useEffect(() => {
-        reset(parsedFilterDefaults);
-    }, [parsedFilterDefaults, reset]);
-    // !!! Needed to set default values
-    // useEffect(() => {
-    //     const currentValues = getValues();
-    //     // Check if the current form values are different from the new defaultValues
-    //     if (defaultValues && JSON.stringify(currentValues) !== JSON.stringify(defaultValues)) {
-    //         reset(defaultValues); // Only reset if values are different
-    //     }
-    // }, [defaultValues]);
-
+    
     const formError = formState.errors;
 
     // ---> Date and Time
@@ -120,6 +109,9 @@ export const CallListAdvanceFilters = () => {
             return
         }
         if (value === "false") {
+            console.log("onclick handleBoolChange", value)
+            console.log("rhf KEy", rhfKey)
+
             setValue(rhfKey, false);
             return
         }

@@ -21,7 +21,6 @@ export const useParseAdvanceFilterDefaults = () => {
         const formatDateAndTime = (dateString: string) => {
             const isValid = isValidDate(dateString, "locale");
             if (!isValid) {
-                console.log("is not valid", dateString)
                 return { date: "", time: "" }
             }
 

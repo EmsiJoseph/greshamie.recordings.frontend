@@ -8,5 +8,8 @@ export const defaultCallFilterValues: ICallFilters = {
     endDate: undefined,
     minimumDurationSeconds: undefined,
     maximumDurationSeconds: undefined,
+    hasVideoRecording: undefined,
+    hasPciCompliance: undefined,
+    hasQualityEvaluation: undefined,
     ...defaultPaginationValues
 }
