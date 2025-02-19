@@ -1,8 +1,10 @@
 export interface IPagination {
-    hasNext?: boolean,
-    hasPrevious?: boolean,
+    // API Params
     pageSize?: number
     pageOffSet?: number
+
+    hasNext?: boolean,
+    hasPrevious?: boolean,
     totalCount?: number,
     totalPages?: number
 }

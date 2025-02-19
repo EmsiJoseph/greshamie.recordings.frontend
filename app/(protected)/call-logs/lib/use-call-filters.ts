@@ -1,5 +1,4 @@
-import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
+import { useUpdateUrlParams } from "@/hooks/use-url-params";
 import { ICallFilters } from "@/lib/interfaces/call-interface";
 import { parseBoolean, parseNumber } from "@/lib/utils/parse-values";
 import { defaultCallFilterValues } from "./default-filter-values";
@@ -7,8 +6,7 @@ import { CallDirections } from "@/constants/call-types";
 import { isValidDate } from "@/lib/utils/date-utils";
 
 export const useCallFilters = () => {
-  const { resetUrlParams } = useUpdateUrlParams();
-  const getUrlParams = useGetUrlParams();
+  const { getUrlParams, resetUrlParams } = useUpdateUrlParams();
   let shouldAppendDefaultParams = false
   let hasInvalidFilter = false;
   let isAutoFetchEnabled = false;
@@ -19,7 +17,7 @@ export const useCallFilters = () => {
       const filterKey = key as keyof ICallFilters;
       const value = getUrlParams(key)
 
-      // 01 Handle Default Params | Start, End Date
+      // 01 Handle Default Params | Start, End Date, PageOffSet, Page Size
       if (key === 'startDate' || key === 'endDate') {
         if (!value) {
           shouldAppendDefaultParams = true
@@ -35,21 +33,20 @@ export const useCallFilters = () => {
         finalFilters[key] = value
         return
       }
+      if (key === 'pageOffSet' || key === 'pageSize') {
+        if (!value) {
+          shouldAppendDefaultParams = true
+          delete finalFilters[filterKey];
+          return
+        }
 
-      // 02 Handle Default Params | PageOffSet
-      // if (key === 'pageOffSet') {
-      //   if (!value) {
-      //     shouldAppendDefaultParams = true
-      //     delete finalFilters[filterKey];
-      //     return
-      //   }
+        // Check validity
+        const numericValue = parseNumber(value)
+        if (!numericValue || numericValue === 0) { hasInvalidFilter = true; return; }
 
-      //   // Check validity
-      //   const numericValue = parseNumber(value)
-      //   if (!numericValue || numericValue === 0) { hasInvalidFilter = true; console.log("invalid number: ", numericValue); return; }
-
-      //   finalFilters[key as keyof ICallFilters] = numericValue as any
-      // }
+        finalFilters[key as keyof ICallFilters] = numericValue as any
+        return
+      }
 
       // 03 Handle CallDirections
       if (key === 'callDirection' && value) {
@@ -63,15 +60,27 @@ export const useCallFilters = () => {
       }
 
       // 04 Numeric values
-      if (key === "minDurationSeconds" || key === "maxDurationSeconds" && value) {
+      if (
+        value && (
+          key === "minDurationSeconds" ||
+          key === "maxDurationSeconds" ||
+          key === "totalCount" ||
+          key === "totalPages"
+        )) {
         const numericValue = parseNumber(value)
         if (!numericValue) { hasInvalidFilter = true; return; }
 
         finalFilters[key as keyof ICallFilters] = value as any
+        return
       }
 
       // 05 Boolean values
-      if (key === "hasVideoRecording" && value) {
+      if (
+        value && (
+          key === "hasVideoRecording" ||
+          key === "hasNext" ||
+          key === "hasPrevious"
+        )) {
         const booleanValue = parseBoolean(value); // True | False | Undefined
         if (booleanValue === undefined) {
           hasInvalidFilter = true;
@@ -98,7 +107,13 @@ export const useCallFilters = () => {
   };
 
   const retrievedFilters = retrieveCallFilters() // Empty object at the very least
-  console.log("Final Filters", retrievedFilters)
+
+  // Use this in react query
+  const queryKey = { ...retrievedFilters }
+  delete queryKey.hasNext
+  delete queryKey.hasPrevious
+  delete queryKey.totalCount
+  delete queryKey.totalPages
 
   const hasFilterValues = Object.keys(retrievedFilters).length > 0
 
@@ -111,6 +126,7 @@ export const useCallFilters = () => {
 
   return {
     retrievedFilters,
+    queryKey,
     hasInvalidFilter,
     shouldAppendDefaultParams,
     isAutoFetchEnabled,

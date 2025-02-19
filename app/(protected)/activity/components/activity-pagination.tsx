@@ -2,7 +2,7 @@ import Pagination from '@/components/common/pagination';
 import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { ICallLogs } from '@/lib/interfaces/call-interface';
-import { useUpdateUrlParams } from '@/hooks/browser-url-params/use-update-url-params';
+import { useUpdateUrlParams } from '@/hooks/use-url-params';
 import { parseNumber } from '@/lib/utils/parse-values';
 import { IActivityResponse } from '@/lib/interfaces/activity-interface';
 import { useActivityFilters } from '../lib/use-activity-filters';

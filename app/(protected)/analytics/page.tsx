@@ -3,14 +3,12 @@
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { sampleFetchAnalytics } from "@/api/analytics";
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params";
-import { useGetUrlParams } from "@/hooks/browser-url-params/use-get-url-params";
+import { useUpdateUrlParams } from "@/hooks/use-url-params";
 import AnalyticsContainer from "./components/analytics-containers";
 import { IAnalyticsFilters } from "@/lib/interfaces/analytic-interface";
 
 export default function AnalyticsPage() {
-  const { updateUrlParams } = useUpdateUrlParams();
-  const getUrlParams = useGetUrlParams();
+  const { updateUrlParams, getUrlParams } = useUpdateUrlParams();
 
   // Get filter values from URL
   const search = getUrlParams("search") || "";

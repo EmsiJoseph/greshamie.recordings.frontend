@@ -10,7 +10,7 @@ import { ActivityAdvanceFilterSchema } from "@/lib/schema/activity-advance-filte
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormStateError } from "@/components/common/form-state-error"
-import { useUpdateUrlParams } from "@/hooks/browser-url-params/use-update-url-params"
+import { useUpdateUrlParams } from "@/hooks/use-url-params"
 import { useState } from "react"
 import { parseAdvanceFilterDefaults } from "../../lib/parse-advance-filter-default"
 import { handleSubmitFilter } from "@/app/(protected)/call-logs/components/filters/advance-filter/handle-submit-filter"
