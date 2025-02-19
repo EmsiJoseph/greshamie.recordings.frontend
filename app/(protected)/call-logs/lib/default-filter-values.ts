@@ -11,5 +11,7 @@ export const defaultCallFilterValues: ICallFilters = {
     hasVideoRecording: undefined,
     hasPciCompliance: undefined,
     hasQualityEvaluation: undefined,
-    ...defaultPaginationValues
+    pageOffSet: defaultPaginationValues.pageOffSet,
+    pageSize: defaultPaginationValues.pageSize
+    // Do not include other pagination fields here because they are not necessary for API query params
 }

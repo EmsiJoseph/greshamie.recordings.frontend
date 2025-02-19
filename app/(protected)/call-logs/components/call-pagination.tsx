@@ -5,6 +5,7 @@ import { useCallFilters } from '../lib/use-call-filters';
 import { ICallLogs } from '@/lib/interfaces/call-interface';
 import { useUpdateUrlParams } from '@/hooks/browser-url-params/use-update-url-params';
 import { parseNumber } from '@/lib/utils/parse-values';
+import { useGetUrlParams } from '@/hooks/browser-url-params/use-get-url-params';
 
 interface CallPaginationProps {
   callLogs?: ICallLogs
@@ -12,10 +13,12 @@ interface CallPaginationProps {
 
 export const CallPagination = ({ callLogs }: CallPaginationProps) => {
   const { retrievedFilters } = useCallFilters()
+  const getUrlParams = useGetUrlParams()
   const { updateUrlParams } = useUpdateUrlParams()
-  const currPage = retrievedFilters?.pageOffSet
-  const totalPages = retrievedFilters?.totalPages
+  const currPage = parseNumber(getUrlParams("pageOffSet"))
+  const totalPages = parseNumber(getUrlParams("totalPages"))
   const hasNext = retrievedFilters?.hasNext
+  const hasPrev = getUrlParams("hasPrevious")
 
 
   const handlePageChange = (
@@ -46,8 +49,6 @@ export const CallPagination = ({ callLogs }: CallPaginationProps) => {
         return
       }
     }
-
-
   }
 
   return (
