@@ -12,7 +12,7 @@ export interface IActivity {
     timestamp: Date,
 }
 export interface IActivityResponse extends IPagination {
-    items: IActivity[] | []
+    items?: IActivity[] | []
 }
 
 export interface IActivityFilters extends IPagination {
