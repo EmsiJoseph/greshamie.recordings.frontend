@@ -9,15 +9,14 @@ import { SingleToggleGroupFilter } from "@/components/filters/single-toggle-grou
 import { EventTypes } from "@/constants/activity-types";
 import { SingleChoiceDropdown } from "@/components/common/single-choice-dropdown";
 import { ActivityListPeriodFilter } from "./activity-list-period-filter";
+import { getDateString } from "@/lib/utils/date-utils";
 
 interface ActivityListFiltersProps {
   retrievedFilters: IActivityFilters
-  resetActivityFilters: () => void
 }
 
 export const ActivityListFilters = ({ 
   retrievedFilters, 
-  resetActivityFilters 
 }: ActivityListFiltersProps) => {
   const { updateUrlParams } = useUpdateUrlParams();
   // 01 Activity Types
@@ -31,14 +30,16 @@ export const ActivityListFilters = ({
   const [search, setSearch] = useState<IActivityFilters['search']>("");
   const debouncedSearch = useDebounce(search);
 
+   // 3. Period
+  const handlePeriodChange = (startDate: Date, endDate: Date) => {
+    const formattedStartDate = getDateString(startDate.toDateString(), "ISO") 
+    const formattedEndDate = getDateString(endDate.toDateString(), "ISO") 
+    updateUrlParams({ startDate: formattedStartDate, endDate: formattedEndDate });
+  };
+  
   useEffect(() => {
     updateUrlParams({ search: debouncedSearch })
 }, [debouncedSearch, updateUrlParams]);
-
-  // 3. Period
-  const handlePeriodChange = (startDate: Date, endDate: Date) => {
-    updateUrlParams({ startDate: startDate.toISOString(), endDate: endDate.toISOString() });
-  };
 
   return (
     <div className="flex gap-4">
@@ -55,13 +56,14 @@ export const ActivityListFilters = ({
                 options={EventTypes}
                 className="block lg:hidden"
         />
-
-        <ActivityListAdvanceFilters 
-          retrievedActivityFilters={retrievedFilters} resetActivityFilters={resetActivityFilters} 
-        />
+ 
         <ActivityListPeriodFilter 
           value={retrievedFilters?.period}
           onPeriodChange={handlePeriodChange}/>
+
+        {retrievedFilters && Object.keys(retrievedFilters).length > 0 && 
+          <ActivityListAdvanceFilters />
+        }
 
         <div className="relative w-full">
           <Input className="pr-9" placeholder="Search phone number or participants..." onChangeCapture={(e) => setSearch(e.currentTarget.value)} />
