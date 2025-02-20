@@ -15,10 +15,6 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import ActivityListSkeleton from "@/components/presentational/activity-list-skeleton";
-import ActivityListPagination, {
-  Pagination,
-} from "@/components/common/pagination";
-import ActivityIcon from "./activity-type-with-icon";
 import { formatDate } from "@/lib/utils/date-utils";
 import { eventDirectionIcons } from "@/constants/activity-types";
 import { sortData, ISortConfig } from "@/lib/utils/sort-data";
@@ -30,13 +26,6 @@ interface ActivityListProps {
 }
 
 export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
-  const [page, setPage] = React.useState(1);
-  const [totalPages, setTotalPages] = React.useState(0);
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
-
   const [sortConfig, setSortConfig] = useState<ISortConfig<IActivity> | null>({
     key: "timestamp",
     direction: "descending",

@@ -1,6 +1,6 @@
 import { useUpdateUrlParams } from '@/hooks/use-url-params';
 import { parseBoolean, parseNumber } from '@/lib/utils/parse-values';
-import DynamicPagination from '@/components/common/pagination2';
+import DynamicPagination from '@/components/common/pagination';
 
 export const CallPagination = () => {
   const { updateUrlParams, getUrlParams } = useUpdateUrlParams()
