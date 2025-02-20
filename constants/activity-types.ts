@@ -1,6 +1,6 @@
 import { LogIn, LogOut, Play, Download, Trash2, RefreshCw } from "lucide-react";
 
-export const EventTypes = {
+export const EventTypes: Record<string,string> = {
   SESSION: "SESSION",
   RECORDING: "RECORDING",
 } as const;

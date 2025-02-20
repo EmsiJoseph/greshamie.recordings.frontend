@@ -12,8 +12,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { FormStateError } from "@/components/common/form-state-error"
 import { useUpdateUrlParams } from "@/hooks/use-url-params"
 import { useState } from "react"
-import { parseAdvanceFilterDefaults } from "../../lib/parse-advance-filter-default"
+import { useParseAdvanceFilterDefaults } from "../../lib/use-parse-advance-filter-default"
 import { handleSubmitFilter } from "@/app/(protected)/call-logs/components/filters/advance-filter/handle-submit-filter"
+import { useActivityFilters } from "../../lib/use-activity-filters"
 
 interface AdvanceFiltersProps {
     retrievedActivityFilters?: IActivityFilters
@@ -22,16 +23,16 @@ interface AdvanceFiltersProps {
 
 const customInputClass = "w-full outline-solid border-solid border-[1.5px] rounded-md h-10 p-4";
 
-export const ActivityListAdvanceFilters = ({
-    retrievedActivityFilters,
-    resetActivityFilters,
-}: AdvanceFiltersProps) => {
+export const ActivityListAdvanceFilters = () => {
+        const {resetActivityFilters } = useActivityFilters();
+        const parsedFilterDefaults = useParseAdvanceFilterDefaults();
+        const { updateUrlParams } = useUpdateUrlParams();
+
         const [open, setOpen] = useState(false);
-        const { updateUrlParams } = useUpdateUrlParams()
-        const defaultValues = parseAdvanceFilterDefaults(retrievedActivityFilters);
+        
         const { watch, setValue, formState, handleSubmit, reset } = useForm<z.infer<typeof ActivityAdvanceFilterSchema>>({
             resolver: zodResolver(ActivityAdvanceFilterSchema),
-            defaultValues,
+            defaultValues: parsedFilterDefaults as z.infer<typeof ActivityAdvanceFilterSchema>,
         })
         
         const formError = formState.errors;

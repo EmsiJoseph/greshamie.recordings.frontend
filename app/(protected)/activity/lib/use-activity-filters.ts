@@ -4,40 +4,101 @@ import {
   TEventType,
 } from "@/lib/interfaces/activity-interface";
 import { parseBoolean, parseNumber } from "@/lib/utils/parse-values";
+import { defaultActivityFilterValues } from "./default-filter-values";
+import { EventTypes } from "@/constants/activity-types";
+import { isValidDate } from "@/lib/utils/date-utils";
 
 export const useActivityFilters = () => {
   const { resetUrlParams, getUrlParams } = useUpdateUrlParams();
+  let shouldAppendDefaultParams = false
+  let hasInvalidFilter = false;
+  let isAutoFetchEnabled = false;
 
   const retrieveActivityFilters = (): IActivityFilters => {
-    const getNumericUrlParam = (key: string): number | undefined => {
-      const param = getUrlParams(key);
-      return parseNumber(param);
-    };
+    const finalFilters = { ...defaultActivityFilterValues }
+    Object.keys(defaultActivityFilterValues).forEach((key) => {
+      const filterKey = key as keyof IActivityFilters;
+      const value = getUrlParams(key)
 
-    const getBooleanUrlParam = (key: string): boolean | undefined => {
-      const param = getUrlParams(key);
-      return parseBoolean(param);
-    };
+      // 01 Handle Default Params | Start, End Date, PageOffSet, Page Size
+      if (key === 'startDate' || key === 'endDate') {
+        if (!value) {
+          shouldAppendDefaultParams = true
+          delete finalFilters[filterKey];
+          return
+        }
+
+        // Check for valid date
+        const isValid = isValidDate(value, "locale");
+        if (!isValid) { hasInvalidFilter = true; return }
+
+        // All checks are made, append to finalFilters
+        finalFilters[key] = value
+        return
+      }
+      if (key === 'pageOffSet' || key === 'pageSize') {
+        if (!value) {
+          shouldAppendDefaultParams = true
+          delete finalFilters[filterKey];
+          return
+        }
+         // Check validity
+        const numericValue = parseNumber(value)
+        if (!numericValue || numericValue === 0) { hasInvalidFilter = true; return; }
+
+        finalFilters[key as keyof IActivityFilters] = numericValue as any
+        return
+      }
+
+      if (key === 'eventType' && value) {
+        const isValid = value.toUpperCase() in EventTypes;
+        if (!isValid) {
+          hasInvalidFilter = true;
+          return;
+        }
+        finalFilters[key] = value;
+        return;
+      }
+
+      if (value === "" || value === undefined || value === null) {
+        delete finalFilters[filterKey];
+        return
+      }
+
+      
+      // 07 For all other strings
+      finalFilters[key as keyof IActivityFilters] = value as any
+    });
+
+    
+    shouldAppendDefaultParams = shouldAppendDefaultParams ? shouldAppendDefaultParams : Object.keys(finalFilters).length === 0
+    return finalFilters
+  }
+
+    const retrievedFilters = retrieveActivityFilters()
+
+    // Use this in react query
+    const queryKey = { ...retrievedFilters }
+    delete queryKey.hasNext
+    delete queryKey.hasPrevious
+    delete queryKey.totalCount
+    delete queryKey.totalPages
+
+
+    const hasFilterValues = Object.keys(retrievedFilters).length > 0
+
+    isAutoFetchEnabled = hasFilterValues && !hasInvalidFilter && !shouldAppendDefaultParams
+
+    const resetActivityFilters = () => {
+      resetUrlParams();
+    }
+
     return {
-      search: getUrlParams("search") || "",
-      eventType: (getUrlParams("eventType") as TEventType) || undefined,
-      startDate: getUrlParams("startDate") ?? undefined,
-      endDate: getUrlParams("endDate") ?? undefined,
-      // Pagination
-      hasNext: getBooleanUrlParam("hasNext"),
-      hasPrevious: getBooleanUrlParam("hasPrevious"),
-      pageSize: getNumericUrlParam("pageSize"),
-      pageOffSet: getNumericUrlParam("pageOffSet"),
-      totalCount: getNumericUrlParam("totalCount"),
-      totalPages: getNumericUrlParam("totalPages"),
-    };
-  };
-
-  const retrievedFilters = retrieveActivityFilters();
-
-  const resetActivityFilters = () => {
-    resetUrlParams();
-  };
-
-  return { retrievedFilters, resetActivityFilters };
+      retrievedFilters,
+      queryKey,
+      hasInvalidFilter,
+      shouldAppendDefaultParams,
+      isAutoFetchEnabled,
+      resetActivityFilters
+    }
 };
