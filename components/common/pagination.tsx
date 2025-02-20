@@ -1,81 +1,103 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { parseNumber } from "@/lib/utils/parse-values";
+import React, { useEffect, useState } from 'react';
+import { Pagination as ShadCnPagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '../ui/pagination';
+import useDeviceSize from '@/hooks/use-device-size';
+import { Button } from '../ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
-  hasNext?: boolean,
-  hasPrev?: boolean,
-  pageSize?: number,
-  currentPage?: number; // PageOffSet
+  hasNext?: boolean;
+  hasPrev?: boolean;
+  pageSize?: number;
+  currentPage?: number; // PageOffset
   totalCount?: number;
   totalPages?: number;
   onPageChange: (
-    nextOrPrevOrSet?: "next" | "prev" | "set",
+    nextOrPrevOrSet?: 'next' | 'prev' | 'set',
     page?: string | number
   ) => void;
 }
 
-export const Pagination = ({
-  currentPage,
-  totalPages,
-  pageSize,
-  onPageChange,
+const Pagination = ({
   hasNext,
-  hasPrev
+  hasPrev,
+  pageSize,
+  currentPage,
+  totalCount,
+  totalPages,
+  onPageChange
 }: PaginationProps) => {
+  // const [viewportWidth] = useDeviceSize()
 
-  const handleInputPage = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    nextOrPrevOrSet?: "next" | "prev" | "set"
-  ) => {
-    // For manual input of page number
-    if (e.target.value) {
-      const page = parseNumber(e.target.value)
-      if (page) {
-        onPageChange(nextOrPrevOrSet, Math.abs(page))
-        return
-      }
-    }
+  // Directly use viewportWidth in your rendering logic to calculate maxPagesToShow
+  const maxPagesToShow = 4;
+  console.log("max pages to show", maxPagesToShow)
 
-    if (nextOrPrevOrSet === "next") {
-      onPageChange(nextOrPrevOrSet, 1)
-    }
-    onPageChange(nextOrPrevOrSet, e.target.value)
-  }
+  const isPrevDisabled = currentPage === 1;
+  const isNextDisabled = currentPage === totalPages;
+
+
+  // Calculate the start and end page numbers
+  const startPage = currentPage ? Math.max(currentPage - Math.floor(maxPagesToShow / 2), 1) : undefined;
+  const endPage = startPage && totalPages ? Math.min(startPage + maxPagesToShow - 1, totalPages) : undefined;
+
+  // Handle the page click
+  const handlePageClick = (page: number) => {
+    onPageChange('set', page);
+  };
 
   return (
-    <div className="flex items-center justify-between w-full mt-4">
-      {/* Left Side: Page Input and Text */}
-      <div className="flex items-center space-x-2">
-        <span className="text-sm">Page</span>
-        <span className="text-sm">{currentPage} of {totalPages}</span>
-      </div>
+    <ShadCnPagination>
+      <PaginationContent>
+        <PaginationItem>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange("prev")}
+            disabled={isPrevDisabled}
+            className='outline-none border-none'
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <p className='sm:block hidden'>Previous</p>
+          </Button>
 
-      {/* Right Side: Previous and Next Buttons */}
-      <div className="flex items-center space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange("prev")}
-          disabled={!hasPrev}
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Previous
-        </Button>
+        </PaginationItem>
+        {/* Loop over and render the pages in the calculated range */}
+        {endPage && startPage && Array.from({ length: endPage - startPage + 1 }, (_, idx) => {
+          const page = startPage + idx;
+          return (
+            <PaginationItem key={page}>
+              <PaginationLink
+                href="#"
+                onClick={() => handlePageClick(page)}
+                className={currentPage === page ? 'bg-gray-100 dark:bg-gray-500' : ''}
+              >
+                {page}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        })}
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange("next")}
-          disabled={!hasNext}
-        >
-          Next
-          <ChevronRight className="w-4 h-4" />
-        </Button>
-      </div>
-    </div>
+        {/* Show ellipsis if needed (after the last page in the current range) */}
+        {currentPage && totalPages && currentPage < totalPages - maxPagesToShow && (
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+        )}
+
+        <PaginationItem>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange("next")}
+            disabled={isNextDisabled}
+            className='outline-none border-none'
+          >
+            <p className='sm:block hidden'>Next</p>
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </PaginationItem>
+      </PaginationContent>
+    </ShadCnPagination>
   );
 };
 

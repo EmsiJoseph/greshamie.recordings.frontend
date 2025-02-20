@@ -22,7 +22,6 @@ type AudioData = {
 
 export default function CallLogPage() {
   const { updateUrlParams } = useUpdateUrlParams()
-
   const {
     retrievedFilters,
     queryKey,
@@ -82,7 +81,7 @@ export default function CallLogPage() {
 
   // 02 Audio Player
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
-    null
+      null
   );
   const [audioData, setAudioData] = useState<AudioData | null>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
