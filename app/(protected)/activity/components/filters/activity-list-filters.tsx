@@ -1,4 +1,3 @@
-import { MultiToggleGroupFilter } from "@/components/filters/multi-toggle-group-filter";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { IActivityFilters, TEventType } from "@/lib/interfaces/activity-interface";

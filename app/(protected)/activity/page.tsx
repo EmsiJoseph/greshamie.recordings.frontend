@@ -1,16 +1,11 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { fetchActivity } from "@/api/activities";
 import { ActivityListFilters } from "./components/filters/activity-list-filters";
 import { ActivityList } from "../activity/components/activity-list";
 import { useActivityFilters } from "./lib/use-activity-filters";
-import {
-  IActivity,
-  IActivityFilters,
-  IActivityResponse,
-} from "@/lib/interfaces/activity-interface";
-import { AxiosResponse } from "axios";
+import { IActivityFilters, } from "@/lib/interfaces/activity-interface";
 import { useEffect } from "react";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
 import { useUpdateUrlParams } from "@/hooks/use-url-params";
@@ -19,7 +14,6 @@ export default function ActivityPage() {
   const { updateUrlParams } = useUpdateUrlParams();
 
   const { retrievedFilters, resetActivityFilters } = useActivityFilters();
-  const queryClient = useQueryClient();
   // 01 Prepare filters for query key
   let filters = { ...retrievedFilters } as Record<string, any>;
   Object.entries(retrievedFilters).forEach(([key, value]) => {

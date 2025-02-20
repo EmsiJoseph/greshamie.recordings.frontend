@@ -16,5 +16,4 @@ export const SIDEBAR_ITEMS = {
             active: true
         },
     ],
-    
 }
