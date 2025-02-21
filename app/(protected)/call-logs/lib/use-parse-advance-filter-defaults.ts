@@ -60,9 +60,9 @@ export const useParseAdvanceFilterDefaults = () => {
         };
     };
 
-    const parsedValues = parseFilterDefaults();
+    const parsedFilterDefaults = parseFilterDefaults();
 
-    const parsedFilterDefaults = useMemo(() => parsedValues, [parsedValues]);
+    // const parsedFilterDefaults = useMemo(() => parsedValues, [parsedValues]);
 
     return { parsedFilterDefaults };
 };
