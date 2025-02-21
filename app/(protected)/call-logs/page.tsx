@@ -116,39 +116,64 @@ export default function CallLogPage() {
       if (!call) return null;
       setAudioFetching(true);
       setFetchingCallId(call.id);
-      try {
-        const [streamingResponse, downloadResponse] = await Promise.all([
-          fetchStreamingUrl(call),
-          fetchDownloadUrl(call),
-        ]);
-
-        return {
-          streamingUrl: streamingResponse.data.streamingUrl ?? null,
-          downloadUrl: downloadResponse.data.downloadUrl ?? null,
-        };
-      } finally {
-        setAudioFetching(false);
-        setFetchingCallId(null);
+  
+      const MAX_RETRIES = 3;
+      let attempt = 0;
+  
+      while (attempt < MAX_RETRIES) {
+        try {
+          const [streamingResponse, downloadResponse] = await Promise.all([
+            fetchStreamingUrl(call),
+            fetchDownloadUrl(call),
+          ]);
+  
+          return {
+            streamingUrl: streamingResponse.data.streamingUrl ?? null,
+            downloadUrl: downloadResponse.data.downloadUrl ?? null,
+          };
+        } catch (error) {
+          attempt++;
+  
+          if (attempt >= MAX_RETRIES) {
+            handleApiClientSideError({
+              error: "Failed to fetch audio after multiple attempts. Please try again later.",
+              isSuccessToast: false,
+            });
+            return null;
+          }
+          await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 500));
+        }
       }
+  
+      return null;
     },
     onSuccess: (data, variables) => {
       setAudioData(null);
       setAudioPlaying(false);
       setAudioReady(false);
-
+  
       setTimeout(() => {
         setAudioData(data);
         setAudioReady(true);
         setAudioPlaying(true);
-
+  
         if (variables) {
           setActiveCallId(variables.id);
         } else {
           setActiveCallId(null);
         }
-      }, 100);
+      });
+    },
+    onError: () => {
+      setAudioFetching(false);
+      setFetchingCallId(null);
+    },
+    onSettled: () => {
+      setAudioFetching(false);
+      setFetchingCallId(null);
     },
   });
+  
 
   useEffect(() => {
     if (audioData?.streamingUrl && audioReady) {
