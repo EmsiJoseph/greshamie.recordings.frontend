@@ -7,7 +7,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowUpDown, ArrowUpWideNarrow, ArrowDownNarrowWide, CirclePlay, Pause } from "lucide-react";
+import {
+  ArrowUpDown,
+  ArrowUpWideNarrow,
+  ArrowDownNarrowWide,
+  CirclePlay,
+  Pause,
+  Loader2,
+} from "lucide-react";
 import { ICall, ICallLogs } from "@/lib/interfaces/call-interface";
 import CallListSkeleton from "@/components/presentational/call-list-skeleton";
 import { formatDurationToHours } from "@/lib/utils/format-duration";
@@ -21,7 +28,9 @@ interface CallListProps {
   isFetching?: boolean;
   onPlayAudio?: (call: ICall | null) => void;
   activeCallId?: string | number | null;
+  fetchingCallId?: string | number | null;
   audioPlaying?: boolean;
+  audioFetching?: boolean;
   onToggleAudio?: () => void;
 }
 
@@ -30,11 +39,18 @@ export const CallList = ({
   isFetching,
   onPlayAudio,
   activeCallId,
+  fetchingCallId,
   audioPlaying,
-  onToggleAudio, }: CallListProps) => {
-
-  const [sortConfig, setSortConfig] = useState<ISortConfig<ICall> | null>({ key: "endDateTime", direction: "descending" });
-  const sortedCalls = React.useMemo(() => sortData(calls?.items ?? [], sortConfig), [calls?.items, sortConfig]);
+  onToggleAudio,
+}: CallListProps) => {
+  const [sortConfig, setSortConfig] = useState<ISortConfig<ICall> | null>({
+    key: "endDateTime",
+    direction: "descending",
+  });
+  const sortedCalls = React.useMemo(
+    () => sortData(calls?.items ?? [], sortConfig),
+    [calls?.items, sortConfig]
+  );
 
   const requestSort = (key: keyof ICall) => {
     let direction: "ascending" | "descending" | null = "ascending";
@@ -51,7 +67,11 @@ export const CallList = ({
   const getSortIcon = (key: keyof ICall) => {
     if (!sortConfig) return <ArrowUpDown size={15} />;
     if (sortConfig.key !== key) return <ArrowUpDown size={15} />;
-    return sortConfig.direction === "ascending" ? <ArrowUpWideNarrow size={15} /> : <ArrowDownNarrowWide size={15} />;
+    return sortConfig.direction === "ascending" ? (
+      <ArrowUpWideNarrow size={15} />
+    ) : (
+      <ArrowDownNarrowWide size={15} />
+    );
   };
 
   if (isFetching) {
@@ -114,7 +134,9 @@ export const CallList = ({
                       }}
                       className="text-gray-700 cursor-pointer"
                     >
-                      {activeCallId === call.id && audioPlaying ? (
+                      {fetchingCallId === call.id ? (
+                        <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+                      ) : activeCallId === call.id && audioPlaying ? (
                         <Pause className="h-5 w-5 text-blue-500" />
                       ) : (
                         <CirclePlay className="h-5 w-5 text-green-500" />
