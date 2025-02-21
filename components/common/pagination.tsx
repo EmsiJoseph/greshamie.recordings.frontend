@@ -113,7 +113,7 @@ const Pagination = ({
               <>
                 <PaginationItem>
                   <PaginationLink
-                    onClick={() => handlePageClick(1)}
+                    onClick={() => handlePageClick(totalPages)}
                     className='px-[30px]'
                   >
                     <strong>...</strong>{totalPages}
