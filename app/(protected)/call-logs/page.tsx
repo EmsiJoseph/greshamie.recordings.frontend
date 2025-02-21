@@ -135,7 +135,7 @@ export default function CallLogPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-12">
+    <div className="flex flex-col gap-6 sm:gap-5">
       <CallListFilters retrievedFilters={retrievedFilters} />
       <CallList
         calls={data?.data}

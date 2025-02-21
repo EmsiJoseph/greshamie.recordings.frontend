@@ -10,9 +10,7 @@ export default function ActivityListSkeleton() {
           <TableRow>
             <TableHead>Date</TableHead>
             <TableHead>User</TableHead>
-            <TableHead>Recording Item</TableHead>
             <TableHead>Action</TableHead>
-            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
 

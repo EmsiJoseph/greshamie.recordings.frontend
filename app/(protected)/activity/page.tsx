@@ -82,7 +82,7 @@ export default function ActivityPage() {
   
 
   return (
-    <div>
+    <div className="flex flex-col gap-6 sm:gap-5">
       <ActivityListFilters
         retrievedFilters={retrievedFilters}/>
       <ActivityList activities={data?.data} isFetching={isFetching} />
