@@ -55,9 +55,7 @@ export const CallListFilters = ({ retrievedFilters }: CallListFiltersProps) => {
       />
 
       <CallLogsPeriodFilter
-        value={retrievedFilters?.period}
         onPeriodChange={handlePeriodChange}
-
       />
 
       {retrievedFilters && Object.keys(retrievedFilters).length > 0 &&

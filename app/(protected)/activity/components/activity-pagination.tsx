@@ -1,20 +1,13 @@
-import React from 'react';
 import { useUpdateUrlParams } from '@/hooks/use-url-params';
-import { IActivityResponse } from '@/lib/interfaces/activity-interface';
-import { useActivityFilters } from '../lib/use-activity-filters';
-import Pagination from '@/components/common/pagination';
+import { parseBoolean, parseNumber } from '@/lib/utils/parse-values';
+import DynamicPagination from '@/components/common/pagination';
 
-interface ActivityPaginationProps {
-  activities?: IActivityResponse
-}
-
-export const ActivityPagination = ({ activities }: ActivityPaginationProps) => {
-  const { retrievedFilters } = useActivityFilters();
-  const { updateUrlParams } = useUpdateUrlParams()
-  const currPage = retrievedFilters?.pageOffSet
-  const totalPages = retrievedFilters?.totalPages
-  const hasNext = retrievedFilters?.hasNext
-
+export const ActivityPagination = () => {
+  const { updateUrlParams, getUrlParams } = useUpdateUrlParams()
+  const currPage = parseNumber(getUrlParams("pageOffSet"))
+  const totalPages = parseNumber(getUrlParams("totalPages"))
+  const hasNext = parseBoolean(getUrlParams("hasNext"))
+  const hasPrev = parseBoolean(getUrlParams("hasPrevious"))
 
   const handlePageChange = (
     nextOrPrevOrSet?: "next" | "prev" | "set",
@@ -44,16 +37,15 @@ export const ActivityPagination = ({ activities }: ActivityPaginationProps) => {
         return
       }
     }
-
-
   }
 
   return (
-    <Pagination
+    <DynamicPagination
       currentPage={currPage}
       totalPages={totalPages}
       hasNext={hasNext}
+      hasPrev={hasPrev}
       onPageChange={handlePageChange}
     />
   );
-};
+}

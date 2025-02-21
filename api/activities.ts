@@ -2,32 +2,21 @@ import { GreshamAxiosConfig } from "@/lib/config/main-backend-axios-config";
 import { activityEndpoint } from "./endpoints/activity-endpoints";
 import { IActivityFilters, IActivityResponse } from "@/lib/interfaces/activity-interface";
 import { AxiosResponse } from "axios";
+import { getDateString } from "@/lib/utils/date-utils";
+import { buildQueryParams } from "@/lib/utils/build-query-params";
 
- export const fetchActivity = async (filters?: IActivityFilters): Promise<AxiosResponse<IActivityResponse>> => {
-      let finalEndpoint = activityEndpoint;
-    
-        if (filters) {
-            const queryParams = Object.entries(filters)
-                .filter(([key, value]) => {
-                    // Check if the value is a non-empty array, or if it's a non-falsy string or number
-                    return value && (Array.isArray(value) ? value.length > 0 : true);
-                })
-                .map(([key, value]) => {
-                    // If the value is a Date, convert it to an ISO string
-                    if (value instanceof Date) {
-                        value = value.toISOString();
-                    }
-                    return `${key}=${value}`;
-                })
-                .join('&'); // Join the query parameters with '&'
-    
-            if (queryParams) {
-                // If there are existing params in the endpoint, append with '&', else use '?'
-                finalEndpoint = activityEndpoint.includes('?')
-                    ? `${activityEndpoint}&${queryParams}`
-                    : `${activityEndpoint}?${queryParams}`;
-            }
+export const useFetchActivity = () => {
+    const fetchActivity = async (filters: IActivityFilters): Promise<AxiosResponse<IActivityResponse>> => {
+        if (filters.startDate && filters.endDate) {
+            filters['startDate'] = getDateString(filters.startDate, "locale")
+            filters['endDate'] = getDateString(filters.endDate, "locale")
         }
-    
+
+        if (filters.pageOffSet && filters.pageOffSet > 0) {
+            filters['pageOffSet'] = filters.pageOffSet - 1
+        }
+        const finalEndpoint = activityEndpoint + buildQueryParams(filters);
         return await GreshamAxiosConfig.get(finalEndpoint);
+    };
+    return { fetchActivity };
 }

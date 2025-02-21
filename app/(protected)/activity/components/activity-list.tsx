@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/table";
 import { IActivity, IActivityResponse } from "@/lib/interfaces/activity-interface";
 import {
-  EllipsisVertical,
   ArrowUpDown,
   ArrowUpWideNarrow,
   ArrowDownNarrowWide,
@@ -30,7 +29,6 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
     key: "timestamp",
     direction: "descending",
   });
-
   const sortedActivities = React.useMemo(
     () => sortData(activities?.items ?? [], sortConfig),
     [activities, sortConfig]
@@ -62,15 +60,17 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
     return <ActivityListSkeleton />;
   }
 
+  console.log("activities", activities);  
+
   return (
     <div className="w-full">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead onClick={() => requestSort("timestamp")}>
+            <TableHead onClick={() => requestSort("timestamp")} className="cursor-pointer">
               Date {getSortIcon("timestamp")}
             </TableHead>
-            <TableHead onClick={() => requestSort("userName")}>
+            <TableHead onClick={() => requestSort("userName")} className="cursor-pointer">
               User {getSortIcon("userName")}
             </TableHead>
             <TableHead>Action</TableHead>
@@ -78,9 +78,11 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
         </TableHeader>
 
         <TableBody>
-          {sortedActivities && sortedActivities.length > 0 ? (
-            sortedActivities.map((activity) => (
-              <TableRow key={activity.id}>
+          {/* {sortedActivities && sortedActivities.length > 0 ? (
+            sortedActivities.map((activity) => ( */}
+              {activities?.items && activities?.items.length > 0 ? (
+                activities?.items.map((activity: IActivity) => (
+              <TableRow key={String(activity?.id)}>
                 <TableCell>{formatDate(activity.timestamp)}</TableCell>
                 <TableCell>{activity.userName}</TableCell>
 
@@ -123,7 +125,7 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
           )}
         </TableBody>
       </Table>
-      <ActivityPagination activities={activities} />
+        {activities && activities.items && <ActivityPagination />}
     </div>
   );
 };
