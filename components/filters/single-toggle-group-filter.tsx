@@ -25,7 +25,7 @@ export const SingleToggleGroupFilter = <T extends string>({
     //   defaultValue={defaultValue}
       type="single"
       onValueChange={onValueChange}
-      value={value}
+      value={value ?? ""}
       className={`gap-2 sm:gap-4 min-w-fit ${className}`}
     >
       {Object.keys(options).map((key: string) => {
