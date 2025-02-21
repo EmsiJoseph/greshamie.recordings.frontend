@@ -63,39 +63,37 @@ export const CallList = ({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead onClick={() => requestSort("caller")}>
+            <TableHead onClick={() => requestSort("caller") }className="cursor-pointer">
               Caller {getSortIcon("caller")}
             </TableHead>
-            <TableHead onClick={() => requestSort("receiver")}>
+            <TableHead onClick={() => requestSort("receiver")} className="cursor-pointer">
               Receiver {getSortIcon("receiver")}
             </TableHead>
-            <TableHead onClick={() => requestSort("startDateTime")}>
+            <TableHead onClick={() => requestSort("startDateTime")} className="cursor-pointer">
               Start Date {getSortIcon("startDateTime")}
             </TableHead>
-            <TableHead onClick={() => requestSort("endDateTime")}>
+            <TableHead onClick={() => requestSort("endDateTime")} className="cursor-pointer">
               End Date {getSortIcon("endDateTime")}
             </TableHead>
-            <TableHead onClick={() => requestSort("callType")}>
+            <TableHead onClick={() => requestSort("callType")} className="cursor-pointer">
               Call Direction {getSortIcon("callType")}
             </TableHead>
-            <TableHead onClick={() => requestSort("isLive")}>
+            <TableHead onClick={() => requestSort("isLive")} className="cursor-pointer">
               Is Live {getSortIcon("isLive")}
             </TableHead>
-            <TableHead onClick={() => requestSort("durationSeconds")}>
+            <TableHead onClick={() => requestSort("durationSeconds")} className="cursor-pointer">
               Duration {getSortIcon("durationSeconds")}
             </TableHead>
-            <TableHead onClick={() => requestSort("recorder")}>
+            <TableHead onClick={() => requestSort("recorder")} className="cursor-pointer">
               Recorder {getSortIcon("recorder")}
             </TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {/* {sortedCalls && sortedCalls.length > 0 ? (
-            sortedCalls.map((call: ICall) => ( */}
-          {calls?.items && calls?.items.length > 0 ? (
-            calls?.items.map((call: ICall) => (
-              <TableRow key={String(call?.id)}>
+          {sortedCalls && sortedCalls.length > 0 ? (
+            sortedCalls.map((call: ICall) => (
+              <TableRow key={call?.id}>
                 <TableCell>{call?.caller}</TableCell>
                 <TableCell>{call?.receiver}</TableCell>
                 <TableCell>{formatDate(call?.startDateTime)}</TableCell>

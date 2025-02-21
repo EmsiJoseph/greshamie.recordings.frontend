@@ -3,5 +3,5 @@ export const PeriodTypes = {
     'Last Month': 'Last Month',
     'Last Year': 'Last Year',
     'Today': 'Today',
-    'All': 'All',
+    'Custom': 'Custom',
 } as const;
