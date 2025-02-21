@@ -2,7 +2,11 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFetchCalls } from "@/api/calls";
-import { ICall, ICallFilters, ICallLogs } from "@/lib/interfaces/call-interface";
+import {
+  ICall,
+  ICallFilters,
+  ICallLogs,
+} from "@/lib/interfaces/call-interface";
 import { CallList } from "./components/call-list";
 import { CallListFilters } from "./components/filters/call-list-filters";
 import { handleApiClientSideError } from "@/lib/handlers/api-response-handlers/handle-use-client-response";
@@ -21,42 +25,48 @@ type AudioData = {
 };
 
 export default function CallLogPage() {
-  const { updateUrlParams } = useUpdateUrlParams()
+  const { updateUrlParams } = useUpdateUrlParams();
   const {
     retrievedFilters,
     queryKey,
     hasInvalidFilter,
     shouldAppendDefaultParams,
-    isAutoFetchEnabled
-  } = useCallFilters()
+    isAutoFetchEnabled,
+  } = useCallFilters();
   const { fetchCalls } = useFetchCalls();
 
   // 01 Fetching Call logs and filtering
-  const qKeyStr = JSON.stringify(queryKey)
-  const { data, isFetching, isError } = useQuery<
-    AxiosResponse<ICallLogs>
-  >({
+  const qKeyStr = JSON.stringify(queryKey);
+  const { data, isFetching, isError } = useQuery<AxiosResponse<ICallLogs>>({
     queryKey: ["calls", qKeyStr],
     queryFn: () => fetchCalls({ ...queryKey }),
-    enabled: isAutoFetchEnabled
+    enabled: isAutoFetchEnabled,
   });
 
   useEffect(() => {
     // Append start and end dates onto the URL
     if (shouldAppendDefaultParams) {
       // Convert ISO to Locale
-      const startDate = getDateString(operateOnDays(undefined, -7), "ISO") // 7 days ago
-      const endDate = getDateString(operateOnDays(), "ISO") // now
+      const startDate = getDateString(operateOnDays(undefined, -7), "ISO"); // 7 days ago
+      const endDate = getDateString(operateOnDays(), "ISO"); // now
       const pageOffSet = 1;
       const pageSize = 10;
 
       let defaultParams: ICallFilters = {};
-      defaultParams['startDate'] = retrievedFilters.startDate ? retrievedFilters.startDate : startDate
-      defaultParams['endDate'] = retrievedFilters.endDate ? retrievedFilters.endDate : endDate
-      defaultParams['pageOffSet'] = retrievedFilters.pageOffSet ? retrievedFilters.pageOffSet : pageOffSet
-      defaultParams['pageSize'] = retrievedFilters.pageSize ? retrievedFilters.pageSize : pageSize
+      defaultParams["startDate"] = retrievedFilters.startDate
+        ? retrievedFilters.startDate
+        : startDate;
+      defaultParams["endDate"] = retrievedFilters.endDate
+        ? retrievedFilters.endDate
+        : endDate;
+      defaultParams["pageOffSet"] = retrievedFilters.pageOffSet
+        ? retrievedFilters.pageOffSet
+        : pageOffSet;
+      defaultParams["pageSize"] = retrievedFilters.pageSize
+        ? retrievedFilters.pageSize
+        : pageSize;
 
-      updateUrlParams(defaultParams)
+      updateUrlParams(defaultParams);
     }
 
     // Redirect to /400
@@ -64,65 +74,94 @@ export default function CallLogPage() {
       window.location.href = "/400";
       return;
     }
-  }, [shouldAppendDefaultParams, hasInvalidFilter, operateOnDays, updateUrlParams, getDateString])
+  }, [
+    shouldAppendDefaultParams,
+    hasInvalidFilter,
+    operateOnDays,
+    updateUrlParams,
+    getDateString,
+  ]);
 
   // Append the pagination data after a fetch
   useEffect(() => {
     if (data?.data) {
-      const pagination = { ...data?.data }
-      delete pagination.items
+      const pagination = { ...data?.data };
+      delete pagination.items;
 
-      const pageOffSet = pagination?.pageOffSet ? pagination?.pageOffSet + 1 : 1
+      const pageOffSet = pagination?.pageOffSet
+        ? pagination?.pageOffSet + 1
+        : 1;
       pagination.pageOffSet = pageOffSet;
 
-      updateUrlParams(pagination)
+      updateUrlParams(pagination);
     }
-  }, [data?.data])
+  }, [data?.data]);
 
   // 02 Audio Player
   const [activeCallId, setActiveCallId] = useState<string | number | null>(
-      null
+    null
   );
   const [audioData, setAudioData] = useState<AudioData | null>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
+  const [, setAudioFetching] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
+  const [fetchingCallId, setFetchingCallId] = useState<string | number | null>(
+    null
+  );
 
   // Unified mutation for fetching streaming and download URLs
   const fetchAudioData = useMutation({
     mutationKey: ["audioData"],
     mutationFn: async (call: ICall | null): Promise<AudioData | null> => {
       if (!call) return null;
+      setAudioFetching(true);
+      setFetchingCallId(call.id);
+      try {
+        const [streamingResponse, downloadResponse] = await Promise.all([
+          fetchStreamingUrl(call),
+          fetchDownloadUrl(call),
+        ]);
 
-      const [streamingResponse, downloadResponse] = await Promise.all([
-        fetchStreamingUrl(call),
-        fetchDownloadUrl(call),
-      ]);
-
-      return {
-        streamingUrl: streamingResponse.data.streamingUrl ?? null,
-        downloadUrl: downloadResponse.data.downloadUrl ?? null,
-      };
+        return {
+          streamingUrl: streamingResponse.data.streamingUrl ?? null,
+          downloadUrl: downloadResponse.data.downloadUrl ?? null,
+        };
+      } finally {
+        setAudioFetching(false);
+        setFetchingCallId(null);
+      }
     },
     onSuccess: (data, variables) => {
-      setAudioData(data);
+      setAudioData(null);
+      setAudioPlaying(false);
+      setAudioReady(false);
 
-      if (variables) {
-        setActiveCallId(variables.id);
+      setTimeout(() => {
+        setAudioData(data);
+        setAudioReady(true);
         setAudioPlaying(true);
-      } else {
-        setActiveCallId(null);
-        setAudioPlaying(false);
-      }
+
+        if (variables) {
+          setActiveCallId(variables.id);
+        } else {
+          setActiveCallId(null);
+        }
+      }, 100);
     },
   });
 
   useEffect(() => {
+    if (audioData?.streamingUrl && audioReady) {
+      setAudioPlaying(true);
+    }
+
     if (isError) {
       handleApiClientSideError({
         error: "Something went wrong. Try again later.",
         isSuccessToast: false,
       });
     }
-  }, [isError]);
+  }, [audioData?.streamingUrl, audioReady, isError]);
 
   const toggleAudio = () => {
     setAudioPlaying((prev) => !prev);
@@ -152,10 +191,11 @@ export default function CallLogPage() {
         }}
         activeCallId={activeCallId}
         audioPlaying={audioPlaying}
+        fetchingCallId={fetchingCallId}
         onToggleAudio={toggleAudio}
       />
 
-      {audioData?.streamingUrl && (
+      {audioReady && audioData?.streamingUrl && (
         <AudioPlayer
           url={audioData.streamingUrl}
           downloadUrl={audioData.downloadUrl ?? undefined}
