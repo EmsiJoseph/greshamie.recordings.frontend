@@ -5,6 +5,8 @@ import DynamicPagination from '@/components/common/pagination';
 export const CallPagination = () => {
   const { updateUrlParams, getUrlParams } = useUpdateUrlParams()
   const currPage = parseNumber(getUrlParams("pageOffSet"))
+  const totalCount = parseNumber(getUrlParams("totalCount"))
+  const pageSize = parseNumber(getUrlParams("pageSize"))
   const totalPages = parseNumber(getUrlParams("totalPages"))
   const hasNext = parseBoolean(getUrlParams("hasNext"))
   const hasPrev = parseBoolean(getUrlParams("hasPrevious"))
@@ -41,6 +43,8 @@ export const CallPagination = () => {
 
   return (
     <DynamicPagination
+      pageSize={pageSize}
+      totalCount={totalCount}
       currentPage={currPage}
       totalPages={totalPages}
       hasNext={hasNext}
