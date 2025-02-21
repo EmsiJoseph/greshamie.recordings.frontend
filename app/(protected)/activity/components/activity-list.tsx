@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/table";
 import { IActivity, IActivityResponse } from "@/lib/interfaces/activity-interface";
 import {
-  EllipsisVertical,
   ArrowUpDown,
   ArrowUpWideNarrow,
   ArrowDownNarrowWide,
@@ -30,7 +29,6 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
     key: "timestamp",
     direction: "descending",
   });
-
   const sortedActivities = React.useMemo(
     () => sortData(activities?.items ?? [], sortConfig),
     [activities, sortConfig]
@@ -69,10 +67,10 @@ export const ActivityList = ({ activities, isFetching }: ActivityListProps) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead onClick={() => requestSort("timestamp")}>
+            <TableHead onClick={() => requestSort("timestamp")} className="cursor-pointer">
               Date {getSortIcon("timestamp")}
             </TableHead>
-            <TableHead onClick={() => requestSort("userName")}>
+            <TableHead onClick={() => requestSort("userName")} className="cursor-pointer">
               User {getSortIcon("userName")}
             </TableHead>
             <TableHead>Action</TableHead>

@@ -44,7 +44,11 @@ export const CallListAdvanceFilters = () => {
         resolver: zodResolver(CallAdvanceFilterSchema),
         defaultValues: parsedFilterDefaults,
     })
-    
+
+    // useEffect(() => {
+    //     reset(parsedFilterDefaults); // This will reset the form with the new parsedFilterDefaults
+    // }, [parsedFilterDefaults, reset]);
+
     const formError = formState.errors;
 
     // ---> Date and Time

@@ -8,14 +8,14 @@ export default function CallListSkeleton() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
             <TableHead>Caller</TableHead>
             <TableHead>Receiver</TableHead>
-            <TableHead>Call Type</TableHead>
+            <TableHead>Start Date</TableHead>
+            <TableHead>End Date</TableHead>
+            <TableHead>Call Direction</TableHead>
+            <TableHead>Is Live</TableHead>
             <TableHead>Duration</TableHead>
             <TableHead>Recorder</TableHead>
-            <TableHead>Size</TableHead>
-            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
 
