@@ -108,61 +108,63 @@ export default function CallLogPage() {
   const [fetchingCallId, setFetchingCallId] = useState<string | number | null>(
     null
   );
+  const [activeCall, setActiveCall] = useState<ICall | null>(null);
 
-  // Unified mutation for fetching streaming and download URLs
-  const fetchAudioData = useMutation({
-    mutationKey: ["audioData"],
-    mutationFn: async (call: ICall | null): Promise<AudioData | null> => {
+  const fetchStreamingAudioData = useMutation({
+    mutationKey: ["streamingAudioData"],
+    mutationFn: async (call: ICall | null): Promise<string | null> => {
       if (!call) return null;
+      console.log(`Fetching streaming URL for call id: ${call.id}`);
       setAudioFetching(true);
       setFetchingCallId(call.id);
-  
+
       const MAX_RETRIES = 3;
       let attempt = 0;
-  
+
       while (attempt < MAX_RETRIES) {
         try {
-          const [streamingResponse, downloadResponse] = await Promise.all([
-            fetchStreamingUrl(call),
-            fetchDownloadUrl(call),
-          ]);
-  
-          return {
-            streamingUrl: streamingResponse.data.streamingUrl ?? null,
-            downloadUrl: downloadResponse.data.downloadUrl ?? null,
-          };
+          console.log(
+            `Attempt ${attempt + 1} to fetch streaming URL for call id: ${
+              call.id
+            }`
+          );
+          const response = await fetchStreamingUrl(call);
+          console.log(
+            `Successfully fetched streaming URL for call id: ${call.id} ${response.data.streamingUrl}`
+          );
+          return response.data.streamingUrl ?? null;
         } catch (error) {
           attempt++;
-  
+          console.error(
+            `Error fetching streaming URL for call id: ${call.id}, attempt ${attempt}`,
+            error
+          );
           if (attempt >= MAX_RETRIES) {
             handleApiClientSideError({
-              error: "Failed to fetch audio after multiple attempts. Please try again later.",
+              error:
+                "Failed to fetch streaming audio after multiple attempts. Please try again later.",
               isSuccessToast: false,
             });
             return null;
           }
-          await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 500));
+          await new Promise((resolve) =>
+            setTimeout(resolve, Math.pow(2, attempt) * 500)
+          );
         }
       }
-  
+
       return null;
     },
-    onSuccess: (data, variables) => {
-      setAudioData(null);
-      setAudioPlaying(false);
-      setAudioReady(false);
-  
-      setTimeout(() => {
-        setAudioData(data);
-        setAudioReady(true);
-        setAudioPlaying(true);
-  
-        if (variables) {
-          setActiveCallId(variables.id);
-        } else {
-          setActiveCallId(null);
-        }
-      });
+    onSuccess: (streamingUrl, call) => {
+      setAudioData({ streamingUrl, downloadUrl: null });
+      setAudioReady(true);
+      setAudioPlaying(true);
+      if (call) {
+        setActiveCallId(call.id);
+        setActiveCall(call);
+      } else {
+        setActiveCallId(null);
+      }
     },
     onError: () => {
       setAudioFetching(false);
@@ -173,7 +175,67 @@ export default function CallLogPage() {
       setFetchingCallId(null);
     },
   });
-  
+
+  const fetchDownloadAudioData = useMutation({
+    mutationKey: ["downloadAudioData"],
+    mutationFn: async (call: ICall | null): Promise<string | null> => {
+      if (!call) return null;
+      console.log(`Fetching download URL for call id: ${call.id}`);
+      try {
+        const response = await fetchDownloadUrl(call);
+        console.log(
+          `Successfully fetched download URL for call id: ${call.id}`
+        );
+        return response.data.downloadUrl ?? null;
+      } catch (error) {
+        console.error(
+          `Error fetching download URL for call id: ${call.id}`,
+          error
+        );
+        handleApiClientSideError({
+          error: "Failed to fetch download audio. Please try again later.",
+          isSuccessToast: false,
+        });
+        return null;
+      }
+    },
+    onSuccess: (downloadUrl) => {
+      setAudioData((prev) => ({
+        streamingUrl: prev?.streamingUrl ?? null,
+        downloadUrl,
+      }));
+      if (downloadUrl) {
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = `call-recording-${new Date().toISOString()}.mp3`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    },
+  });
+
+  // Handler for playing audio (triggers streaming URL fetch)
+  const handlePlayAudio = (call: ICall | null) => {
+    if (call && call.id !== activeCallId) {
+      fetchStreamingAudioData.mutate(call);
+    } else if (call && call.id === activeCallId) {
+      toggleAudio();
+    } else {
+      setAudioPlaying(false);
+      setActiveCallId(null);
+    }
+  };
+
+  // Handler for download button click (triggers download URL fetch)
+  const handleDownloadAudio = () => {
+    if (activeCall) {
+      console.log(`Download button clicked for call id: ${activeCall.id}`);
+      fetchDownloadAudioData.mutate(activeCall);
+    } else {
+      console.warn("No active call set. Download action aborted.");
+    }
+  };
 
   useEffect(() => {
     if (audioData?.streamingUrl && audioReady) {
@@ -204,16 +266,7 @@ export default function CallLogPage() {
       <CallList
         calls={data?.data}
         isFetching={isFetching}
-        onPlayAudio={(call) => {
-          if (call && call.id !== activeCallId) {
-            fetchAudioData.mutate(call);
-          } else if (call && call.id === activeCallId) {
-            toggleAudio();
-          } else {
-            setAudioPlaying(false);
-            setActiveCallId(null);
-          }
-        }}
+        onPlayAudio={handlePlayAudio}
         activeCallId={activeCallId}
         audioPlaying={audioPlaying}
         fetchingCallId={fetchingCallId}
@@ -227,6 +280,7 @@ export default function CallLogPage() {
           playing={audioPlaying}
           onPlayPause={toggleAudio}
           onClose={handleAudioClose}
+          onDownload={handleDownloadAudio}
         />
       )}
     </div>
